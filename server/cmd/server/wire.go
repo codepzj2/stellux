@@ -7,11 +7,10 @@ import (
 	"server/internal/ioc"
 	"server/internal/user"
 
-	"github.com/gin-gonic/gin"
 	"github.com/google/wire"
 )
 
-func InitApp() *gin.Engine {
+func InitApp() *HttpServer {
 	wire.Build(
 		ioc.InitEnv,
 		ioc.NewMongoDB,
@@ -20,6 +19,8 @@ func InitApp() *gin.Engine {
 
 		user.InitUserModule,
 		wire.FieldsOf(new(*user.Module), "Hdl"),
+
+		NewHttpServer,
 	)
 	return nil
 }

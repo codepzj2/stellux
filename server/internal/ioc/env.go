@@ -2,10 +2,12 @@ package ioc
 
 import (
 	"encoding/json"
+
 	"github.com/joho/godotenv"
 )
 
 type EnvConfig struct {
+	Port              string `json:"PORT"`
 	DSN               string `json:"DSN"`
 	MongoDatabase     string `json:"MONGO_INITDB_DATABASE"`
 	MongoRootUsername string `json:"MONGO_INITDB_ROOT_USERNAME"`

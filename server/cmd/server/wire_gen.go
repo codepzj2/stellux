@@ -7,19 +7,19 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
 	"server/internal/ioc"
 	"server/internal/user"
 )
 
 // Injectors from wire.go:
 
-func InitApp() *gin.Engine {
+func InitApp() *HttpServer {
 	envConfig := ioc.InitEnv()
 	database := ioc.NewMongoDB(envConfig)
 	module := user.InitUserModule(database)
 	userHandler := module.Hdl
 	v := ioc.InitMiddleWare()
 	engine := ioc.NewGin(userHandler, v)
-	return engine
+	httpServer := NewHttpServer(engine, envConfig)
+	return httpServer
 }
