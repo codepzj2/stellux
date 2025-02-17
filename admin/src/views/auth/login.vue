@@ -1,5 +1,7 @@
 <template>
-  <div class="flex items-center justify-center h-screen w-full login-background">
+  <div
+    class="flex items-center justify-center h-screen w-full login-background"
+  >
     <a-card class="shadow-md w-96">
       <img class="m-auto w-2/5 h-3/5" :src="Logo" />
       <a-form
@@ -61,7 +63,7 @@ import { UserOutlined, LockOutlined } from "@ant-design/icons-vue";
 import $message from "@/utils/message";
 import type { LoginForm } from "@/api/interfaces/user";
 
-import Logo from "@/assets/login/logo.svg"
+import Logo from "@/assets/login/logo.svg";
 
 const loginForm: LoginForm = reactive({
   username: "",
@@ -83,6 +85,7 @@ const disabled = computed(() => {
 </script>
 <style lang="scss" scoped>
 .login-background {
-  background: url("@/assets/login/background.png") no-repeat center center / cover;
+  background: url("@/assets/login/background.png") no-repeat center center /
+    cover;
 }
 </style>
