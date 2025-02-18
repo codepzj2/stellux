@@ -3,7 +3,7 @@
     class="flex items-center justify-center h-screen w-full login-background"
   >
     <a-card class="shadow-md w-96">
-      <img class="m-auto w-2/5 h-3/5" :src="Logo" />
+      <img class="m-auto my-6 w-32" :src="themeStore.tailwindTheme === 'dark' ? darkLogo : lightLogo" />
       <a-form
         :model="loginForm"
         class="w-full mx-auto pt-4 px-4"
@@ -34,11 +34,11 @@
 
         <a-form-item>
           <a-form-item name="remember" no-style>
-            <a-checkbox v-model:checked="loginForm.remember">记住我</a-checkbox>
+            <a-checkbox class="text-sm" v-model:checked="loginForm.remember">记住我</a-checkbox>
           </a-form-item>
           <span class="float-right space-x-2 w-32">
-            <a class="hover:text-blue-600" href="">忘记密码</a>
-            <a class="hover:text-blue-600" href="">立即注册</a>
+            <a class="text-sm" href="">忘记密码</a>
+            <a class="text-sm" href="">立即注册</a>
           </span>
         </a-form-item>
 
@@ -63,10 +63,13 @@ import $message from "@/utils/message";
 import type { LoginForm, LoginVO } from "@/api/interfaces/user";
 import { userLogin } from "@/api/modules/user";
 import { useUserStore } from "@/store/user";
-import Logo from "@/assets/login/logo.svg";
+import darkLogo from "@/assets/logo/logo-dark.png";
+import lightLogo from "@/assets/logo/logo-light.png";
 import type { Response } from "@/api/interfaces/resp";
 import { useRouter } from "vue-router";
+import { useThemeStore } from "@/store/theme";
 
+const themeStore = useThemeStore();
 const { setUser, setToken } = useUserStore();
 const router = useRouter();
 

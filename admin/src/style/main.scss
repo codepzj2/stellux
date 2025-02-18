@@ -2,8 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-    font-size: 16px;
+body,#app {
+    height: 100vh;
 }
 
 .message {

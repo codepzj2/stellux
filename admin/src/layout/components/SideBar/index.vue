@@ -1,14 +1,12 @@
 <template>
-  <div class="font-bold">
-    <div class="flex items-center justify-center">
-      <img :src="Stellux" alt="logo" class="w-1/2 my-2" />
-    </div>
+  <div>
     <a-menu
       v-model:selectedKeys="state.selectedKeys"
       mode="inline"
       :open-keys="state.openKeys"
       :items="items"
       @openChange="onOpenChange"
+      class="w-64"
     ></a-menu>
   </div>
 </template>
@@ -24,7 +22,6 @@ import {
   SettingOutlined,
 } from "@ant-design/icons-vue";
 import type { ItemType } from "ant-design-vue";
-import Stellux from "@/assets/dashboard/stellux.png";
 
 function getItem(
   label: VueElement | string,
@@ -87,7 +84,7 @@ const state = reactive({
     "notice",
     "system",
   ],
-  openKeys: ["content"],
+  openKeys: ["user", "content"],
   selectedKeys: [],
 });
 const onOpenChange = (openKeys: string[]) => {

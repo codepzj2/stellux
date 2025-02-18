@@ -7,6 +7,7 @@ import {
 import Layout from "@/layout/index.vue";
 import Home from "@/views/home/index.vue";
 import Login from "@/views/auth/login.vue";
+import Test from "@/views/test/index.vue";
 import { errorView } from "@/router/modules/errorView";
 
 const routes: RouteRecordRaw[] = [
@@ -19,6 +20,11 @@ const routes: RouteRecordRaw[] = [
     path: "/login",
     component: Login,
     name: "Login",
+  },
+  {
+    path: "/test",
+    component: Test,
+    name: "Test",
   },
   {
     path: "/error",
