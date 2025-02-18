@@ -1,9 +1,9 @@
 <template>
-  <div class="w-full flex px-4 py-6">
-    <div class="w-1/5">
+  <div class="w-full flex p-4 space-x-4">
+    <div class="w-48">
       <Sidebar></Sidebar>
     </div>
-    <div class="w-4/5 h-screen">
+    <div class="h-full">
       <Tab></Tab>
       <app-main></app-main>
       <app-footer></app-footer>

@@ -26,8 +26,16 @@ const warning = (text: string) => {
   });
 };
 
+const loading = (text: string) => { 
+  message.loading({
+    content: text,
+    class: "message",
+  });
+};
+
 export default {
   success,
   error,
   warning,
+  loading,
 };

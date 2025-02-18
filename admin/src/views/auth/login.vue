@@ -8,7 +8,6 @@
         :model="loginForm"
         class="w-full mx-auto pt-4 px-4"
         @finish="onFinish"
-        @finishFailed="onFinishFailed"
       >
         <a-form-item
           label="用户名"
@@ -61,24 +60,38 @@
 import { reactive, computed } from "vue";
 import { UserOutlined, LockOutlined } from "@ant-design/icons-vue";
 import $message from "@/utils/message";
-import type { LoginForm } from "@/api/interfaces/user";
-
+import type { LoginForm, LoginVO } from "@/api/interfaces/user";
+import { userLogin } from "@/api/modules/user";
+import { useUserStore } from "@/store/user";
 import Logo from "@/assets/login/logo.svg";
+import type { Response } from "@/api/interfaces/resp";
+import { useRouter } from "vue-router";
+
+const { setUser, setToken } = useUserStore();
+const router = useRouter();
 
 const loginForm: LoginForm = reactive({
   username: "",
   password: "",
   remember: true,
 });
-const onFinish = (values: LoginForm) => {
-  $message.success("登录成功");
-  console.log("Success:", values);
+
+// 登录校验逻辑
+const onFinish = async (loginForm: LoginForm) => {
+  console.log("Success:", loginForm);
+  try {
+    $message.loading("登录中");
+    const res: Response<LoginVO> = await userLogin(loginForm);
+    // 设置用户信息和token
+    setUser(res.data.user);
+    setToken(res.data.token);
+    $message.success("登录成功");
+    router.push("/");
+  } catch (error) {
+    console.error("登录失败", error);
+  }
 };
 
-const onFinishFailed = (errorInfo: unknown) => {
-  console.error("登录失败", errorInfo);
-  $message.error("登录失败，请重试");
-};
 const disabled = computed(() => {
   return !(loginForm.username && loginForm.password);
 });
