@@ -1,10 +1,12 @@
 package middleware
 
 import (
-	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 	"server/internal/pkg/utils"
 	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
 func JWT() gin.HandlerFunc {
@@ -20,6 +22,7 @@ func JWT() gin.HandlerFunc {
 			}
 		}
 		token := ctx.Request.Header.Get("Authorization")
+		log.Println("用户携带的token:", token)
 		if token == "" || !strings.HasPrefix(token, "Bearer ") {
 			ctx.AbortWithStatus(http.StatusUnauthorized)
 			return
@@ -29,6 +32,7 @@ func JWT() gin.HandlerFunc {
 			ctx.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
+		log.Println("解析后的claims:", claims)
 		ctx.Set("userId", claims.ID)
 		ctx.Next()
 	}

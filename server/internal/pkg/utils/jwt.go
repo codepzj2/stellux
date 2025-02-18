@@ -1,20 +1,13 @@
 package utils
 
 import (
-	"crypto/rand"
+	"time"
+
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/pkg/errors"
-	"time"
 )
 
-var jwtKey []byte
-
-func init() {
-	jwtKey = make([]byte, 32) // 生成32字节的密钥
-	if _, err := rand.Read(jwtKey); err != nil {
-		panic(err)
-	}
-}
+var jwtKey = []byte("codepzj")
 
 type JwtCustomClaims struct {
 	ID string
@@ -37,16 +30,16 @@ func GenerateJwt(id string) (string, error) {
 	return token.SignedString(jwtKey)
 }
 
-func ParseJwt(jwtStr string) (JwtCustomClaims, error) {
-	claims := JwtCustomClaims{}
+func ParseJwt(jwtStr string) (*JwtCustomClaims, error) {
+	claims := new(JwtCustomClaims)
 	token, err := jwt.ParseWithClaims(jwtStr, claims, func(token *jwt.Token) (interface{}, error) {
 		return jwtKey, nil
 	})
 	if err != nil {
-		return JwtCustomClaims{}, err
+		return nil, err
 	}
 	if !token.Valid {
-		return JwtCustomClaims{}, errors.New("无效的token")
+		return nil, errors.New("无效的token")
 	}
 	return claims, nil
 }
