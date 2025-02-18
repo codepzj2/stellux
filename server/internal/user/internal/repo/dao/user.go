@@ -13,6 +13,7 @@ type IUserDao interface {
 	CreateOne(ctx context.Context, user *domain.User) error
 	FindByName(ctx context.Context, username string) (*domain.User, error)
 	FindIsExist(ctx context.Context, user *domain.User) (*domain.User, error)
+	FindAll(ctx context.Context) ([]*domain.User, error)
 }
 
 var _ IUserDao = (*UserDao)(nil)
@@ -39,4 +40,8 @@ func (u *UserDao) FindByName(ctx context.Context, username string) (*domain.User
 
 func (u *UserDao) FindIsExist(ctx context.Context, user *domain.User) (*domain.User, error) {
 	return u.userColl.Finder().Filter(query.NewBuilder().Eq("username", user.Username).Eq("password", user.Password).Build()).FindOne(ctx)
+}
+
+func (u *UserDao) FindAll(ctx context.Context) ([]*domain.User, error) {
+	return u.userColl.Finder().Find(ctx)
 }

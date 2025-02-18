@@ -11,6 +11,7 @@ import (
 type IUserRepo interface {
 	CreateUser(ctx context.Context, user *domain.User) error
 	FindIsExist(ctx context.Context, user *domain.User) (*domain.User, bool)
+	FindAllUsers(ctx context.Context) ([]*domain.User, error)
 }
 
 var _ IUserRepo = (*UserRepo)(nil)
@@ -44,4 +45,8 @@ func (u *UserRepo) FindIsExist(ctx context.Context, user *domain.User) (*domain.
 		return nil, false
 	}
 	return result, result != nil
+}
+
+func (u *UserRepo) FindAllUsers(ctx context.Context) ([]*domain.User, error) {
+	return u.dao.FindAll(ctx)
 }
