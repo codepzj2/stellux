@@ -25,7 +25,7 @@ func SuccessWithMsg(c *gin.Context, msg string) {
 }
 
 func SuccessWithData(c *gin.Context, data interface{}) {
-	respond(c, http.StatusOK, data, "Success")
+	respond(c, http.StatusOK, data, "操作成功")
 }
 
 func SuccessWithDetail(c *gin.Context, data interface{}, msg string) {

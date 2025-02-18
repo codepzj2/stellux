@@ -10,6 +10,7 @@ import (
 
 type IUserRepo interface {
 	CreateUser(ctx context.Context, user *domain.User) error
+	FindIsExist(ctx context.Context, user *domain.User) (*domain.User, bool)
 }
 
 var _ IUserRepo = (*UserRepo)(nil)
@@ -35,4 +36,12 @@ func (u *UserRepo) CreateUser(ctx context.Context, user *domain.User) error {
 		return errors.New("用户名已存在")
 	}
 	return u.dao.CreateOne(ctx, user)
+}
+
+func (u *UserRepo) FindIsExist(ctx context.Context, user *domain.User) (*domain.User, bool) {
+	result, err := u.dao.FindIsExist(ctx, user)
+	if err != nil {
+		return nil, false
+	}
+	return result, result != nil
 }

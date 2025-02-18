@@ -7,5 +7,5 @@ type User struct {
 	mongox.Model `bson:",inline"`
 	Username     string `bson:"username"`
 	Password     string `bson:"password"`
-	RoleId       int64  `bson:"role_id"`
+	RoleId       int    `bson:"role_id"`
 }

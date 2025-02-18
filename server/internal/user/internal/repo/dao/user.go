@@ -2,15 +2,17 @@ package dao
 
 import (
 	"context"
+	"server/internal/user/internal/domain"
+
 	"github.com/chenmingyong0423/go-mongox/v2"
 	"github.com/chenmingyong0423/go-mongox/v2/builder/query"
 	"github.com/pkg/errors"
-	"server/internal/user/internal/domain"
 )
 
 type IUserDao interface {
 	CreateOne(ctx context.Context, user *domain.User) error
-	FindByName(ctx context.Context, name string) (*domain.User, error)
+	FindByName(ctx context.Context, username string) (*domain.User, error)
+	FindIsExist(ctx context.Context, user *domain.User) (*domain.User, error)
 }
 
 var _ IUserDao = (*UserDao)(nil)
@@ -33,4 +35,8 @@ func (u *UserDao) CreateOne(ctx context.Context, user *domain.User) error {
 
 func (u *UserDao) FindByName(ctx context.Context, username string) (*domain.User, error) {
 	return u.userColl.Finder().Filter(query.Eq("username", username)).FindOne(ctx)
+}
+
+func (u *UserDao) FindIsExist(ctx context.Context, user *domain.User) (*domain.User, error) {
+	return u.userColl.Finder().Filter(query.NewBuilder().Eq("username", user.Username).Eq("password", user.Password).Build()).FindOne(ctx)
 }
