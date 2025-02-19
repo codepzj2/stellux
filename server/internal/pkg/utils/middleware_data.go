@@ -5,7 +5,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func getUserId(ctx *gin.Context) (string, error) {
+func GetUserId(ctx *gin.Context) (string, error) {
 	val, isExist := ctx.Get("userId")
 	if !isExist {
 		return "", errors.New("userId不存在")

@@ -10,4 +10,12 @@ db.user.insertOne({
     "updated_at": new Date()
 });
 
+db.user.insertOne({
+    "username": "test",
+    "password": "123456",
+    "role_id": 1,
+    "created_at": new Date(),
+    "updated_at": new Date()
+});
+
 EOF

@@ -25,7 +25,7 @@ func (h *UserHandler) RegisterGinRoutes(router *gin.Engine) {
 	{
 		userRouter.POST("/login", h.Login)
 		userRouter.POST("/create", h.CreateUser)
-		userRouter.GET("/all", h.FindAllUsers)
+		userRouter.GET("/list", h.FindAllUsers)
 	}
 }
 
@@ -78,17 +78,16 @@ func (h *UserHandler) CreateUserReqToUser(createUserReq CreateUserReq) domain.Us
 }
 
 func (h *UserHandler) FindAllUsers(ctx *gin.Context) {
-	val, isExist := ctx.Get("userId")
-	if !isExist {
-		resp.FailWithMsg(ctx, http.StatusUnauthorized, "请先登录")
+	userId, err := utils.GetUserId(ctx)
+	if err != nil {
+		resp.FailWithMsg(ctx, http.StatusUnauthorized, err.Error())
 		return
 	}
-	userId := val.(string)
 	log.Println("userId:", userId)
-	users, err := h.serv.FindAllUsers(ctx)
+	users, err := h.serv.FindAllUsers(ctx, userId)
 	if err != nil {
 		resp.FailWithMsg(ctx, http.StatusInternalServerError, err.Error())
 		return
 	}
-	resp.SuccessWithDetail(ctx, users, "查询成功")
+	resp.SuccessWithDetail(ctx, toUserListVO(users), "查询成功")
 }
