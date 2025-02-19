@@ -1,14 +1,14 @@
 <template>
   <div class="">
     <a-layout>
-      <a-layout-header class="stellux-header">
+      <a-layout-header :style="{ height: '56px', background: themeStore.tailwindTheme === 'dark' ? '#00151d' : '#f2f3f4',padding: '0 15px' }">
         <app-header></app-header>
       </a-layout-header>
-      <a-layout>
-        <a-layout-sider>
+      <a-layout style="min-height: calc(100vh - 56px);padding: 10px 15px">
+        <a-layout-sider  :style="{ background: themeStore.tailwindTheme === 'dark' ? '#1d1d1d' : '#fff' }">
           <Sidebar></Sidebar>
         </a-layout-sider>
-        <a-layout-content>
+        <a-layout-content class="ml-4">
           <tab></tab>
           <app-main></app-main>
         </a-layout-content>
@@ -26,14 +26,10 @@ import Tab from "./components/Tab/index.vue";
 import AppHeader from "./components/AppHeader.vue";
 import AppMain from "./components/AppMain.vue";
 import AppFooter from "./components/AppFooter.vue";
+import { useThemeStore } from "@/store/theme";
+const themeStore = useThemeStore();
 </script>
 
 <style lang="scss" scoped>
-.stellux-header {
-  background: #fff !important;
-  padding: 0 20px !important;
-}
-.dark .stellux-header {
-  background: #000 !important;
-}
+
 </style>

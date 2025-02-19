@@ -2,6 +2,8 @@
 import darkLogo from "@/assets/logo/logo-dark.png";
 import lightLogo from "@/assets/logo/logo-light.png";
 import { useThemeStore } from "@/store/theme";
+import Sun from "@/assets/icons/sun.svg";
+import Moon from "@/assets/icons/moon.svg";
 const themeStore = useThemeStore();
 </script>
 
@@ -12,6 +14,17 @@ const themeStore = useThemeStore();
       alt="logo"
       class="w-32"
     />
-    <a-button type="primary" @click="themeStore.toggleTheme">切换主题</a-button>
+    <div class="flex items-center gap-2">
+      <a-avatar
+        :size="28"
+        @click="themeStore.toggleTheme"
+        :src="themeStore.tailwindTheme === 'dark' ? Sun : Moon"
+        :style="{
+          backgroundColor:
+            themeStore.tailwindTheme === 'dark' ? '#222' : '#ddd',
+          margin: '0 8px',
+        }"
+      />
+    </div>
   </div>
 </template>

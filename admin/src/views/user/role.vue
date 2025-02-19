@@ -1,7 +1,6 @@
 <template>
-  <div>首页</div>
+  <div>
+    <h1>用户角色</h1>
+  </div>
 </template>
-
 <script setup lang="ts"></script>
-
-<style scoped></style>

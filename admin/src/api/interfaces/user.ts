@@ -17,3 +17,14 @@ export interface LoginVO {
   token: string; // 令牌
   user: User;
 }
+
+export interface UserManage {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  username: string;
+  password: string;
+  role_id: number;
+}
+
+export type UserListVO = UserManage[];

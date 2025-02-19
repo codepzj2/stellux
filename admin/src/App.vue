@@ -6,24 +6,27 @@
           ? theme.darkAlgorithm
           : theme.defaultAlgorithm,
       token: {
-        fontSize: 16,
-        wireframe: true,
+        fontSize: 15,
+        borderRadius: 6,
+        wireframe: false,
       },
     }"
   >
-    <a-style-provider hash-priority="high">
-      <div class="h-screen bg-white dark:bg-gray-900">
-        <router-view></router-view>
-      </div>
-    </a-style-provider>
+    <div class="h-screen">
+      <router-view></router-view>
+    </div>
   </a-config-provider>
 </template>
 
 <script setup lang="ts">
 import { useThemeStore } from "@/store/theme";
+
 import { theme } from "ant-design-vue";
+import { onMounted } from "vue";
 const themeStore = useThemeStore();
-themeStore.initTheme();
+onMounted(() => {
+  themeStore.initTheme();
+});
 </script>
 
 <style lang="scss"></style>

@@ -6,12 +6,14 @@
       :open-keys="state.openKeys"
       :items="items"
       @openChange="onOpenChange"
-      class="w-64"
+      @select="onSelect"
+      :style="{ height: '100%', borderRight: 0 }"
     ></a-menu>
   </div>
 </template>
 <script lang="ts" setup>
 import { VueElement, h, reactive } from "vue";
+import { useRouter } from "vue-router";
 import {
   HomeOutlined,
   UserOutlined,
@@ -31,7 +33,7 @@ function getItem(
   type?: "group"
 ): ItemType {
   return {
-    key,
+    key: key.charAt(0).toUpperCase() + key.slice(1), // 将key改为大驼峰
     icon,
     children,
     label,
@@ -40,53 +42,58 @@ function getItem(
 }
 
 const items: ItemType[] = reactive([
-  getItem("仪表盘", "dashboard", () => h(HomeOutlined)),
-  getItem("用户管理", "user", () => h(UserOutlined), [
-    getItem("用户列表", "userList", null),
-    getItem("用户角色", "userRole", null),
+  getItem("仪表盘", "Dashboard", () => h(HomeOutlined)),
+  getItem("用户管理", "User", () => h(UserOutlined), [
+    getItem("用户列表", "UserList", null),
+    getItem("用户角色", "UserRole", null),
   ]),
-  getItem("内容管理", "content", () => h(AppstoreOutlined), [
-    getItem("发布文章", "publishArticle", null),
-    getItem("文章列表", "articleList", null),
-    getItem("草稿箱", "draft", null),
-    getItem("素材库", "materialLibrary", null),
-    getItem("回收站", "recycleBin", null),
+  getItem("内容管理", "Content", () => h(AppstoreOutlined), [
+    getItem("发布文章", "PublishArticle", null),
+    getItem("文章列表", "ArticleList", null),
+    getItem("草稿箱", "Draft", null),
+    getItem("素材库", "MaterialLibrary", null),
+    getItem("回收站", "RecycleBin", null),
   ]),
-  getItem("互动管理", "interaction", () => h(InteractionOutlined), [
-    getItem("评论管理", "comment", null),
-    getItem("点赞管理", "like", null),
-    getItem("私信管理", "message", null),
+  getItem("互动管理", "Interaction", () => h(InteractionOutlined), [
+    getItem("评论管理", "Comment", null),
+    getItem("点赞管理", "Like", null),
+    getItem("私信管理", "Message", null),
   ]),
-  getItem("数据分析", "data", () => h(LineChartOutlined), [
-    getItem("文章统计", "articleStatistics", null),
-    getItem("用户统计", "userStatistics", null),
-    getItem("互动统计", "interactionStatistics", null),
+  getItem("数据分析", "Data", () => h(LineChartOutlined), [
+    getItem("文章统计", "ArticleStatistics", null),
+    getItem("用户统计", "UserStatistics", null),
+    getItem("互动统计", "InteractionStatistics", null),
   ]),
-  getItem("通知中心", "notice", () => h(BellOutlined), [
-    getItem("系统通知", "systemNotice", null),
-    getItem("用户通知", "userNotice", null),
+  getItem("通知中心", "Notice", () => h(BellOutlined), [
+    getItem("系统通知", "SystemNotifications", null),
+    getItem("用户通知", "UserNotifications", null),
   ]),
-  getItem("系统设置", "system", () => h(SettingOutlined), [
-    getItem("系统设置", "systemSetting", null),
-    getItem("用户设置", "userSetting", null),
-    getItem("角色设置", "roleSetting", null),
-    getItem("权限设置", "permissionSetting", null),
+  getItem("系统设置", "System", () => h(SettingOutlined), [
+    getItem("系统设置", "SystemSettings", null),
   ]),
 ]);
 
 const state = reactive({
   rootSubmenuKeys: [
-    "dashboard",
-    "user",
-    "content",
-    "interaction",
-    "data",
-    "notice",
-    "system",
+    "Dashboard",
+    "User",
+    "Content",
+    "Interaction",
+    "Data",
+    "Notice",
+    "System",
   ],
-  openKeys: ["user", "content"],
+  openKeys: ["User", "Content"],
   selectedKeys: [],
 });
+
+const router = useRouter();
+
+const onSelect = ({ key }: { key: string }) => {
+  console.log(key);
+  router.push({ name: key });
+};
+
 const onOpenChange = (openKeys: string[]) => {
   const latestOpenKey = openKeys.find(
     (key) => state.openKeys.indexOf(key) === -1

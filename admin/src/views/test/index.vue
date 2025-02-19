@@ -4,7 +4,7 @@
       <div class="logo" />
       <a-menu
         v-model:selectedKeys="selectedKeys1"
-        theme="dark"
+        theme="light"
         mode="horizontal"
         :style="{ lineHeight: '64px' }"
       >

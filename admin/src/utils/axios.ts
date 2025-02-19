@@ -1,8 +1,8 @@
 import axios from "axios";
-import $message from "./message";
+import { message } from "ant-design-vue";
 import { clearStorage } from "./clearStorage";
 import { useUserStore } from "@/store/user";
-
+import router from "@/router";
 const baseURL =
   (window as any).ipConfigUrl?.baseURL || import.meta.env.VITE_API_URL;
 
@@ -43,6 +43,7 @@ request.interceptors.response.use(
       case 401:
         errMessage = "登录过期，请重新登录";
         clearStorage();
+        router.push({ name: "Login" });
         break;
       case 403:
         errMessage = "没有权限";
@@ -54,7 +55,7 @@ request.interceptors.response.use(
         errMessage = "网络错误，请重试";
         break;
     }
-    $message.error(errMessage);
+    message.error(errMessage);
     return Promise.reject(error);
   }
 );

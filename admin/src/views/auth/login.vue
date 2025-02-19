@@ -59,7 +59,7 @@
 <script lang="ts" setup>
 import { reactive, computed } from "vue";
 import { UserOutlined, LockOutlined } from "@ant-design/icons-vue";
-import $message from "@/utils/message";
+import { message } from "ant-design-vue";
 import type { LoginForm, LoginVO } from "@/api/interfaces/user";
 import { userLogin } from "@/api/modules/user";
 import { useUserStore } from "@/store/user";
@@ -83,12 +83,12 @@ const loginForm: LoginForm = reactive({
 const onFinish = async (loginForm: LoginForm) => {
   console.log("Success:", loginForm);
   try {
-    $message.loading("登录中");
+    message.loading("登录中");
     const res: Response<LoginVO> = await userLogin(loginForm);
     // 设置用户信息和token
     setUser(res.data.user);
     setToken(res.data.token);
-    $message.success("登录成功");
+    message.success("登录成功");
     router.push("/");
   } catch (error) {
     console.error("登录失败", error);
