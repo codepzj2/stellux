@@ -1,14 +1,18 @@
 package api
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"server/internal/pkg/http/resp"
 	"server/internal/posts/internal/service"
+
+	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
 type IPostHandler interface {
 	CreatePosts(ctx *gin.Context)
+	FindPostById(ctx *gin.Context)
+	FindAllPosts(ctx *gin.Context)
 }
 type PostsHandler struct {
 	serv service.IPostsService
@@ -22,6 +26,8 @@ func (h *PostsHandler) RegisterGinRoutes(router *gin.Engine) {
 	group := router.Group("/posts")
 	{
 		group.POST("/create", h.CreatePosts)
+		group.GET("/:id", h.FindPostById)
+		group.GET("/list", h.FindAllPosts)
 	}
 }
 
@@ -37,4 +43,32 @@ func (h *PostsHandler) CreatePosts(ctx *gin.Context) {
 		return
 	}
 	resp.SuccessWithMsg(ctx, "新增文章成功")
+}
+
+func (h *PostsHandler) FindPostById(ctx *gin.Context) {
+	id := ctx.Param("id")
+	idObj, err := bson.ObjectIDFromHex(id)
+	if err != nil {
+		resp.FailWithMsg(ctx, http.StatusBadRequest, err.Error())
+		return
+	}
+	posts, err := h.serv.FindPostById(ctx, idObj)
+	if err != nil {
+		resp.FailWithMsg(ctx, http.StatusBadRequest, err.Error())	
+		return
+	}
+	resp.SuccessWithDetail(ctx, toPostsVO(posts), "获取文章详情成功")
+}
+
+func (h *PostsHandler) FindAllPosts(ctx *gin.Context) {
+	posts, err := h.serv.FindAllPosts(ctx)
+	if err != nil {
+		resp.FailWithMsg(ctx, http.StatusBadRequest, err.Error())
+		return
+	}
+	postsVO := make([]*PostsVO, 0)
+	for _, post := range posts {
+		postsVO = append(postsVO, toPostsVO(post))
+	}
+	resp.SuccessWithDetail(ctx, postsVO, "获取文章列表成功")
 }

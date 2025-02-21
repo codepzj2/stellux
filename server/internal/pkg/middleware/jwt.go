@@ -11,6 +11,12 @@ import (
 
 func JWT() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		// 放行GET请求
+		if ctx.Request.Method == "GET" {
+			ctx.Next()
+			return
+		}	
+
 		// 排除接口
 		excludeUri := []string{
 			"/user/login",

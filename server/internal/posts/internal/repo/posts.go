@@ -9,7 +9,8 @@ import (
 
 type IPostsRepo interface {
 	CreatePost(ctx context.Context, posts *domain.Posts) error
-	FindAll(ctx context.Context) ([]*domain.Posts, error)
+	FindPostById(ctx context.Context, id bson.ObjectID) (*domain.Posts, error)
+	FindAllPosts(ctx context.Context) ([]*domain.Posts, error)
 	DeletePostById(ctx context.Context, Id bson.ObjectID) error
 }
 
@@ -27,7 +28,11 @@ func (p *PostsRepo) CreatePost(ctx context.Context, posts *domain.Posts) error {
 	return p.dao.Create(ctx, posts)
 }
 
-func (p *PostsRepo) FindAll(ctx context.Context) ([]*domain.Posts, error) {
+func (p *PostsRepo) FindPostById(ctx context.Context, id bson.ObjectID) (*domain.Posts, error) {
+	return p.dao.FindById(ctx, id)
+}
+
+func (p *PostsRepo) FindAllPosts(ctx context.Context) ([]*domain.Posts, error) {
 	return p.dao.FindAll(ctx)
 }
 

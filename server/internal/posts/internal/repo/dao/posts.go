@@ -12,6 +12,7 @@ import (
 type IPostsDao interface {
 	Create(ctx context.Context, posts *domain.Posts) error
 	FindAll(ctx context.Context) ([]*domain.Posts, error)
+	FindById(ctx context.Context, id bson.ObjectID) (*domain.Posts, error)
 	DeleteById(ctx context.Context, Id bson.ObjectID) error
 }
 
@@ -31,6 +32,10 @@ func (p *PostsDao) Create(ctx context.Context, posts *domain.Posts) error {
 		return errors.Wrap(err, "添加文章失败")
 	}
 	return nil
+}
+
+func (p *PostsDao) FindById(ctx context.Context, id bson.ObjectID) (*domain.Posts, error) {
+	return p.postColl.Finder().Filter(query.Id(id)).FindOne(ctx)
 }
 
 func (p *PostsDao) FindAll(ctx context.Context) ([]*domain.Posts, error) {
