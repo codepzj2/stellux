@@ -8,6 +8,7 @@ package main
 
 import (
 	"server/internal/ioc"
+	"server/internal/posts"
 	"server/internal/user"
 )
 
@@ -18,8 +19,10 @@ func InitApp() *HttpServer {
 	database := ioc.NewMongoDB(envConfig)
 	module := user.InitUserModule(database)
 	userHandler := module.Hdl
+	postsModule := posts.InitPostsModule(database)
+	postsHandler := postsModule.Hdl
 	v := ioc.InitMiddleWare()
-	engine := ioc.NewGin(userHandler, v)
+	engine := ioc.NewGin(userHandler, postsHandler, v)
 	httpServer := NewHttpServer(engine, envConfig)
 	return httpServer
 }

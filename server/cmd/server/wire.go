@@ -5,6 +5,7 @@ package main
 
 import (
 	"server/internal/ioc"
+	"server/internal/posts"
 	"server/internal/user"
 
 	"github.com/google/wire"
@@ -19,6 +20,9 @@ func InitApp() *HttpServer {
 
 		user.InitUserModule,
 		wire.FieldsOf(new(*user.Module), "Hdl"),
+
+		posts.InitPostsModule,
+		wire.FieldsOf(new(*posts.Module), "Hdl"),
 
 		NewHttpServer,
 	)

@@ -35,7 +35,7 @@ func (h *UserHandler) Login(ctx *gin.Context) {
 		resp.FailWithMsg(ctx, http.StatusBadRequest, "参数错误")
 		return
 	}
-	user := h.LoginReqToUser(loginReq)
+	user := toUser(loginReq)
 	if u, isExist := h.serv.FindIsExist(ctx, &user); isExist {
 		token, _ := utils.GenerateJwt(u.ID.Hex())
 		loginVo := LoginVO{
@@ -60,13 +60,6 @@ func (h *UserHandler) CreateUser(ctx *gin.Context) {
 		return
 	}
 	resp.SuccessWithMsg(ctx, "创建用户成功")
-}
-
-func (h *UserHandler) LoginReqToUser(loginReq LoginReq) domain.User {
-	return domain.User{
-		Username: loginReq.Username,
-		Password: loginReq.Password,
-	}
 }
 
 func (h *UserHandler) CreateUserReqToUser(createUserReq CreateUserReq) domain.User {
