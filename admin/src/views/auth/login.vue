@@ -1,9 +1,10 @@
 <template>
-  <div
-    class="flex items-center justify-center h-screen w-full login-background"
-  >
+  <div class="flex items-center justify-center h-screen w-full">
     <a-card class="shadow-md w-96">
-      <img class="m-auto my-6 w-32" :src="themeStore.tailwindTheme === 'dark' ? darkLogo : lightLogo" />
+      <img
+        class="m-auto my-6 w-32"
+        :src="themeStore.tailwindTheme === 'dark' ? darkLogo : lightLogo"
+      />
       <a-form
         :model="loginForm"
         class="w-full mx-auto pt-4 px-4"
@@ -34,7 +35,9 @@
 
         <a-form-item>
           <a-form-item name="remember" no-style>
-            <a-checkbox class="text-sm" v-model:checked="loginForm.remember">记住我</a-checkbox>
+            <a-checkbox class="text-sm" v-model:checked="loginForm.remember"
+              >记住我</a-checkbox
+            >
           </a-form-item>
           <span class="float-right space-x-2 w-32">
             <a class="text-sm" href="">忘记密码</a>
@@ -81,17 +84,18 @@ const loginForm: LoginForm = reactive({
 
 // 登录校验逻辑
 const onFinish = async (loginForm: LoginForm) => {
-  console.log("Success:", loginForm);
+  const key = "updatable";
   try {
-    message.loading("登录中");
+    message.loading({ content: "登录中", key });
     const res: Response<LoginVO> = await userLogin(loginForm);
     // 设置用户信息和token
     setUser(res.data.user);
     setToken(res.data.token);
-    message.success("登录成功");
+    message.success({ content: "登录成功", key });
     router.push("/");
-  } catch (error) {
+  } catch (error: any) {
     console.error("登录失败", error);
+    message.error({ content: "登录失败", key });
   }
 };
 
@@ -99,9 +103,3 @@ const disabled = computed(() => {
   return !(loginForm.username && loginForm.password);
 });
 </script>
-<style lang="scss" scoped>
-.login-background {
-  background: url("@/assets/login/background.png") no-repeat center center /
-    cover;
-}
-</style>

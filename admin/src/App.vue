@@ -12,7 +12,7 @@
       },
     }"
   >
-    <div class="h-screen">
+    <div class="h-screen dark:bg-gray-900">
       <router-view></router-view>
     </div>
   </a-config-provider>
@@ -26,6 +26,7 @@ import { onMounted } from "vue";
 const themeStore = useThemeStore();
 onMounted(() => {
   themeStore.initTheme();
+  console.log(themeStore.tailwindTheme);
 });
 </script>
 

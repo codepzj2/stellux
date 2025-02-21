@@ -15,10 +15,9 @@ export const useThemeStore = defineStore(
     };
 
     const initTheme = () => {
-      document.documentElement.classList.toggle(
-        "dark",
-        tailwindTheme.value === "light"
-      );
+      if (tailwindTheme.value === "dark")
+        document.documentElement.classList.add("dark");
+      else document.documentElement.classList.remove("dark");
     };
 
     return { tailwindTheme, toggleTheme, initTheme };

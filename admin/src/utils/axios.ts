@@ -1,5 +1,4 @@
 import axios from "axios";
-import { message } from "ant-design-vue";
 import { clearStorage } from "./clearStorage";
 import { useUserStore } from "@/store/user";
 import router from "@/router";
@@ -55,8 +54,8 @@ request.interceptors.response.use(
         errMessage = "网络错误，请重试";
         break;
     }
-    message.error(errMessage);
-    return Promise.reject(error);
+    console.error(errMessage);
+    return Promise.reject(new Error(errMessage));
   }
 );
 
