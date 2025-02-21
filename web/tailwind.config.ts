@@ -11,5 +11,10 @@ export default {
     extend: {},
   },
   darkMode: "selector",
-  plugins: [heroui()],
+  plugins: [
+    heroui({
+      defaultTheme: "light",
+      defaultExtendTheme: "light",
+    }),
+  ],
 } satisfies Config;
