@@ -1,9 +1,16 @@
-import { Button } from "antd";
+"use client";
 
-export default function Page() {
+import { DatePicker } from "@heroui/react";
+import { themeStore } from "@/store/theme";
+
+export default  function App() {
+  const { toggleTheme } = themeStore();
+   
   return (
-    <>
-      <Button type="primary">Button</Button>
-    </>
+    <div>
+      <div className="text-red-500">hello</div>
+      <button onClick={toggleTheme}>按钮</button>
+      <DatePicker className="max-w-[284px]" label="Birth date" />
+    </div>
   );
 }

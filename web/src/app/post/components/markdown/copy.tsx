@@ -31,7 +31,7 @@ const CopyButton = ({ id }: { id: string }) => {
       />
       <Check
         size={16}
-        className={`absolute transition-all ${
+        className={`absolute transition-all text-green-700 ${
           copied ? "scale-100" : "scale-0"
         }`}
       />

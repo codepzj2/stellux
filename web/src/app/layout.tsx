@@ -1,17 +1,18 @@
+"use client";
 import "@/style/main.scss";
-import { AntdRegistry } from "@ant-design/nextjs-registry";
-import "@ant-design/v5-patch-for-react-19";
-
+import { HeroUIProvider } from "@heroui/react";
+import { themeStore } from "@/store/theme";
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const { theme } = themeStore();
   return (
-    <html lang="zh-CN">
+    <html lang="zh-CN" className={theme}>
       <body>
-        <AntdRegistry>{children}</AntdRegistry>
+        <HeroUIProvider>{children}</HeroUIProvider>
       </body>
     </html>
   );
