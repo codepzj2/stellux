@@ -1,48 +1,68 @@
-import { Resp } from "@/types/response";
+import { Response } from "@/types/response";
+import qs from "qs";
+
+type RequestMethod = "GET" | "POST" | "PUT" | "DELETE";
 
 class Request {
-  private headers = { "Content-Type": "application/json" };
+  private baseUrl: string;
+  constructor(baseUrl: string) {
+    this.baseUrl = baseUrl;
+  }
 
-  constructor(private baseUrl: string) {}
-
-  private async request<T>(
+  public async request<T, D>(
     url: string,
-    method: string,
-    data?: any
-  ): Promise<Resp<T>> {
+    method: RequestMethod,
+    data?: T
+  ): Promise<Response<D>> {
     const options: RequestInit = {
       method,
-      headers: this.headers,
-      body: data ? JSON.stringify(data) : undefined,
+      headers: {
+        "Content-Type": "application/json",
+      },
     };
-    const response = await fetch(`${this.baseUrl}${url}`, options);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+
+    if (data) {
+      options.body = JSON.stringify(data);
     }
-    return response.json();
+
+    console.log(`${this.baseUrl}${url}`);
+    const res = await fetch(`${this.baseUrl}${url}`, options);
+
+
+    if (!res.ok) {
+      throw new Error(`网络错误: ${res.status}`);
+    }
+
+    return res.json();
   }
 
-  public get<T>(
-    url: string,
-    params?: Record<string, string>
-  ): Promise<Resp<T>> {
-    const queryString = params
-      ? `?${new URLSearchParams(params).toString()}`
-      : "";
-    return this.request<T>(`${url}${queryString}`, "GET");
+  public async get<D>(url: string, params: object): Promise<Response<D>> {
+    const respData = this.request<any, D>(
+      `${url}?${qs.stringify(params)}`,
+      "GET"
+    );
+    return respData;
   }
 
-  public post<T>(url: string, data: any): Promise<Resp<T>> {
-    return this.request<T>(url, "POST", data);
+  public async post<T, D>(url: string, data: T): Promise<Response<D>> {
+    const respData = this.request<T, D>(url, "POST", data);
+    return respData;
   }
 
-  public put<T>(url: string, data: any): Promise<Resp<T>> {
-    return this.request<T>(url, "PUT", data);
+  public async put<T, D>(url: string, data: T): Promise<Response<D>> {
+    const respData = this.request<T, D>(url, "PUT", data);
+    return respData;
   }
 
-  public delete(url: string): Promise<Resp<any>> {
-    return this.request(url, "DELETE");
+  public async delete<T, D>(url: string, data: T): Promise<Response<D>> {
+    const respData = this.request<T, D>(url, "DELETE", data);
+    return respData;
   }
 }
 
-export default new Request("http://localhost:9001");
+const baseUrl = process.env.API_BASE_URL;
+if (!baseUrl) {
+  throw new Error("baseUrl未设置，将读取默认配置");
+}
+const request = new Request(baseUrl);
+export default request;

@@ -3,7 +3,7 @@ import remarkGfm from "remark-gfm";
 import rehypeRaw from 'rehype-raw'
 import rehypeHighlight from "rehype-highlight";
 import "highlight.js/styles/atom-one-light.css";
-import "github-markdown-css/github-markdown.css";
+import "@/style/md.scss";
 import { Terminal } from "lucide-react";
 import CopyButton from "./copy";
 import React from "react";
@@ -33,9 +33,9 @@ export default function StelluxMarkdown({ content }: { content: string }) {
               const id = Math.random().toString(36).slice(2, 11);
               return (
                 <div className="not-prose rounded-md">
-                  <div className="flex h-12 items-center justify-between bg-zinc-100 px-4">
+                  <div className="flex h-10 items-center justify-between px-4 bg-zinc-100 dark:bg-zinc-800">
                     <div className="flex items-center gap-2">
-                      <Terminal size={18} />
+                      <Terminal size={16} />
                       <span className="h-full flex items-center">
                         {node?.data?.meta || match?.[1] || "plaintext"}
                       </span>

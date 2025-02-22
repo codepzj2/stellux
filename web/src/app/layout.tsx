@@ -1,18 +1,19 @@
-"use client";
 import "@/style/main.scss";
-import { HeroUIProvider } from "@heroui/react";
-import { themeStore } from "@/store/theme";
+import { Providers } from "./providers";
+import NavBar from "@/components/navbar";
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { theme } = themeStore();
   return (
-    <html lang="zh-CN" className={theme}>
+    <html suppressHydrationWarning lang="zh-CN">
       <body>
-        <HeroUIProvider>{children}</HeroUIProvider>
+        <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
+          <NavBar />
+          {children}
+        </Providers>
       </body>
     </html>
   );
