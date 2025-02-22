@@ -25,9 +25,9 @@ func NewPostHandler(serv service.IPostsService) *PostsHandler {
 func (h *PostsHandler) RegisterGinRoutes(router *gin.Engine) {
 	group := router.Group("/posts")
 	{
-		group.POST("/create", h.CreatePosts)
-		group.GET("/:id", h.FindPostById)
+		group.GET("/", h.FindPostById)
 		group.GET("/list", h.FindAllPosts)
+		group.POST("/create", h.CreatePosts)
 	}
 }
 
@@ -46,7 +46,11 @@ func (h *PostsHandler) CreatePosts(ctx *gin.Context) {
 }
 
 func (h *PostsHandler) FindPostById(ctx *gin.Context) {
-	id := ctx.Param("id")
+	id := ctx.Query("id")
+	if id == "" {
+		resp.FailWithMsg(ctx, http.StatusBadRequest, "参数错误")
+		return
+	}
 	idObj, err := bson.ObjectIDFromHex(id)
 	if err != nil {
 		resp.FailWithMsg(ctx, http.StatusBadRequest, err.Error())
@@ -54,7 +58,7 @@ func (h *PostsHandler) FindPostById(ctx *gin.Context) {
 	}
 	posts, err := h.serv.FindPostById(ctx, idObj)
 	if err != nil {
-		resp.FailWithMsg(ctx, http.StatusBadRequest, err.Error())	
+		resp.FailWithMsg(ctx, http.StatusBadRequest, err.Error())
 		return
 	}
 	resp.SuccessWithDetail(ctx, toPostsVO(posts), "获取文章详情成功")
