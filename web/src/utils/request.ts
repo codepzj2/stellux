@@ -28,7 +28,6 @@ class Request {
     console.log(`${this.baseUrl}${url}`);
     const res = await fetch(`${this.baseUrl}${url}`, options);
 
-
     if (!res.ok) {
       throw new Error(`网络错误: ${res.status}`);
     }
@@ -37,7 +36,7 @@ class Request {
   }
 
   public async get<D>(url: string, params: object): Promise<Response<D>> {
-    const respData = this.request<any, D>(
+    const respData = this.request<unknown, D>(
       `${url}?${qs.stringify(params)}`,
       "GET"
     );
