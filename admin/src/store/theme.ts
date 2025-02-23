@@ -1,10 +1,10 @@
 import { defineStore } from "pinia";
-import { ref } from "vue";
+import { ref, type Ref } from "vue";
 
 export const useThemeStore = defineStore(
   "theme",
   () => {
-    const tailwindTheme = ref("light");
+    const tailwindTheme: Ref<"light" | "dark"> = ref("light");
 
     const toggleTheme = () => {
       tailwindTheme.value = tailwindTheme.value === "light" ? "dark" : "light";
