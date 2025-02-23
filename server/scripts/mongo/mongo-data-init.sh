@@ -18,4 +18,8 @@ db.user.insertOne({
     "updated_at": new Date()
 });
 
+db.posts.insertOne({
+
+});
+
 EOF

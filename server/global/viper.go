@@ -1,4 +1,4 @@
-package ioc
+package global
 
 import (
 	"fmt"
@@ -7,8 +7,10 @@ import (
 	"log"
 )
 
+var Env *EnvConfig
+
 type EnvConfig struct {
-	DSN                 string `json:"DSN"`
+	URL                 string `json:"URL"`
 	MongoDatabase       string `json:"MONGO_INITDB_DATABASE"`
 	MongoRootUsername   string `json:"MONGO_INITDB_ROOT_USERNAME"`
 	MongoRootPassword   string `json:"MONGO_INITDB_ROOT_PASSWORD"`
@@ -18,7 +20,7 @@ type EnvConfig struct {
 	TokenExpireDuration string `json:"TOKEN_EXPIRE_DURATION"`
 }
 
-func InitEnv() *EnvConfig {
+func init() {
 	viper.SetConfigFile("./config/stellux.yaml")
 	err := viper.ReadInConfig()
 	if err != nil {
@@ -29,8 +31,8 @@ func InitEnv() *EnvConfig {
 	viper.SetDefault("TokenExpireDuration", "86400s")
 
 	// 加载配置
-	envConfig := &EnvConfig{
-		DSN:               viper.GetString("mongodb.DSN"),
+	Env = &EnvConfig{
+		URL:               viper.GetString("mongodb.URL"),
 		MongoDatabase:     viper.GetString("mongodb.MONGO_INITDB_DATABASE"),
 		MongoRootUsername: viper.GetString("mongodb.MONGO_INITDB_ROOT_USERNAME"),
 		MongoRootPassword: viper.GetString("mongodb.MONGO_INITDB_ROOT_PASSWORD"),
@@ -38,11 +40,11 @@ func InitEnv() *EnvConfig {
 		MongoPassword:     viper.GetString("mongodb.MONGO_PASSWORD"),
 		Port:              viper.GetString("server.PORT"),
 	}
-	log.Println(envConfig)
+
 	// 监听配置文件
 	viper.WatchConfig()
 	viper.OnConfigChange(func(e fsnotify.Event) {
 		log.Println("配置文件发生改变:", e.Name)
 	})
-	return envConfig
+
 }

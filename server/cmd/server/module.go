@@ -3,26 +3,23 @@ package main
 import (
 	"fmt"
 	"log"
-
-	"server/internal/ioc"
+	"server/global"
 
 	"github.com/gin-gonic/gin"
 )
 
 type HttpServer struct {
-	engine    *gin.Engine
-	envConfig *ioc.EnvConfig
+	engine *gin.Engine
 }
 
-func NewHttpServer(engine *gin.Engine, envConfig *ioc.EnvConfig) *HttpServer {
+func NewHttpServer(engine *gin.Engine) *HttpServer {
 	return &HttpServer{
-		engine:    engine,
-		envConfig: envConfig,
+		engine: engine,
 	}
 }
 
 func (s *HttpServer) Start() {
-	port := s.envConfig.Port
+	port := global.Env.Port
 	if port == "" {
 		log.Fatal("未配置端口，请检查.env文件中的PORT设置")
 	}

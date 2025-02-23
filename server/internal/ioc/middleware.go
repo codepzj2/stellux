@@ -12,5 +12,6 @@ func InitMiddleWare() []gin.HandlerFunc {
 		middleware.GinLogger(),
 		middleware.Cors(),
 		middleware.JWT(),
+		middleware.Auth(),
 	}
 }

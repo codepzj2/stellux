@@ -13,7 +13,6 @@ import (
 
 func InitApp() *HttpServer {
 	wire.Build(
-		ioc.InitEnv,
 		ioc.NewMongoDB,
 		ioc.InitMiddleWare,
 		ioc.NewGin,
