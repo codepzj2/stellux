@@ -4,9 +4,6 @@ import (
 	"context"
 	"server/internal/user/internal/domain"
 	"server/internal/user/internal/repo/dao"
-	"slices"
-
-	"go.mongodb.org/mongo-driver/v2/bson"
 
 	"github.com/pkg/errors"
 )
@@ -14,7 +11,7 @@ import (
 type IUserRepo interface {
 	CreateUser(ctx context.Context, user *domain.User) error
 	FindIsExist(ctx context.Context, user *domain.User) (*domain.User, bool)
-	FindAllUsersByPermission(ctx context.Context, userId bson.ObjectID) ([]*domain.User, error)
+	FindAllUsers(ctx context.Context) ([]*domain.User, error)
 }
 
 var _ IUserRepo = (*UserRepo)(nil)
@@ -50,16 +47,6 @@ func (u *UserRepo) FindIsExist(ctx context.Context, user *domain.User) (*domain.
 	return result, result != nil
 }
 
-func (u *UserRepo) FindAllUsersByPermission(ctx context.Context, userId bson.ObjectID) ([]*domain.User, error) {
-	user, err := u.dao.FindById(ctx, userId)
-	// 判断用户是否存在
-	if err != nil || user == nil {
-		return nil, errors.Wrap(err, "获取用户信息失败")
-	}
-	// 判断用户权限是否在[0,1,2]之间
-	roleId := user.RoleId
-	if !slices.Contains([]int{0, 1, 2}, roleId) {
-		return nil, errors.Wrap(err, "用户权限超出范围")
-	}
-	return u.dao.FindAllByRoleID(ctx, roleId)
+func (u *UserRepo) FindAllUsers(ctx context.Context) ([]*domain.User, error) {
+	return u.dao.FindAll(ctx)
 }

@@ -1,7 +1,6 @@
 package api
 
 import (
-	"log"
 	"server/internal/pkg/http/resp"
 	"server/internal/pkg/utils"
 	"server/internal/user/internal/domain"
@@ -71,13 +70,7 @@ func (h *UserHandler) CreateUserReqToUser(createUserReq CreateUserReq) domain.Us
 }
 
 func (h *UserHandler) FindAllUsers(ctx *gin.Context) {
-	userId, err := utils.GetUserId(ctx)
-	if err != nil {
-		resp.FailWithMsg(ctx, http.StatusUnauthorized, err.Error())
-		return
-	}
-	log.Println("userId:", userId)
-	users, err := h.serv.FindAllUsers(ctx, userId)
+	users, err := h.serv.FindAllUsers(ctx)
 	if err != nil {
 		resp.FailWithMsg(ctx, http.StatusInternalServerError, err.Error())
 		return

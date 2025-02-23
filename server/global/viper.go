@@ -17,7 +17,6 @@ type EnvConfig struct {
 	MongoUserName       string `json:"MONGO_USERNAME"`
 	MongoPassword       string `json:"MONGO_PASSWORD"`
 	Port                string `json:"PORT"`
-	TokenExpireDuration string `json:"TOKEN_EXPIRE_DURATION"`
 }
 
 func init() {
@@ -26,9 +25,6 @@ func init() {
 	if err != nil {
 		panic(fmt.Errorf("找不到环境配置文件: %w", err))
 	}
-
-	// 设置默认值
-	viper.SetDefault("TokenExpireDuration", "86400s")
 
 	// 加载配置
 	Env = &EnvConfig{
