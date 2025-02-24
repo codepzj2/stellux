@@ -11,6 +11,11 @@ import (
 
 func JWT() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		// 排除GET请求
+		if ctx.Request.Method == "GET" {
+			ctx.Next()
+			return
+		}
 		// 排除接口
 		excludeUri := []string{
 			"/user/login",
@@ -24,7 +29,8 @@ func JWT() gin.HandlerFunc {
 		token := ctx.Request.Header.Get("Authorization")
 		log.Println("用户携带的token:", token)
 		// 若非GET请求的token为空
-		if (ctx.Request.Method != "GET" && token == "") || !strings.HasPrefix(token, "Bearer ") {
+		if token == "" || !strings.HasPrefix(token, "Bearer ") {
+			log.Println("用户未携带token")
 			ctx.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}

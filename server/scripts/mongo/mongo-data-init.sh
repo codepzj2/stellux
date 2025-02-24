@@ -44,7 +44,7 @@ db.casbin_rule.insertMany([{
     "ptype": "p",
     "v0": "user",
     "v1": "/user/list",
-    "v2": "GET",
+    "v2": "POST",
 }]);
 
 # 所有人均可访问（白名单）

@@ -9,5 +9,5 @@ export const userLogin: (data: LoginForm) => Promise<Response<LoginVO>> = (
 };
 
 export const getUserList: () => Promise<Response<UserListVO>> = () => {
-  return request.get("/user/list");
+  return request.post("/user/list");
 };

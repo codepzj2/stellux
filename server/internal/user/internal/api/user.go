@@ -24,7 +24,7 @@ func (h *UserHandler) RegisterGinRoutes(router *gin.Engine) {
 	{
 		userRouter.POST("/login", h.Login)
 		userRouter.POST("/create", h.CreateUser)
-		userRouter.GET("/list", h.FindAllUsers)
+		userRouter.POST("/list", h.FindAllUsers)
 	}
 }
 
