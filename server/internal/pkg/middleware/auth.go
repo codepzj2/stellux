@@ -1,8 +1,11 @@
 package middleware
 
 import (
+	"fmt"
 	"log"
+	"net/http"
 	"server/global"
+	"server/internal/pkg/http/resp"
 	"sync"
 
 	"github.com/casbin/casbin/v2"
@@ -39,7 +42,20 @@ func Auth() gin.HandlerFunc {
 	enforcer = InitCasbin()
 	return func(ctx *gin.Context) {
 		userId := ctx.GetString("userId")
-		log.Println("casbin获取的userId为:", userId)
-		ctx.Next()
+		log.Println(userId, 666)
+		requestURI := ctx.Request.RequestURI
+		method := ctx.Request.Method
+		log.Println(method,requestURI)
+		ok, err := enforcer.Enforce(userId, requestURI, method)
+		fmt.Println(ok)
+		if err != nil {
+			resp.FailWithMsg(ctx, http.StatusInternalServerError, "权限校验失败")
+			ctx.Abort()
+		}
+		if ok {
+			log.Println("userId为:", userId, "放行")
+			ctx.Next()
+		}
+		ctx.AbortWithStatus(http.StatusForbidden)
 	}
 }
