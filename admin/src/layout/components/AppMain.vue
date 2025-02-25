@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-2 w-full">
+  <div class="w-full">
     <router-view></router-view>
   </div>
 </template>

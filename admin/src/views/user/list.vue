@@ -36,11 +36,16 @@ import dayjs from "dayjs";
 import { ref, onMounted, computed } from "vue";
 import type { UserListVO } from "@/api/interfaces/user";
 import { getUserList } from "@/api/modules/user";
+import { message } from "ant-design-vue";
 const userList = ref<UserListVO>([]);
-onMounted(() => {
-  getUserList().then((res) => {
+
+onMounted(async () => {
+  try {
+    const res = await getUserList();
     userList.value = res.data;
-  });
+  } catch (error) {
+    message.error(error as string);
+  }
 });
 const columns = [
   {

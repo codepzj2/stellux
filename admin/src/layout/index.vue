@@ -20,8 +20,8 @@
         >
           <Sidebar></Sidebar>
         </a-layout-sider>
-        <a-layout>
-          <a-layout-content class="ml-4">
+        <a-layout style="padding: 0 15px">
+          <a-layout-content>
             <tab></tab>
             <app-main></app-main>
           </a-layout-content>
