@@ -11,6 +11,7 @@
         wireframe: false,
       },
     }"
+    :locale="locale"
   >
     <div class="h-screen dark:bg-gray-900">
       <router-view></router-view>
@@ -19,10 +20,11 @@
 </template>
 
 <script setup lang="ts">
+import zhCN from "ant-design-vue/es/locale/zh_CN";
 import { useThemeStore } from "@/store/theme";
-
+import { ref, onMounted } from "vue";
 import { theme } from "ant-design-vue";
-import { onMounted } from "vue";
+const locale = ref(zhCN);
 const themeStore = useThemeStore();
 onMounted(() => {
   themeStore.initTheme();

@@ -7,5 +7,8 @@ type Posts struct {
 	Title        string
 	Content      string
 	Author       string
-	Like         int
+	Category     string
+	Tags         []string
+	Cover        string
+	IsTop        bool
 }
