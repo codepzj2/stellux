@@ -18,7 +18,7 @@ var (
 	enforcer *casbin.Enforcer
 )
 
-// 确保在使用中间件时enforcer被初始化至内存中
+// InitCasbin 确保在使用中间件时enforcer被初始化至内存中
 func InitCasbin() *casbin.Enforcer {
 	once.Do(func() {
 		mongoClientOption := mongooptions.Client().ApplyURI(global.Env.URL)

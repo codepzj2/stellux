@@ -94,8 +94,7 @@ const onFinish = async (loginForm: LoginForm) => {
     message.success({ content: "登录成功", key });
     router.push("/");
   } catch (error: any) {
-    console.error("登录失败", error);
-    message.error({ content: "登录失败", key });
+    message.error({ content: error, key });
   }
 };
 

@@ -1,7 +1,7 @@
 package ioc
 
 import (
-	"server/internal/picture"
+	"server/internal/file"
 	"server/internal/posts"
 	"server/internal/user"
 
@@ -9,7 +9,7 @@ import (
 )
 
 // NewGin 初始化gin服务器
-func NewGin(usrHdl *user.Handler, postsHdl *posts.Handler, pictureHdl *picture.Handler, middleware []gin.HandlerFunc) *gin.Engine {
+func NewGin(usrHdl *user.Handler, postsHdl *posts.Handler, fileHdl *file.Handler, middleware []gin.HandlerFunc) *gin.Engine {
 	router := gin.New()
 
 	// 中间件
@@ -19,7 +19,7 @@ func NewGin(usrHdl *user.Handler, postsHdl *posts.Handler, pictureHdl *picture.H
 	{
 		usrHdl.RegisterGinRoutes(router)
 		postsHdl.RegisterGinRoutes(router)
-		pictureHdl.RegisterGinRoutes(router)
+		fileHdl.RegisterGinRoutes(router)
 	}
 
 	return router

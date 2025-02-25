@@ -8,5 +8,5 @@ export const uploadPicturesLocal: (data: {
   files.forEach((file: any) => {
     formData.append("files", file);
   });
-  return request.post("/picture/upload", formData);
+  return request.post("/picture/local/upload", formData);
 };

@@ -54,8 +54,7 @@ request.interceptors.response.use(
         errMessage = "网络错误，请重试";
         break;
     }
-    console.error(errMessage);
-    return Promise.reject(new Error(errMessage));
+    return Promise.reject(errMessage);
   }
 );
 

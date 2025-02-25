@@ -5,6 +5,7 @@ go 1.22.2
 require (
 	github.com/casbin/casbin/v2 v2.103.0
 	github.com/casbin/mongodb-adapter/v3 v3.7.0
+	github.com/chenmingyong0423/go-mongox v1.8.0
 	github.com/chenmingyong0423/go-mongox/v2 v2.2.1
 	github.com/fsnotify/fsnotify v1.7.0
 	github.com/gin-gonic/gin v1.10.0
@@ -12,8 +13,8 @@ require (
 	github.com/google/wire v0.6.0
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/viper v1.19.0
-	go.mongodb.org/mongo-driver v1.12.0
-	go.mongodb.org/mongo-driver/v2 v2.0.0
+	go.mongodb.org/mongo-driver v1.17.2
+	go.mongodb.org/mongo-driver/v2 v2.0.1
 	go.uber.org/zap v1.27.0
 )
 
@@ -28,9 +29,10 @@ require (
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
-	github.com/go-playground/validator/v10 v10.20.0 // indirect
+	github.com/go-playground/validator/v10 v10.23.0 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
+	github.com/google/uuid v1.6.0
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/compress v1.17.2 // indirect
@@ -41,10 +43,11 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
-	github.com/montanaflynn/stats v0.0.0-20171201202039-1bf9dbcd8cbe // indirect
+	github.com/montanaflynn/stats v0.7.1 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.2 // indirect
 	github.com/sagikazarmark/locafero v0.4.0 // indirect
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
+	github.com/samber/lo v1.49.1
 	github.com/sourcegraph/conc v0.3.0 // indirect
 	github.com/spf13/afero v1.11.0 // indirect
 	github.com/spf13/cast v1.6.0 // indirect

@@ -7,8 +7,8 @@
 package main
 
 import (
+	"server/internal/file"
 	"server/internal/ioc"
-	"server/internal/picture"
 	"server/internal/posts"
 	"server/internal/user"
 )
@@ -21,10 +21,10 @@ func InitApp() *HttpServer {
 	userHandler := module.Hdl
 	postsModule := posts.InitPostsModule(database)
 	postsHandler := postsModule.Hdl
-	pictureModule := picture.InitPictureModule()
-	pictureHandler := pictureModule.Hdl
+	fileModule := file.InitFileModule(database)
+	fileHandler := fileModule.Hdl
 	v := ioc.InitMiddleWare()
-	engine := ioc.NewGin(userHandler, postsHandler, pictureHandler, v)
+	engine := ioc.NewGin(userHandler, postsHandler, fileHandler, v)
 	httpServer := NewHttpServer(engine)
 	return httpServer
 }

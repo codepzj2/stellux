@@ -4,8 +4,8 @@
 package main
 
 import (
+	"server/internal/file"
 	"server/internal/ioc"
-	"server/internal/picture"
 	"server/internal/posts"
 	"server/internal/user"
 
@@ -24,8 +24,8 @@ func InitApp() *HttpServer {
 		posts.InitPostsModule,
 		wire.FieldsOf(new(*posts.Module), "Hdl"),
 
-		picture.InitPictureModule,
-		wire.FieldsOf(new(*picture.Module), "Hdl"),
+		file.InitFileModule,
+		wire.FieldsOf(new(*file.Module), "Hdl"),
 
 		NewHttpServer,
 	)

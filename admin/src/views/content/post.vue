@@ -1,5 +1,5 @@
 <template>
-  <MdEditor class="h-[calc(100vh-180px)]" v-model="text" :theme="theme" />
+  <MdEditor class="h-[calc(100vh-130px)]" v-model="text" :theme="theme" />
 </template>
 
 <script lang="ts" setup>

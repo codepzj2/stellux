@@ -43,8 +43,8 @@ onMounted(async () => {
   try {
     const res = await getUserList();
     userList.value = res.data;
-  } catch (error) {
-    message.error(error as string);
+  } catch (error: any) {
+    message.error(error);
   }
 });
 const columns = [
