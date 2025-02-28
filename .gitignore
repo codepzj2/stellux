@@ -33,7 +33,7 @@ admin/.vscode
 
 web/node_modules
 server/scripts/data/
-server/images/
+server/static/images/
 admin/node_modules
 
 *.log*

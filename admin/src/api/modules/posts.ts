@@ -1,6 +1,6 @@
 import type { PostsReq } from "@/api/interfaces/posts";
 import type { Response } from "@/api/interfaces/resp";
-import request from "@/utils/axios";
+import request from "@/utils/request";
 export const createPost: (data: PostsReq) => Promise<Response<any>> = (
   data
 ) => {

@@ -1,4 +1,4 @@
-import request from "@/utils/axios";
+import request from "@/utils/request";
 import type { Response } from "@/api/interfaces/resp";
 import type { UploadFile } from "ant-design-vue/lib/upload/interface";
 export const uploadPicturesLocal: (data: {

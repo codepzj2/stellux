@@ -1,10 +1,15 @@
 <template>
-  <div class="flex justify-center">
+  <div class="flex flex-col items-center">
+    <a-tabs v-model:activeKey="activeKey" @change="handleChange">
+      <a-tab-pane key="1" tab="文件上传"></a-tab-pane>
+      <a-tab-pane key="2" tab="文件夹上传"></a-tab-pane>
+    </a-tabs>
     <a-upload-dragger
       v-model:file-list="fileList"
       :multiple="true"
       :beforeUpload="handleBeforeUpload"
       list-type="picture"
+      :directory="activeKey === '2'"
       class="w-3/5 h-[280px] inline-block"
     >
       <div class="flex flex-col items-center justify-center h-full">
@@ -12,7 +17,7 @@
           <inbox-outlined></inbox-outlined>
         </p>
         <p class="ant-upload-text hidden md:block">
-          点击或拖拽文件到此区域上传
+          点击或拖拽{{ activeKey === "1" ? "文件" : "文件夹" }}到此区域上传
         </p>
         <p class="ant-upload-hint hidden md:block">支持单个或批量上传</p>
       </div>
@@ -27,9 +32,14 @@ import type { UploadProps } from "ant-design-vue/lib/upload/interface";
 import { uploadPicturesLocal } from "@/api/modules/upload";
 import { message } from "ant-design-vue";
 
-const fileList = ref<UploadProps["fileList"]>([]);
-
 const key = "upload-pictures-local";
+const fileList = ref<UploadProps["fileList"]>([]);
+const activeKey = ref("1");
+
+const handleChange = (key: string) => {
+  console.log(key);
+};
+
 const handleBeforeUpload: UploadProps["beforeUpload"] = async (
   file,
   FileList

@@ -2,14 +2,14 @@
   <a-layout class="h-screen overflow-hidden">
     <a-layout-header
       :style="{
-        height: '42px',
+        height: '48px',
         background: themeStore.tailwindTheme === 'dark' ? '#00151d' : '#f2f3f4',
         padding: '0 15px',
       }"
     >
       <app-header></app-header>
     </a-layout-header>
-    <a-layout style="min-height: calc(100vh - 42px); padding: 10px 0">
+    <a-layout style="min-height: calc(100vh - 48px);">
       <a-layout-sider
         :style="{
           background: themeStore.tailwindTheme === 'dark' ? '#1d1d1d' : '#fff',
