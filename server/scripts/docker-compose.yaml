@@ -1,14 +1,21 @@
 services:
   mongo:
-      container_name: mongo
-      image: mongo:latest
-      env_file:
-        - ../config/stellux.yaml
-      volumes:
-        - ./data/mongo_data/db:/data/db
-        - ./mongo/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh
-        - ./mongo/mongo-data-init.sh:/docker-entrypoint-initdb.d/mongo-data-init.sh
-      ports:
-        - "27017:27017"
-      command:
-        - --auth
+    container_name: mongo
+    image: mongo:latest
+    env_file:
+      - ../config/stellux.yaml
+    volumes:
+      - ./data/mongo_data/db:/data/db
+      - ./mongo/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh
+      - ./mongo/mongo-data-init.sh:/docker-entrypoint-initdb.d/mongo-data-init.sh
+    ports:
+      - "27017:27017"
+    networks:
+      - stellux-network
+    restart: always
+    command: --auth
+
+networks:
+  stellux-network:
+    name: stellux-network
+    driver: bridge

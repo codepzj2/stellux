@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 	"server/global"
-	"server/internal/pkg/http/resp"
+	"server/internal/pkg/wrap"
 	"sync"
 
 	"github.com/casbin/casbin/v2"
@@ -43,9 +43,10 @@ func Auth() gin.HandlerFunc {
 		userId := ctx.GetString("userId")
 		requestURI := ctx.Request.RequestURI
 		method := ctx.Request.Method
+		log.Println("requestURI为:", requestURI, "method为:", method)
 		ok, err := enforcer.Enforce(userId, requestURI, method)
 		if err != nil {
-			resp.FailWithMsg(ctx, http.StatusInternalServerError, "权限校验失败")
+			wrap.FailWithMsg(ctx, http.StatusInternalServerError, "权限校验失败")
 			ctx.Abort()
 			return
 		}

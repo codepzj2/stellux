@@ -4,10 +4,9 @@ import (
 	"context"
 	"server/internal/file/internal/domain"
 
-	"github.com/chenmingyong0423/go-mongox/builder/query"
-	"github.com/chenmingyong0423/go-mongox/v2"
 	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/v2/bson"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
 type IFileDao interface {
@@ -16,19 +15,19 @@ type IFileDao interface {
 }
 
 type FileDao struct {
-	fileColl *mongox.Collection[domain.File]
+	fileColl *mongo.Collection
 }
 
 var _ IFileDao = (*FileDao)(nil)
 
-func NewFileDao(database *mongox.Database) *FileDao {
+func NewFileDao(database *mongo.Database) *FileDao {
 	return &FileDao{
-		fileColl: mongox.NewCollection[domain.File](database, "file"),
+		fileColl: database.Collection("file"),
 	}
 }
 
 func (p *FileDao) Create(ctx context.Context, files []*domain.File) error {
-	result, err := p.fileColl.Creator().InsertMany(ctx, files)
+	result, err := p.fileColl.InsertMany(ctx, files)
 	if err != nil {
 		return err
 	}
@@ -39,7 +38,7 @@ func (p *FileDao) Create(ctx context.Context, files []*domain.File) error {
 }
 
 func (p *FileDao) Delete(ctx context.Context, filesId []bson.ObjectID) error {
-	result, err := p.fileColl.Deleter().Filter(query.In("_id", filesId)).DeleteMany(ctx)
+	result, err := p.fileColl.DeleteMany(ctx, bson.M{"_id": bson.M{"$in": filesId}})
 	if err != nil {
 		return err
 	}

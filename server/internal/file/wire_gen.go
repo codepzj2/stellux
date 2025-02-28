@@ -7,7 +7,8 @@
 package file
 
 import (
-	"github.com/chenmingyong0423/go-mongox/v2"
+	"github.com/google/wire"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 	"server/internal/file/internal/api"
 	"server/internal/file/internal/repo"
 	"server/internal/file/internal/repo/dao"
@@ -16,7 +17,7 @@ import (
 
 // Injectors from wire.go:
 
-func InitFileModule(database *mongox.Database) *Module {
+func InitFileModule(database *mongo.Database) *Module {
 	fileDao := dao.NewFileDao(database)
 	fileRepo := repo.NewFileRepo(fileDao)
 	fileService := service.NewFileService(fileRepo)
@@ -27,3 +28,7 @@ func InitFileModule(database *mongox.Database) *Module {
 	}
 	return module
 }
+
+// wire.go:
+
+var fileProvider = wire.NewSet(api.NewFileHandler, service.NewFileService, repo.NewFileRepo, dao.NewFileDao, wire.Bind(new(service.IFileService), new(*service.FileService)), wire.Bind(new(repo.IFileRepo), new(*repo.FileRepo)), wire.Bind(new(dao.IFileDao), new(*dao.FileDao)))

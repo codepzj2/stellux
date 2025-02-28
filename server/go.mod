@@ -5,7 +5,6 @@ go 1.22.2
 require (
 	github.com/casbin/casbin/v2 v2.103.0
 	github.com/casbin/mongodb-adapter/v3 v3.7.0
-	github.com/chenmingyong0423/go-mongox v1.8.0
 	github.com/chenmingyong0423/go-mongox/v2 v2.2.1
 	github.com/fsnotify/fsnotify v1.7.0
 	github.com/gin-gonic/gin v1.10.0

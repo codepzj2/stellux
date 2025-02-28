@@ -1,13 +1,14 @@
 package service
 
 import (
-	"github.com/pkg/errors"
 	"mime/multipart"
 	"os"
 	"path/filepath"
 	"server/internal/file/internal/domain"
 	"server/internal/file/internal/repo"
 	"strings"
+
+	"github.com/pkg/errors"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -33,10 +34,11 @@ func (s *FileService) UploadFilesLocal(ctx *gin.Context, files []*multipart.File
 	for _, file := range files {
 		// 生成新的文件名
 		newFileName := strings.ReplaceAll(uuid.New().String(), "-", "") + filepath.Ext(file.Filename)
-		filePath := filepath.Join("images", newFileName)
+		networkPath := "images/" + newFileName
+		filePath := "static/images/" + newFileName
 		picture := &domain.File{
 			Type: "local",
-			Url:  filePath,
+			Url:  networkPath,
 			Dst:  filePath,
 		}
 		pictures = append(pictures, picture)

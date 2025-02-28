@@ -1,8 +1,8 @@
 package api
 
 import (
-	"server/internal/pkg/http/resp"
 	"server/internal/pkg/utils"
+	"server/internal/pkg/wrap"
 	"server/internal/user/internal/domain"
 	"server/internal/user/internal/service"
 
@@ -31,34 +31,34 @@ func (h *UserHandler) RegisterGinRoutes(router *gin.Engine) {
 func (h *UserHandler) Login(ctx *gin.Context) {
 	var loginReq LoginReq
 	if err := ctx.ShouldBindJSON(&loginReq); err != nil {
-		resp.FailWithMsg(ctx, http.StatusBadRequest, "参数错误")
+		wrap.FailWithMsg(ctx, http.StatusBadRequest, "参数错误")
 		return
 	}
 	user := toUser(loginReq)
-	if u, isExist := h.serv.FindIsExist(ctx, &user); isExist {
+	if u, isExist := h.serv.FindUserIsExist(ctx, &user); isExist {
 		token, _ := utils.GenerateJwt(u.ID.Hex())
 		loginVo := LoginVO{
 			User:  toUserVO(u),
 			Token: token,
 		}
-		resp.SuccessWithDetail(ctx, loginVo, "登录成功")
+		wrap.SuccessWithDetail(ctx, loginVo, "登录成功")
 		return
 	}
-	resp.FailWithMsg(ctx, http.StatusBadRequest, "用户名或者密码错误")
+	wrap.FailWithMsg(ctx, http.StatusBadRequest, "用户名或者密码错误")
 }
 
 func (h *UserHandler) CreateUser(ctx *gin.Context) {
 	var createUserReq CreateUserReq
 	if err := ctx.ShouldBindJSON(&createUserReq); err != nil {
-		resp.FailWithMsg(ctx, http.StatusBadRequest, "参数错误")
+		wrap.FailWithMsg(ctx, http.StatusBadRequest, "参数错误")
 		return
 	}
 	user := h.CreateUserReqToUser(createUserReq)
 	if err := h.serv.CreateUser(ctx, &user); err != nil {
-		resp.FailWithMsg(ctx, http.StatusInternalServerError, err.Error())
+		wrap.FailWithMsg(ctx, http.StatusInternalServerError, err.Error())
 		return
 	}
-	resp.SuccessWithMsg(ctx, "创建用户成功")
+	wrap.SuccessWithMsg(ctx, "创建用户成功")
 }
 
 func (h *UserHandler) CreateUserReqToUser(createUserReq CreateUserReq) domain.User {
@@ -72,8 +72,8 @@ func (h *UserHandler) CreateUserReqToUser(createUserReq CreateUserReq) domain.Us
 func (h *UserHandler) FindAllUsers(ctx *gin.Context) {
 	users, err := h.serv.FindAllUsers(ctx)
 	if err != nil {
-		resp.FailWithMsg(ctx, http.StatusInternalServerError, err.Error())
+		wrap.FailWithMsg(ctx, http.StatusInternalServerError, err.Error())
 		return
 	}
-	resp.SuccessWithDetail(ctx, toUserListVO(users), "查询成功")
+	wrap.SuccessWithDetail(ctx, toUserListVO(users), "查询成功")
 }

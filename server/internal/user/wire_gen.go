@@ -7,8 +7,8 @@
 package user
 
 import (
-	"github.com/chenmingyong0423/go-mongox/v2"
 	"github.com/google/wire"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 	"server/internal/user/internal/api"
 	"server/internal/user/internal/repo"
 	"server/internal/user/internal/repo/dao"
@@ -17,8 +17,8 @@ import (
 
 // Injectors from wire.go:
 
-func InitUserModule(db *mongox.Database) *Module {
-	userDao := dao.NewUserDao(db)
+func InitUserModule(database *mongo.Database) *Module {
+	userDao := dao.NewUserDao(database)
 	userRepo := repo.NewUserRepo(userDao)
 	userService := service.NewUserService(userRepo)
 	userHandler := api.NewUserHandler(userService)
@@ -31,4 +31,4 @@ func InitUserModule(db *mongox.Database) *Module {
 
 // wire.go:
 
-var userProvider = wire.NewSet(api.NewUserHandler, service.NewUserService, repo.NewUserRepo, dao.NewUserDao, wire.Struct(new(Module), "Hdl", "Svc"), wire.Bind(new(service.IUserService), new(*service.UserService)), wire.Bind(new(repo.IUserRepo), new(*repo.UserRepo)), wire.Bind(new(dao.IUserDao), new(*dao.UserDao)))
+var userProvider = wire.NewSet(api.NewUserHandler, service.NewUserService, repo.NewUserRepo, dao.NewUserDao, wire.Bind(new(service.IUserService), new(*service.UserService)), wire.Bind(new(repo.IUserRepo), new(*repo.UserRepo)), wire.Bind(new(dao.IUserDao), new(*dao.UserDao)))

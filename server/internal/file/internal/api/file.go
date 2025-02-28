@@ -2,11 +2,10 @@ package api
 
 import (
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"net/http"
 	"server/internal/file/internal/service"
-	"server/internal/pkg/http/resp"
-
-	"github.com/gin-gonic/gin"
+	"server/internal/pkg/wrap"
 )
 
 type IFileHandler interface {
@@ -24,6 +23,7 @@ func NewFileHandler(serv service.IFileService) *FileHandler {
 }
 
 func (h *FileHandler) RegisterGinRoutes(router *gin.Engine) {
+	router.Static("/images", "./static/images")
 	group := router.Group("/picture")
 	{
 		group.POST("/local/upload", h.UploadFilesLocal)
@@ -34,19 +34,19 @@ func (h *FileHandler) RegisterGinRoutes(router *gin.Engine) {
 func (h *FileHandler) UploadFilesLocal(ctx *gin.Context) {
 	form, err := ctx.MultipartForm()
 	if err != nil {
-		resp.FailWithMsg(ctx, http.StatusBadRequest, "文件上传失败，请检查文件字段")
+		wrap.FailWithMsg(ctx, http.StatusBadRequest, "文件上传失败，请检查文件字段")
 		return
 	}
 	files := form.File["files"]
 	if len(files) == 0 {
-		resp.FailWithMsg(ctx, http.StatusBadRequest, "未找到上传的文件")
+		wrap.FailWithMsg(ctx, http.StatusBadRequest, "未找到上传的文件")
 		return
 	}
 	pictures, err := h.serv.UploadFilesLocal(ctx, files)
 	if err != nil {
-		resp.FailWithMsg(ctx, http.StatusInternalServerError, err.Error())
+		wrap.FailWithMsg(ctx, http.StatusInternalServerError, err.Error())
 		return
 	}
 	count := len(pictures)
-	resp.SuccessWithMsg(ctx, fmt.Sprintf("上传成功，共%d张图片", count))
+	wrap.SuccessWithMsg(ctx, fmt.Sprintf("上传成功，共%d张图片", count))
 }

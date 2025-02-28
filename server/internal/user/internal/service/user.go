@@ -8,7 +8,7 @@ import (
 
 type IUserService interface {
 	CreateUser(ctx context.Context, user *domain.User) error
-	FindIsExist(ctx context.Context, user *domain.User) (*domain.User, bool)
+	FindUserIsExist(ctx context.Context, user *domain.User) (*domain.User, bool)
 	FindAllUsers(ctx context.Context) ([]*domain.User, error)
 }
 
@@ -26,8 +26,8 @@ func (s *UserService) CreateUser(ctx context.Context, user *domain.User) error {
 	return s.repo.CreateUser(ctx, user)
 }
 
-func (s *UserService) FindIsExist(ctx context.Context, user *domain.User) (*domain.User, bool) {
-	return s.repo.FindIsExist(ctx, user)
+func (s *UserService) FindUserIsExist(ctx context.Context, user *domain.User) (*domain.User, bool) {
+	return s.repo.FindUserIsExist(ctx, user)
 }
 
 func (s *UserService) FindAllUsers(ctx context.Context) ([]*domain.User, error) {

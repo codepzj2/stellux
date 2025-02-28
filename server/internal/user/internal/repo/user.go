@@ -10,7 +10,7 @@ import (
 
 type IUserRepo interface {
 	CreateUser(ctx context.Context, user *domain.User) error
-	FindIsExist(ctx context.Context, user *domain.User) (*domain.User, bool)
+	FindUserIsExist(ctx context.Context, user *domain.User) (*domain.User, bool)
 	FindAllUsers(ctx context.Context) ([]*domain.User, error)
 }
 
@@ -39,12 +39,9 @@ func (u *UserRepo) CreateUser(ctx context.Context, user *domain.User) error {
 	return u.dao.CreateOne(ctx, user)
 }
 
-func (u *UserRepo) FindIsExist(ctx context.Context, user *domain.User) (*domain.User, bool) {
-	result, err := u.dao.FindIsExist(ctx, user)
-	if err != nil {
-		return nil, false
-	}
-	return result, result != nil
+func (u *UserRepo) FindUserIsExist(ctx context.Context, user *domain.User) (*domain.User, bool) {
+	return u.dao.FindUserIsExist(ctx, user)
+
 }
 
 func (u *UserRepo) FindAllUsers(ctx context.Context) ([]*domain.User, error) {

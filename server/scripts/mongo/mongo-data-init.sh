@@ -3,14 +3,14 @@ db = db.getSiblingDB('$MONGO_INITDB_DATABASE')
 db.auth('$MONGO_USERNAME', '$MONGO_PASSWORD');
 
 
-# 用户表为用户名创建唯一升序索引
+// 用户表为用户名创建唯一升序索引
 db.user.createIndex({"username":1},{"unique":true});
 
 let AdminId = ObjectId();
 let UserId = ObjectId();
 let TestId = ObjectId();
 
-# 管理员所有权限
+// 管理员所有权限
 db.casbin_rule.insertMany([{
     "_id": ObjectId(),
     "ptype": "p",
@@ -38,7 +38,7 @@ db.casbin_rule.insertMany([{
 }]);
 
 
-# 普通用户部分权限
+// 普通用户部分权限
 db.casbin_rule.insertMany([{
     "_id": ObjectId(),
     "ptype": "p",
@@ -47,7 +47,7 @@ db.casbin_rule.insertMany([{
     "v2": "POST",
 }]);
 
-# 所有人均可访问（白名单）
+// 所有人均可访问（白名单）
 db.casbin_rule.insertMany([{
     "_id": ObjectId(),
     "ptype": "p",
@@ -66,9 +66,15 @@ db.casbin_rule.insertMany([{
     "v0": "*",
     "v1": "/user/login",
     "v2": "POST",
+},{
+    "_id": ObjectId(),
+    "ptype": "p",
+    "v0": "*",
+    "v1": "/images/*",
+    "v2": "GET",
 }]);
 
-# 为用户授权
+// 为用户授权
 db.casbin_rule.insertMany([{
     "_id": ObjectId(),
     "ptype": "g",
@@ -86,7 +92,7 @@ db.casbin_rule.insertMany([{
     "v1": "test",
 }]);
 
-# 初始化用户
+// 初始化用户
 db.user.insertMany([{
     "_id": AdminId,
     "username": "admin",
@@ -110,7 +116,7 @@ db.user.insertMany([{
     "updated_at": new Date()
 }])
 
-# 插入文章
+// 插入文章
 db.posts.insertMany([{
     "_id": ObjectId("67b876b0e2f2b89ab22d3ca0"),
     "created_at": new Date(),

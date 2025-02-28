@@ -7,8 +7,8 @@
 package posts
 
 import (
-	"github.com/chenmingyong0423/go-mongox/v2"
 	"github.com/google/wire"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 	"server/internal/posts/internal/api"
 	"server/internal/posts/internal/repo"
 	"server/internal/posts/internal/repo/dao"
@@ -17,7 +17,7 @@ import (
 
 // Injectors from wire.go:
 
-func InitPostsModule(database *mongox.Database) *Module {
+func InitPostsModule(database *mongo.Database) *Module {
 	postsDao := dao.NewPostsDao(database)
 	postsRepo := repo.NewPostsRepo(postsDao)
 	postsService := service.NewPostsService(postsRepo)
@@ -31,4 +31,4 @@ func InitPostsModule(database *mongox.Database) *Module {
 
 // wire.go:
 
-var postsProvider = wire.NewSet(api.NewPostHandler, service.NewPostsService, repo.NewPostsRepo, dao.NewPostsDao, wire.Bind(new(service.IPostsService), new(*service.PostsService)), wire.Bind(new(repo.IPostsRepo), new(*repo.PostsRepo)), wire.Bind(new(dao.IPostsDao), new(*dao.PostsDao)), wire.Struct(new(Module), "Hdl", "Svc"))
+var postsProvider = wire.NewSet(api.NewPostHandler, service.NewPostsService, repo.NewPostsRepo, dao.NewPostsDao, wire.Bind(new(service.IPostsService), new(*service.PostsService)), wire.Bind(new(repo.IPostsRepo), new(*repo.PostsRepo)), wire.Bind(new(dao.IPostsDao), new(*dao.PostsDao)))
