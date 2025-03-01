@@ -1,13 +1,3 @@
-<script lang="ts" setup>
-import darkLogo from "@/assets/logo/logo-dark.png";
-import lightLogo from "@/assets/logo/logo-light.png";
-import { useThemeStore } from "@/store/theme";
-import { useUserStore } from "@/store/user";
-import { UserOutlined } from "@ant-design/icons-vue";
-const themeStore = useThemeStore();
-const userStore = useUserStore();
-</script>
-
 <template>
   <div class="flex h-full w-full items-center justify-between">
     <img
@@ -16,53 +6,93 @@ const userStore = useUserStore();
       class="w-32"
     />
     <div class="flex items-center gap-2">
-      <a-avatar :size="28">
-        <template #icon v-if="userStore.user">
-          <UserOutlined />
+      <a-dropdown>
+        <button
+          class="p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+          aria-label="User menu"
+        >
+          <svg
+            class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M5 20v-1a7 7 0 0 1 7-7v0a7 7 0 0 1 7 7v1m-7-8a4 4 0 1 0 0-8a4 4 0 0 0 0 8"
+            />
+          </svg>
+        </button>
+        <template #overlay>
+          <a-menu @click="onClick">
+            <a-menu-item key="1">退出登录</a-menu-item>
+            <a-menu-item key="2">设置</a-menu-item>
+          </a-menu>
         </template>
-      </a-avatar>
-      <span
-        v-if="themeStore.tailwindTheme === 'dark'"
+      </a-dropdown>
+
+      <!-- 主题切换按钮 -->
+      <button
         @click="themeStore.toggleTheme"
+        class="p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+        aria-label="Toggle theme"
       >
         <svg
-          aria-hidden="true"
+          class="w-6 h-6 hidden dark:block"
           fill="none"
-          focusable="false"
-          height="24"
-          role="presentation"
+          stroke="currentColor"
           viewBox="0 0 24 24"
-          width="24"
-          xmlns="http://www.w3.org/2000/svg"
         >
           <path
-            d="M12 17C14.7614 17 17 14.7614 17 12C17 9.23858 14.7614 7 12 7C9.23858 7 7 9.23858 7 12C7 14.7614 9.23858 17 12 17Z"
-            stroke="currentColor"
-            stroke-width="1.5"
-          ></path>
-          <path
-            d="M12 2V4M12 20V22M4 12H2M22 12H20M19.778 4.223L17.556 6.254M4.222 4.223L6.444 6.254M6.444 17.556L4.222 19.778M19.778 19.777L17.556 17.555"
-            stroke="currentColor"
             stroke-linecap="round"
-            stroke-width="1.5"
-          ></path>
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+          />
         </svg>
-      </span>
-      <span @click="themeStore.toggleTheme" v-else>
         <svg
-          aria-hidden="true"
-          focusable="false"
-          height="24"
-          role="presentation"
+          class="w-6 h-6 block dark:hidden"
+          fill="none"
+          stroke="currentColor"
           viewBox="0 0 24 24"
-          width="24"
         >
           <path
-            d="M21.25 12C21.25 14.4533 20.2754 16.806 18.5407 18.5407C16.806 20.2754 14.4533 21.25 12 21.25V22.75C17.937 22.75 22.75 17.937 22.75 12H21.25ZM12 21.25C9.54675 21.25 7.19397 20.2754 5.45926 18.5407C3.72455 16.806 2.75 14.4533 2.75 12H1.25C1.25 17.937 6.063 22.75 12 22.75V21.25ZM2.75 12C2.75 9.54675 3.72455 7.19397 5.45926 5.45926C7.19397 3.72455 9.54675 2.75 12 2.75V1.25C6.063 1.25 1.25 6.063 1.25 12H2.75ZM15.5 14.25C13.975 14.25 12.5125 13.6442 11.4341 12.5659C10.3558 11.4875 9.75 10.025 9.75 8.5H8.25C8.25 10.4228 9.01384 12.2669 10.3735 13.6265C11.7331 14.9862 13.5772 15.75 15.5 15.75V14.25ZM20.425 11.469C19.9133 12.3176 19.191 13.0197 18.3281 13.5069C17.4652 13.9942 16.491 14.2501 15.5 14.25V15.75C16.7494 15.7504 17.9777 15.4279 19.0657 14.8138C20.1537 14.1997 21.0646 13.3148 21.71 12.245L20.425 11.469ZM9.75 8.5C9.74986 7.50903 10.0058 6.53483 10.4931 5.67193C10.9803 4.80902 11.6824 4.08669 12.531 3.575L11.755 2.291C10.6854 2.93628 9.80058 3.84701 9.18649 4.93486C8.57239 6.02271 8.2498 7.25078 8.25 8.5H9.75ZM12 2.75C11.9497 2.74903 11.9002 2.73811 11.8542 2.71785C11.8082 2.6976 11.7666 2.66842 11.732 2.632C11.6898 2.58965 11.6613 2.53568 11.65 2.477C11.646 2.446 11.648 2.356 11.755 2.291L12.531 3.575C13.034 3.271 13.196 2.714 13.137 2.276C13.075 1.821 12.717 1.25 12 1.25V2.75ZM21.71 12.245C21.644 12.352 21.554 12.354 21.523 12.35C21.4643 12.3387 21.4103 12.3102 21.368 12.268C21.3316 12.2334 21.3024 12.1918 21.2821 12.1458C21.2619 12.0998 21.251 12.0503 21.25 12H22.75C22.75 11.283 22.179 10.925 21.724 10.863C21.286 10.804 20.729 10.966 20.425 11.469L21.71 12.245Z"
-            fill="currentColor"
-          ></path>
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+          />
         </svg>
-      </span>
+      </button>
     </div>
   </div>
 </template>
+
+<script lang="ts" setup>
+import darkLogo from "@/assets/logo/logo-dark.png";
+import lightLogo from "@/assets/logo/logo-light.png";
+import { useThemeStore } from "@/store/theme";
+import { useUserStore } from "@/store/user";
+import type { MenuProps } from "ant-design-vue";
+import { clearStorage } from "@/utils/clearStorage";
+import { useRouter } from "vue-router";
+import { message } from "ant-design-vue";
+
+const themeStore = useThemeStore();
+const userStore = useUserStore();
+const router = useRouter();
+
+const onClick: MenuProps["onClick"] = ({ key }) => {
+  switch (key) {
+    case "1":
+      clearStorage();
+      message.warning("退出成功，请重新登录");
+      window.location.href = "/login";
+      break;
+    case "2":
+      break;
+  }
+};
+</script>

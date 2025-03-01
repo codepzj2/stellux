@@ -5,11 +5,13 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
+
+	. "server/internal/pkg/logger"
 )
 
 // GinLogger gin日志中间件
 func GinLogger() gin.HandlerFunc {
-	logger := zap.NewExample()
+
 	return func(c *gin.Context) {
 		start := time.Now() // 记录请求开始时间
 
@@ -29,7 +31,7 @@ func GinLogger() gin.HandlerFunc {
 		duration := time.Since(start)
 
 		// 记录日志
-		logger.Info(
+		Logger.Info(
 			"请求日志",
 			zap.Int("status", status),
 			zap.String("method", method),

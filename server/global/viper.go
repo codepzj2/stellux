@@ -1,11 +1,13 @@
 package global
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
+	"go.uber.org/zap"
+
+	. "server/internal/pkg/logger"
 )
 
 var (
@@ -23,10 +25,19 @@ type EnvConfig struct {
 }
 
 func init() {
+	viper.SetDefault("mongodb.URL", "mongodb://admin:123456@localhost:27017/?authSource=admin")
+	viper.SetDefault("mongodb.MONGO_INITDB_DATABASE", "stellux")
+	viper.SetDefault("mongodb.MONGO_INITDB_ROOT_USERNAME", "admin")
+	viper.SetDefault("mongodb.MONGO_INITDB_ROOT_PASSWORD", "123456")
+	viper.SetDefault("mongodb.MONGO_USERNAME", "codepzj")
+	viper.SetDefault("mongodb.MONGO_PASSWORD", "123456")
+	viper.SetDefault("server.PORT", "9001")
+
 	viper.SetConfigFile("./config/stellux.yaml")
 	err := viper.ReadInConfig()
 	if err != nil {
-		panic(fmt.Errorf("找不到环境配置文件: %w", err))
+		Logger.Error("找不到环境配置文件", zap.Error(err))
+		Logger.Info("将使用默认配置")
 	}
 
 	// 加载配置

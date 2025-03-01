@@ -15,6 +15,7 @@
   </div>
   <MdEditor
     class="h-[calc(100vh-180px)]"
+    :style="{ fontFamily: 'LXGW WenKai GB Screen' }"
     v-model="debouncedContent"
     :theme="theme"
     previewTheme="vuepress"
@@ -178,6 +179,8 @@ watch(
 );
 </script>
 <style lang="scss">
+@import url("https://cdn.jsdelivr.net/npm/cn-fontsource-lxgw-wen-kai-gb-screen@1.0.6/font.min.css");
+
 .md-editor-toolbar-wrapper {
   height: 40px;
   .md-editor-toolbar {
@@ -194,5 +197,12 @@ watch(
       }
     }
   }
+}
+
+.cm-line {
+  font-size: 17px;
+  margin-top: 10px;
+  font-weight: 500;
+  font-family: "LXGW WenKai GB Screen";
 }
 </style>
