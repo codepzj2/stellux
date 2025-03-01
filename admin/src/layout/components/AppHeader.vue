@@ -74,14 +74,12 @@
 import darkLogo from "@/assets/logo/logo-dark.png";
 import lightLogo from "@/assets/logo/logo-light.png";
 import { useThemeStore } from "@/store/theme";
-import { useUserStore } from "@/store/user";
 import type { MenuProps } from "ant-design-vue";
 import { clearStorage } from "@/utils/clearStorage";
-import { useRouter } from "vue-router";
 import { message } from "ant-design-vue";
+import { useRouter } from "vue-router";
 
 const themeStore = useThemeStore();
-const userStore = useUserStore();
 const router = useRouter();
 
 const onClick: MenuProps["onClick"] = ({ key }) => {
@@ -89,7 +87,7 @@ const onClick: MenuProps["onClick"] = ({ key }) => {
     case "1":
       clearStorage();
       message.warning("退出成功，请重新登录");
-      window.location.href = "/login";
+      router.push("/login");
       break;
     case "2":
       break;

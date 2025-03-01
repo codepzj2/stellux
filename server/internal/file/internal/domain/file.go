@@ -1,10 +1,59 @@
 package domain
 
-import "github.com/chenmingyong0423/go-mongox/v2"
+import (
+	"time"
+
+	"github.com/samber/lo"
+	"go.mongodb.org/mongo-driver/v2/bson"
+)
 
 type File struct {
-	mongox.Model `bson:",inline"`
-	Type         string
-	Url          string
-	Dst          string
+	ID        bson.ObjectID `bson:"_id"`
+	CreatedAt time.Time     `bson:"created_at"`
+	Type      string        `bson:"type"`
+	Url       string        `bson:"url"`
+	Dst       string        `bson:"dst"`
+}
+
+type FileDTO struct {
+	ID        bson.ObjectID `json:"id"`
+	CreatedAt time.Time     `json:"created_at"`
+	Type      string        `json:"type"`
+	Url       string        `json:"url"`
+}
+
+func GetFileFromTime(file *File) *File {
+	return &File{
+		ID:        bson.NewObjectID(),
+		CreatedAt: time.Now().Local(),
+		Type:      file.Type,
+		Url:       file.Url,
+		Dst:       file.Dst,
+	}
+}
+func GetFilesFromTime(files []*File) []*File {
+	return lo.Map(files, func(item *File, _ int) *File {
+		return GetFileFromTime(item)
+	})
+}
+
+func ToFilePtrSlice(files []File) []*File {
+	return lo.Map(files, func(item File, _ int) *File {
+		return &item
+	})
+}
+
+func ToFileDTO(file *File) *FileDTO {
+	return &FileDTO{
+		ID:        file.ID,
+		CreatedAt: file.CreatedAt,
+		Type:      file.Type,
+		Url:       file.Url,
+	}
+}
+
+func ToFilesDTO(files []*File) []*FileDTO {
+	return lo.Map(files, func(item *File, _ int) *FileDTO {
+		return ToFileDTO(item)
+	})
 }

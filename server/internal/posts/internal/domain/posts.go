@@ -15,15 +15,15 @@ type Posts struct {
 
 type PageDTO struct {
 	// 当前页
-	PageNo int64 `form:"pageNo" binding:"required"`
+	PageNo int64 `json:"page_no" binding:"required"`
 	// 每页数量
-	PageSize int64 `form:"pageSize" binding:"required"`
+	PageSize int64 `json:"page_size" binding:"required"`
 	// 排序字段
-	Field string `form:"sortField,omitempty"`
+	Field string `json:"sort_field,omitempty"`
 	// 排序规则
-	Order string `form:"sortOrder,omitempty"`
+	Order string `json:"sort_order,omitempty"`
 	// 搜索内容
-	Keyword string `form:"keyword,omitempty"`
+	Keyword string `json:"keyword,omitempty"`
 }
 
 func (p *PageDTO) OrderConvertToInt() int {

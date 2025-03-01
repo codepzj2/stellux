@@ -72,6 +72,12 @@ db.casbin_rule.insertMany([{
     "v0": "*",
     "v1": "/images/*",
     "v2": "GET",
+},{
+    "_id": ObjectId(),
+    "ptype": "p",
+    "v0": "*",
+    "v1": "/picture/list*",
+    "v2": "GET",
 }]);
 
 // 为用户授权

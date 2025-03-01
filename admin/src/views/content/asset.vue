@@ -27,9 +27,9 @@
 
 <script lang="ts" setup>
 import { InboxOutlined } from "@ant-design/icons-vue";
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import type { UploadProps } from "ant-design-vue/lib/upload/interface";
-import { uploadPicturesLocal } from "@/api/modules/upload";
+import { getFilesByPage, uploadPicturesLocal } from "@/api/modules/file";
 import { message } from "ant-design-vue";
 
 const key = "upload-pictures-local";
@@ -72,6 +72,21 @@ const handleBeforeUpload: UploadProps["beforeUpload"] = async (
 
   return false;
 };
+
+onMounted(async () => {
+  try {
+    const res = await getFilesByPage({
+      page_no: 1,
+      size: 10,
+    });
+    console.log(res);
+  } catch (error: any) {
+    message.error({
+      content: error + "，图片列表获取失败",
+      key,
+    });
+  }
+});
 </script>
 <style scoped>
 .ant-upload-list-item {

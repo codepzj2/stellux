@@ -2,8 +2,7 @@ import axios from "axios";
 import { clearStorage } from "./clearStorage";
 import { useUserStore } from "@/store/user";
 import router from "@/router";
-const baseURL =
-  (window as any).ipConfigUrl?.baseURL || import.meta.env.VITE_API_URL;
+const baseURL = import.meta.env.VITE_API_URL;
 
 const request = axios.create({
   baseURL: baseURL,

@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"mime/multipart"
 	"os"
 	"path/filepath"
@@ -16,6 +17,7 @@ import (
 
 type IFileService interface {
 	UploadFilesLocal(ctx *gin.Context, files []*multipart.FileHeader) ([]*domain.File, error)
+	GetPhotosByPage(ctx context.Context, page int64, pageSize int64) ([]*domain.FileDTO, int64, int64, error)
 }
 
 type FileService struct {
@@ -30,11 +32,11 @@ func NewFileService(fileRepo repo.IFileRepo) *FileService {
 
 func (s *FileService) UploadFilesLocal(ctx *gin.Context, files []*multipart.FileHeader) ([]*domain.File, error) {
 	var pictures []*domain.File
-	os.MkdirAll("images", os.ModePerm)
+	os.MkdirAll("static/images", os.ModePerm)
 	for _, file := range files {
 		// 生成新的文件名
 		newFileName := strings.ReplaceAll(uuid.New().String(), "-", "") + filepath.Ext(file.Filename)
-		networkPath := "images/" + newFileName
+		networkPath := "/images/" + newFileName
 		filePath := "static/images/" + newFileName
 		picture := &domain.File{
 			Type: "local",
@@ -63,4 +65,20 @@ func (s *FileService) UploadFilesLocal(ctx *gin.Context, files []*multipart.File
 		return nil, errors.Wrap(err, "保存到数据库失败")
 	}
 	return pictures, nil
+}
+
+func (s *FileService) GetPhotosByPage(ctx context.Context, page int64, pageSize int64) ([]*domain.FileDTO, int64, int64, error) {
+	photos, err := s.repo.FindByPage(ctx, page, pageSize)
+	if err != nil {
+		return nil, 0, 0, err
+	}
+	totalCount, err := s.repo.GetAllCount(ctx)
+	if err != nil {
+		return nil, 0, 0, err
+	}
+	totalPage := totalCount / pageSize
+	if totalCount%pageSize != 0 {
+		totalPage++
+	}
+	return photos, totalCount, totalPage, nil
 }

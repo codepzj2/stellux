@@ -12,10 +12,12 @@ import (
 type IFileRepo interface {
 	CreateMany(ctx context.Context, files []*domain.File) error
 	DeleteMany(ctx context.Context, files []*domain.File) error
+	FindByPage(ctx context.Context, page int64, pageSize int64) ([]*domain.FileDTO, error)
+	GetAllCount(ctx context.Context) (int64, error)
 }
 
 type FileRepo struct {
-	fileDao dao.IFileDao
+	dao dao.IFileDao
 }
 
 var _ IFileRepo = (*FileRepo)(nil)
@@ -25,12 +27,24 @@ func NewFileRepo(fileDao dao.IFileDao) *FileRepo {
 }
 
 func (p *FileRepo) CreateMany(ctx context.Context, files []*domain.File) error {
-	return p.fileDao.Create(ctx, files)
+	return p.dao.Create(ctx, files)
 }
 
 func (p *FileRepo) DeleteMany(ctx context.Context, files []*domain.File) error {
 	fileIds := lo.Map(files, func(file *domain.File, _ int) bson.ObjectID {
 		return file.ID
 	})
-	return p.fileDao.Delete(ctx, fileIds)
+	return p.dao.Delete(ctx, fileIds)
+}
+
+func (p *FileRepo) FindByPage(ctx context.Context, page int64, pageSize int64) ([]*domain.FileDTO, error) {
+	files, err := p.dao.FindListByPage(ctx, page, pageSize)
+	if err != nil {
+		return nil, err
+	}
+	return domain.ToFilesDTO(files), nil
+}
+
+func (p *FileRepo) GetAllCount(ctx context.Context) (int64, error) {
+	return p.dao.FindCount(ctx)
 }

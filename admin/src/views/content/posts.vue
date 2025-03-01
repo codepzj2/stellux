@@ -16,7 +16,7 @@
   <MdEditor
     class="h-[calc(100vh-180px)]"
     :style="{ fontFamily: 'LXGW WenKai GB Screen' }"
-    v-model="debouncedContent"
+    v-model="configForm.content"
     :theme="theme"
     previewTheme="vuepress"
   />
@@ -39,7 +39,7 @@
       </a-form-item>
       <a-form-item label="内容" name="content">
         <a-textarea
-          v-model:value="debouncedContent"
+          v-model:value="configForm.content"
           placeholder="请输入内容"
         />
       </a-form-item>
@@ -73,7 +73,7 @@
   </a-modal>
 </template>
 <script lang="ts" setup>
-import { ref, reactive, computed, watch} from "vue";
+import { ref, reactive, computed } from "vue";
 import { MdEditor } from "md-editor-v3";
 import { useThemeStore } from "@/store/theme";
 import "md-editor-v3/lib/style.css";
@@ -84,7 +84,6 @@ import type { PostsReq } from "@/api/interfaces/posts";
 
 const themeStore = useThemeStore();
 const theme = computed(() => themeStore.tailwindTheme);
-const debouncedContent = ref("");
 const open = ref<boolean>(false);
 const confirmLoading = ref<boolean>(false);
 const layout = ref<string>("vertical");
@@ -132,7 +131,6 @@ const handleOk = async () => {
         open.value = false;
         confirmLoading.value = false;
         configFormRef.value.resetFields();
-        debouncedContent.value = "";
         message.success({
           content: result.msg,
           key,
@@ -161,22 +159,7 @@ const rules: Record<string, Rule[]> = {
   category: [{ required: true, message: "请选择分类" }],
   tags: [{ required: true, message: "请选择标签" }],
 };
-// 防抖函数
-const debounce = (fn: Function, delay: number) => {
-  let timeout: ReturnType<typeof setTimeout>;
-  return (...args: any[]) => {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => fn(...args), delay);
-  };
-};
 
-// 监听输入并防抖更新 text
-watch(
-  debouncedContent,
-  debounce((newVal: string) => {
-    configForm.content = newVal;
-  }, 100)
-);
 </script>
 <style lang="scss">
 @import url("https://cdn.jsdelivr.net/npm/cn-fontsource-lxgw-wen-kai-gb-screen@1.0.6/font.min.css");
