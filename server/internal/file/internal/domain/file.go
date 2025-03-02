@@ -9,6 +9,8 @@ import (
 
 type File struct {
 	ID        bson.ObjectID `bson:"_id"`
+	Uid       string        `bson:"uid"`
+	FileName  string        `bson:"file_name"`
 	CreatedAt time.Time     `bson:"created_at"`
 	Type      string        `bson:"type"`
 	Url       string        `bson:"url"`
@@ -17,6 +19,8 @@ type File struct {
 
 type FileDTO struct {
 	ID        bson.ObjectID `json:"id"`
+	Uid       string        `json:"uid"`
+	FileName  string        `json:"file_name"`
 	CreatedAt time.Time     `json:"created_at"`
 	Type      string        `json:"type"`
 	Url       string        `json:"url"`

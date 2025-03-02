@@ -14,7 +14,7 @@ import UserRole from "@/views/user/role.vue";
 import PublishArticle from "@/views/content/posts.vue";
 import ArticleList from "@/views/content/list.vue";
 import Draft from "@/views/content/draft.vue";
-import MaterialLibrary from "@/views/content/asset.vue";
+import MaterialLibrary from "@/views/content/material/asset.vue";
 import RecycleBin from "@/views/content/bin.vue";
 import Comment from "@/views/interaction/comment.vue";
 import Like from "@/views/interaction/like.vue";

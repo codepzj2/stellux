@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"server/internal/file/internal/service"
 	"server/internal/pkg/wrap"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -36,17 +35,23 @@ func (h *FileHandler) RegisterGinRoutes(router *gin.Engine) {
 
 // UploadFilesLocal 上传图片到本地
 func (h *FileHandler) UploadFilesLocal(ctx *gin.Context) {
-	form, err := ctx.MultipartForm()
-	if err != nil {
-		wrap.FailWithMsg(ctx, http.StatusBadRequest, "文件上传失败，请检查文件字段")
+	var uploadFilesRequest UploadFilesRequest
+	if err := ctx.ShouldBind(&uploadFilesRequest); err != nil {
+		wrap.FailWithMsg(ctx, http.StatusBadRequest, err.Error())
 		return
 	}
-	files := form.File["files"]
-	if len(files) == 0 {
+	uids := uploadFilesRequest.Uids
+	fileNames := uploadFilesRequest.FileNames
+	files := uploadFilesRequest.Files
+	if len(uids) == 0 || len(fileNames) == 0 || len(files) == 0 {
 		wrap.FailWithMsg(ctx, http.StatusBadRequest, "未找到上传的文件")
 		return
 	}
-	pictures, err := h.serv.UploadFilesLocal(ctx, files)
+	if len(uids) != len(fileNames) || len(uids) != len(files) {
+		wrap.FailWithMsg(ctx, http.StatusBadRequest, "文件数量不匹配")
+		return
+	}
+	pictures, err := h.serv.UploadFilesLocal(ctx, uids, fileNames, files)
 	if err != nil {
 		wrap.FailWithMsg(ctx, http.StatusInternalServerError, err.Error())
 		return
@@ -56,18 +61,16 @@ func (h *FileHandler) UploadFilesLocal(ctx *gin.Context) {
 }
 
 func (h *FileHandler) GetPhotosLocalByPage(ctx *gin.Context) {
-	pageStr := ctx.DefaultQuery("page_no", "1")
-	sizeStr := ctx.DefaultQuery("size", "10")
-	pageNo, err := strconv.Atoi(pageStr)
-	if err != nil {
+	var page wrap.Page
+	if err := ctx.ShouldBind(&page); err != nil {
 		wrap.FailWithMsg(ctx, http.StatusBadRequest, err.Error())
+		return
 	}
-	size, err := strconv.Atoi(sizeStr)
-	if err != nil {
-		wrap.FailWithMsg(ctx, http.StatusBadRequest, err.Error())
-	}
+	pageNo := page.PageNo
+	size := page.Size
 
-	photos, totalCount, totalPage, err := h.serv.GetPhotosByPage(ctx, int64(pageNo), int64(size))
+	photos, totalCount, totalPage, err := h.serv.GetPhotosByPage(ctx, pageNo, size)
+
 	if err != nil {
 		wrap.FailWithMsg(ctx, http.StatusInternalServerError, err.Error())
 	}

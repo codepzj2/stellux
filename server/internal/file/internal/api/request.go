@@ -2,6 +2,8 @@ package api
 
 import "mime/multipart"
 
-type UploadOnePictureRequest struct {
-	Picture *multipart.FileHeader `form:"picture" binding:"required"`
+type UploadFilesRequest struct {
+	Uids      []string `form:"uids" binding:"required"`
+	FileNames []string `form:"file_names" binding:"required"`
+	Files     []*multipart.FileHeader `form:"files" binding:"required"`
 }

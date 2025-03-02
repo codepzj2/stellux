@@ -7,6 +7,8 @@ export const uploadPicturesLocal: (data: {
 }) => Promise<Response<any>> = ({ files }: { files: UploadFile[] }) => {
   const formData = new FormData();
   files.forEach((file: any) => {
+    formData.append("uids", file.uid);
+    formData.append("file_names", file.name);
     formData.append("files", file);
   });
   return request.post("/picture/local/upload", formData);
