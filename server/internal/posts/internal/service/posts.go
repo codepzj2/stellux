@@ -15,6 +15,9 @@ type IPostsService interface {
 	FindPostById(ctx context.Context, id bson.ObjectID) (*PostsDTO, error)
 	FindAllPosts(ctx context.Context) ([]*PostsDTO, error)
 	FindPostsByCondition(ctx context.Context, page *wrap.Page) ([]*PostsDTO, int64, int64, error)
+	UpdatePostsPublishStatus(ctx context.Context, id bson.ObjectID, isPublish *bool) error
+	DeletePostSoftById(ctx context.Context, id bson.ObjectID) error
+	ResumePostSoftById(ctx context.Context, id bson.ObjectID) error
 }
 
 type PostsService struct {
@@ -56,4 +59,15 @@ func (p *PostsService) FindPostsByCondition(ctx context.Context, page *wrap.Page
 
 	return DOsToDTOs(posts), totalCount, totalPage, nil
 
+}
+
+func (p *PostsService) UpdatePostsPublishStatus(ctx context.Context, id bson.ObjectID, isPublish *bool) error {
+	return p.repo.UpdateStatus(ctx, id, isPublish)
+}
+
+func (p *PostsService) DeletePostSoftById(ctx context.Context, id bson.ObjectID) error {
+	return p.repo.DeletePostSoftById(ctx, id)
+}
+func (p *PostsService) ResumePostSoftById(ctx context.Context, id bson.ObjectID) error {
+	return p.repo.ResumePostById(ctx, id)
 }

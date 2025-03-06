@@ -20,7 +20,10 @@ type IPostsDao interface {
 	FindById(ctx context.Context, id bson.ObjectID) (*domain.Posts, error)
 	GetAllCount(ctx context.Context) (int64, error)
 	GetAllCountByKeyword(ctx context.Context, keyword string) (int64, error)
-	DeleteById(ctx context.Context, Id bson.ObjectID) error
+	FindOneAndUpdateStatus(ctx context.Context, id bson.ObjectID, isPublish *bool) error
+	ResumePostById(ctx context.Context, id bson.ObjectID) error
+	DeleteSoftById(ctx context.Context, id bson.ObjectID) error
+	DeleteById(ctx context.Context, id bson.ObjectID) error
 }
 
 type PostsDao struct {
@@ -96,8 +99,24 @@ func (p *PostsDao) GetAllCountByKeyword(ctx context.Context, keyword string) (in
 	return p.postColl.CountDocuments(ctx, filter)
 }
 
-func (p *PostsDao) DeleteById(ctx context.Context, Id bson.ObjectID) error {
-	result, err := p.postColl.DeleteOne(ctx, bson.M{"_id": Id})
+func (p *PostsDao) FindOneAndUpdateStatus(ctx context.Context, id bson.ObjectID, isPublish *bool) error {
+	result := p.postColl.FindOneAndUpdate(ctx, bson.M{"_id": id}, bson.M{"$set": bson.M{"is_publish": isPublish}})
+	return result.Err()
+}
+
+func (p *PostsDao) DeleteSoftById(ctx context.Context, id bson.ObjectID) error {
+	result := p.postColl.FindOneAndUpdate(ctx, bson.M{"_id": id}, bson.M{"$set": bson.M{"deleted_at": time.Now().Local()}})
+	return result.Err()
+}
+
+func (p *PostsDao) ResumePostById(ctx context.Context, id bson.ObjectID) error {
+	// 删除deleted_at字段
+	result := p.postColl.FindOneAndUpdate(ctx, bson.M{"_id": id}, bson.M{"$unset": bson.M{"deleted_at": nil}})
+	return result.Err()
+}
+
+func (p *PostsDao) DeleteById(ctx context.Context, id bson.ObjectID) error {
+	result, err := p.postColl.DeleteOne(ctx, bson.M{"_id": id})
 	if err != nil {
 		return errors.Wrap(err, "删除失败")
 	}
