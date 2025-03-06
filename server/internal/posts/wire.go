@@ -4,17 +4,16 @@
 package posts
 
 import (
-	"server/internal/posts/internal/api"
 	"server/internal/posts/internal/repo"
 	"server/internal/posts/internal/repo/dao"
 	"server/internal/posts/internal/service"
+	"server/internal/posts/internal/web"
 
 	"github.com/google/wire"
-	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
 var postsProvider = wire.NewSet(
-	api.NewPostHandler,
+	web.NewPostHandler,
 	service.NewPostsService,
 	repo.NewPostsRepo,
 	dao.NewPostsDao,
@@ -23,10 +22,10 @@ var postsProvider = wire.NewSet(
 	wire.Bind(new(dao.IPostsDao), new(*dao.PostsDao)),
 )
 
-func InitPostsModule(database *mongo.Database) *Module {
+func InitPostsModule() *Module {
 	wire.Build(
 		postsProvider,
-		wire.Struct(new(Module), "Hdl", "Svc"),
+		wire.Struct(new(Module), "*"),
 	)
 	return nil
 }

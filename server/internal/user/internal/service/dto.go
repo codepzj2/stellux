@@ -12,7 +12,7 @@ type UserDto struct {
 	Username  string
 	CreatedAt time.Time
 	UpdatedAt time.Time
-	RoleId    int
+	RoleId    *int
 }
 
 func DoToDTO(user *domain.User) *UserDto {
@@ -29,4 +29,17 @@ func DOsToDTOs(users []*domain.User) []*UserDto {
 	return lo.Map(users, func(user *domain.User, _ int) *UserDto {
 		return DoToDTO(user)
 	})
+}
+
+func roleIdConvertToString(roleId int) string {
+	switch roleId {
+	case 0:
+		return "admin"
+	case 1:
+		return "user"
+	case 2:
+		return "test"
+	default:
+		return "unknown"
+	}
 }

@@ -8,27 +8,29 @@ package user
 
 import (
 	"github.com/google/wire"
-	"go.mongodb.org/mongo-driver/v2/mongo"
-	"server/internal/user/internal/api"
 	"server/internal/user/internal/repo"
 	"server/internal/user/internal/repo/dao"
 	"server/internal/user/internal/service"
+	"server/internal/user/internal/web"
+	"server/internal/user_detail"
 )
 
 // Injectors from wire.go:
 
-func InitUserModule(database *mongo.Database) *Module {
-	userDao := dao.NewUserDao(database)
+func InitUserModule(userDetailModule *user_detail.Module) *Module {
+	userDao := dao.NewUserDao()
 	userRepo := repo.NewUserRepo(userDao)
-	userService := service.NewUserService(userRepo)
-	userHandler := api.NewUserHandler(userService)
+	iUserDetailRepo := userDetailModule.Repo
+	userService := service.NewUserService(userRepo, iUserDetailRepo)
+	userHandler := web.NewUserHandler(userService)
 	module := &Module{
-		Hdl: userHandler,
-		Svc: userService,
+		Hdl:  userHandler,
+		Svc:  userService,
+		Repo: userRepo,
 	}
 	return module
 }
 
 // wire.go:
 
-var userProvider = wire.NewSet(api.NewUserHandler, service.NewUserService, repo.NewUserRepo, dao.NewUserDao, wire.Bind(new(service.IUserService), new(*service.UserService)), wire.Bind(new(repo.IUserRepo), new(*repo.UserRepo)), wire.Bind(new(dao.IUserDao), new(*dao.UserDao)))
+var userProvider = wire.NewSet(web.NewUserHandler, service.NewUserService, repo.NewUserRepo, dao.NewUserDao, wire.Bind(new(service.IUserService), new(*service.UserService)), wire.Bind(new(repo.IUserRepo), new(*repo.UserRepo)), wire.Bind(new(dao.IUserDao), new(*dao.UserDao)))

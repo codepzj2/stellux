@@ -1,30 +1,30 @@
 package global
 
 import (
-	"log"
-
-	"github.com/fsnotify/fsnotify"
-	"github.com/spf13/viper"
-	"go.uber.org/zap"
-
+	"context"
+	"fmt"
 	. "server/internal/pkg/logger"
-)
 
-var (
-	Env *EnvConfig
+	"github.com/casbin/casbin/v2"
+	mongodbadapter "github.com/casbin/mongodb-adapter/v3"
+	"github.com/pkg/errors"
+	"github.com/spf13/viper"
+	mongooptions "go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
+	"go.mongodb.org/mongo-driver/v2/mongo/readpref"
+	"go.uber.org/zap"
 )
-
-type EnvConfig struct {
-	URL               string `json:"URL"`
-	MongoDatabase     string `json:"MONGO_INITDB_DATABASE"`
-	MongoRootUsername string `json:"MONGO_INITDB_ROOT_USERNAME"`
-	MongoRootPassword string `json:"MONGO_INITDB_ROOT_PASSWORD"`
-	MongoUserName     string `json:"MONGO_USERNAME"`
-	MongoPassword     string `json:"MONGO_PASSWORD"`
-	Port              string `json:"PORT"`
-}
 
 func init() {
+	Env = NewEnv()
+	// 初始化全局变量
+	Enforcer = NewEnforcer(Env.URL, Env.MongoDatabase)
+	Client = NewMongoClient()
+	DB = NewMongoDB(Client)
+}
+
+func NewEnv() *EnvConfig {
 	viper.SetDefault("mongodb.URL", "mongodb://admin:123456@localhost:27017/?authSource=admin")
 	viper.SetDefault("mongodb.MONGO_INITDB_DATABASE", "stellux")
 	viper.SetDefault("mongodb.MONGO_INITDB_ROOT_USERNAME", "admin")
@@ -36,12 +36,11 @@ func init() {
 	viper.SetConfigFile("./config/stellux.yaml")
 	err := viper.ReadInConfig()
 	if err != nil {
-		Logger.Error("找不到环境配置文件", zap.Error(err))
-		Logger.Info("将使用默认配置")
+		Logger.Error("找不到环境配置文件，将使用默认配置", zap.Error(err))
 	}
 
 	// 加载配置
-	Env = &EnvConfig{
+	return &EnvConfig{
 		URL:               viper.GetString("mongodb.URL"),
 		MongoDatabase:     viper.GetString("mongodb.MONGO_INITDB_DATABASE"),
 		MongoRootUsername: viper.GetString("mongodb.MONGO_INITDB_ROOT_USERNAME"),
@@ -50,11 +49,37 @@ func init() {
 		MongoPassword:     viper.GetString("mongodb.MONGO_PASSWORD"),
 		Port:              viper.GetString("server.PORT"),
 	}
+}
 
-	// 监听配置文件
-	viper.WatchConfig()
-	viper.OnConfigChange(func(e fsnotify.Event) {
-		log.Println("配置文件发生改变:", e.Name)
-	})
+func NewEnforcer(url string, dbName string) *casbin.Enforcer {
+	mongoClientOption := mongooptions.Client().ApplyURI(url)
+	a, err := mongodbadapter.NewAdapterWithClientOption(mongoClientOption, dbName)
+	if err != nil {
+		panic(err)
+	}
+	enforcer, err := casbin.NewEnforcer("config/policy.conf", a)
+	if err != nil {
+		fmt.Println(err.Error())
+		panic(err)
+	}
+	err = enforcer.LoadPolicy()
+	if err != nil {
+		panic(fmt.Sprintf("权限加载失败：%s", err.Error()))
+	}
+	return enforcer
+}
 
+func NewMongoClient() *mongo.Client {
+	MongoClient, err := mongo.Connect(options.Client().ApplyURI(Env.URL))
+	if err != nil {
+		panic(errors.Wrap(err, "数据库连接失败"))
+	}
+	return MongoClient
+}
+
+func NewMongoDB(MongoClient *mongo.Client) *mongo.Database {
+	if err := MongoClient.Ping(context.Background(), readpref.Primary()); err != nil {
+		panic(errors.Wrap(err, "数据库无法ping通"))
+	}
+	return MongoClient.Database(Env.MongoDatabase)
 }

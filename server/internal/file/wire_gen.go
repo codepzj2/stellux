@@ -8,27 +8,27 @@ package file
 
 import (
 	"github.com/google/wire"
-	"go.mongodb.org/mongo-driver/v2/mongo"
-	"server/internal/file/internal/api"
 	"server/internal/file/internal/repo"
 	"server/internal/file/internal/repo/dao"
 	"server/internal/file/internal/service"
+	"server/internal/file/internal/web"
 )
 
 // Injectors from wire.go:
 
-func InitFileModule(database *mongo.Database) *Module {
-	fileDao := dao.NewFileDao(database)
+func InitFileModule() *Module {
+	fileDao := dao.NewFileDao()
 	fileRepo := repo.NewFileRepo(fileDao)
 	fileService := service.NewFileService(fileRepo)
-	fileHandler := api.NewFileHandler(fileService)
+	fileHandler := web.NewFileHandler(fileService)
 	module := &Module{
-		Hdl: fileHandler,
-		Svc: fileService,
+		Hdl:  fileHandler,
+		Svc:  fileService,
+		Repo: fileRepo,
 	}
 	return module
 }
 
 // wire.go:
 
-var fileProvider = wire.NewSet(api.NewFileHandler, service.NewFileService, repo.NewFileRepo, dao.NewFileDao, wire.Bind(new(service.IFileService), new(*service.FileService)), wire.Bind(new(repo.IFileRepo), new(*repo.FileRepo)), wire.Bind(new(dao.IFileDao), new(*dao.FileDao)))
+var fileProvider = wire.NewSet(web.NewFileHandler, service.NewFileService, repo.NewFileRepo, dao.NewFileDao, wire.Bind(new(service.IFileService), new(*service.FileService)), wire.Bind(new(repo.IFileRepo), new(*repo.FileRepo)), wire.Bind(new(dao.IFileDao), new(*dao.FileDao)))

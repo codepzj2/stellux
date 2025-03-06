@@ -17,14 +17,13 @@ import (
 // Injectors from wire.go:
 
 func InitApp() *HttpServer {
-	database := ioc.NewMongoDB()
-	module := user.InitUserModule(database)
-	userHandler := module.Hdl
-	user_detailModule := user_detail.InitUserDetailModule(database)
-	userDetailHandler := user_detailModule.Hdl
-	postsModule := posts.InitPostsModule(database)
+	module := user_detail.InitUserDetailModule()
+	userModule := user.InitUserModule(module)
+	userHandler := userModule.Hdl
+	userDetailHandler := module.Hdl
+	postsModule := posts.InitPostsModule()
 	postsHandler := postsModule.Hdl
-	fileModule := file.InitFileModule(database)
+	fileModule := file.InitFileModule()
 	fileHandler := fileModule.Hdl
 	v := ioc.InitMiddleWare()
 	engine := ioc.NewGin(userHandler, userDetailHandler, postsHandler, fileHandler, v)

@@ -4,18 +4,16 @@
 package file
 
 import (
-	"server/internal/file/internal/api"
 	"server/internal/file/internal/repo"
 	"server/internal/file/internal/repo/dao"
 	"server/internal/file/internal/service"
-
-	"go.mongodb.org/mongo-driver/v2/mongo"
+	"server/internal/file/internal/web"
 
 	"github.com/google/wire"
 )
 
 var fileProvider = wire.NewSet(
-	api.NewFileHandler,
+	web.NewFileHandler,
 	service.NewFileService,
 	repo.NewFileRepo,
 	dao.NewFileDao,
@@ -24,10 +22,10 @@ var fileProvider = wire.NewSet(
 	wire.Bind(new(dao.IFileDao), new(*dao.FileDao)),
 )
 
-func InitFileModule(database *mongo.Database) *Module {
+func InitFileModule() *Module {
 	wire.Build(
 		fileProvider,
-		wire.Struct(new(Module), "Hdl", "Svc"),
+		wire.Struct(new(Module), "*"),
 	)
 	return nil
 }
