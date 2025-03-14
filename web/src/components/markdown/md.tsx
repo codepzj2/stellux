@@ -1,9 +1,9 @@
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import rehypeRaw from 'rehype-raw'
+import rehypeRaw from "rehype-raw";
 import rehypeHighlight from "rehype-highlight";
 import "highlight.js/styles/atom-one-dark.css";
-import "@/style/md.scss";
+import "@/styles/md.scss";
 import { Terminal } from "lucide-react";
 import CopyButton from "./copy";
 import React from "react";
@@ -12,7 +12,7 @@ export default function StelluxMarkdown({ content }: { content: string }) {
   return (
     <div className="markdown-body py-4">
       <Markdown
-        rehypePlugins={[rehypeRaw,rehypeHighlight]}
+        rehypePlugins={[rehypeRaw, rehypeHighlight]}
         remarkPlugins={[remarkGfm]}
         components={{
           pre: ({ children }) => <pre style={{ padding: "0" }}>{children}</pre>,
@@ -51,10 +51,7 @@ export default function StelluxMarkdown({ content }: { content: string }) {
               );
             }
             return (
-              <code
-                {...props}
-                className="not-prose rounded-md"
-              >
+              <code {...props} className="not-prose rounded-md">
                 {children}
               </code>
             );

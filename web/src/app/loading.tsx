@@ -1,14 +1,10 @@
-"use client";
-import {Spinner} from "@heroui/react";
+import { LoadingSpinner } from "@/components/ui/spin";
+
 export default function Loading() {
   return (
-    <div className="flex justify-center items-center w-full h-[calc(100vh-4em)]">
-      <Spinner classNames={{label: "text-foreground mt-4"}} label="加载中..." variant="wave" />
+    <div className="flex flex-col justify-center items-center gap-2 h-[calc(100vh-6em)]">
+      <LoadingSpinner size={36} />
+      加载中...
     </div>
   );
-}     
-
-
-
-
-
+}

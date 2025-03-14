@@ -2,5 +2,3 @@
 export const stringToNumber = (str: string) => {
   return parseInt(str, 10);
 };
-
-

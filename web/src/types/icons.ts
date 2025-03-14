@@ -7,6 +7,6 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
 export interface SearchIconProps {
   size?: number;
   strokeWidth?: number;
-  width?: number | string; 
-  height?: number | string; 
+  width?: number | string;
+  height?: number | string;
 }

@@ -12,3 +12,15 @@ export interface PostVO {
   is_top: boolean;
   is_publish: boolean;
 }
+
+export interface IPostCard {
+  id: string;
+  title: string;
+  content: string;
+  description: string;
+  created_at: string;
+  author: string;
+  cover?: string;
+  category?: string;
+  tags?: string[];
+}
