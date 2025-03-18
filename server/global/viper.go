@@ -3,6 +3,7 @@ package global
 import (
 	"context"
 	"fmt"
+	"os"
 
 	. "github.com/codepzj/Stellux/server/internal/pkg/logger"
 
@@ -35,6 +36,14 @@ func NewEnv() *EnvConfig {
 	viper.SetDefault("server.PORT", "9001")
 
 	viper.SetConfigFile("./config/stellux.development.yaml")
+	environment := os.Getenv("APP_ENV")
+	if environment == "production" {
+		Logger.Info("使用生产环境配置文件")
+		viper.SetConfigFile("./config/stellux.production.yaml")
+	} else {
+		Logger.Info("使用开发环境配置文件")
+		viper.SetConfigFile("./config/stellux.development.yaml")
+	}
 	err := viper.ReadInConfig()
 	if err != nil {
 		Logger.Error("找不到环境配置文件，将使用默认配置", zap.Error(err))

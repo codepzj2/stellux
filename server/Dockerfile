@@ -1,33 +1,41 @@
-# 拉取golang:1.24-alpine3.21轻量镜像
+# 使用轻量级 Golang 构建镜像
 FROM golang:1.24-alpine3.21 AS builder
 
-# 配置模块代理
-ENV GO111MODULE=on
-ENV GOPROXY=https://goproxy.cn,direct
+# 配置 Golang 代理
+ENV GO111MODULE=on \
+    GOPROXY=https://goproxy.cn,direct \
+    CGO_ENABLED=0 \
+    GOOS=linux \
+    GOARCH=amd64
 
-## 在docker的根目录下创建相应的使用目录
-RUN mkdir -p /app
-
-## 设置工作目录
+# 设置工作目录
 WORKDIR /app
 
-## 将后端的gin代码复制到docker容器中
+# 复制 go.mod 和 go.sum 以利用 Docker 缓存
+COPY go.mod go.sum ./
+
+# 预下载依赖，提高构建效率
+RUN go mod download && go mod tidy
+
+# 复制源代码
 COPY . .
 
-RUN go mod download
-RUN go mod tidy
+# 编译 Go 程序（去除符号表和调试信息以减小体积）
+RUN go build -ldflags="-s -w" -o main
 
-## go构建可执行文件
-RUN go build main.go
-
-RUN chmod +x main
-
-FROM alpine:latest
+# 选择更小的运行时镜像
+FROM alpine:3.21
 
 WORKDIR /app
 
-COPY --from=builder /app .
+# 复制编译好的二进制文件
+COPY --from=builder /app/main .
 
+# 运行所需的依赖
+RUN apk --no-cache add ca-certificates
+
+# 开放端口
 EXPOSE 9001
 
+# 运行应用
 CMD ["./main"]
