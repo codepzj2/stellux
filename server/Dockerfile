@@ -8,6 +8,9 @@ ENV GO111MODULE=on \
     GOOS=linux \
     GOARCH=amd64
 
+# 设置为生产环境
+ENV APP_ENV=production
+
 # 设置工作目录
 WORKDIR /app
 
