@@ -51,9 +51,6 @@ class Request {
   }
 }
 
-const baseUrl = process.env.NEXT_PUBLIC_PROJECT_API;
-if (!baseUrl) {
-  throw new Error("baseUrl未设置，将读取默认配置");
-}
+const baseUrl = process.env.NEXT_PUBLIC_PROJECT_API as string;
 const request = new Request(baseUrl);
 export default request;
