@@ -4,7 +4,7 @@ type Page struct {
 	// 当前页
 	PageNo int64 `form:"page_no" json:"page_no" binding:"required,gte=1"`
 	// 每页条数
-	Size int64 `form:"size" json:"size" binding:"required"`
+	Size int64 `form:"size" json:"size" binding:"required,gte=1"`
 	// 排序字段
 	Field string `form:"field" json:"field,omitempty" `
 	// 排序方式

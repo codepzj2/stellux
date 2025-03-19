@@ -1,7 +1,7 @@
 // 请求分页携带的params
 export interface Page {
-  page_no: number;
-  size: number;
+  page_no?: number;
+  size?: number;
   field?: string;
   order?: "ASC" | "DESC";
   keyword?: string;

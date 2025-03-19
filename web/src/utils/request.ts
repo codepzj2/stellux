@@ -21,20 +21,15 @@ class Request {
         "Content-Type": "application/json",
       },
       body: data ? JSON.stringify(data) : undefined, // body携带参数
+      next: { revalidate: 300 },
     };
 
     try {
       const res = await fetch(`${this.baseUrl}${url}`, options);
-      const result = await res.json();
-      if (!res.ok) {
-        throw new Error(result.msg);
-      }
-      return result;
+      return await res?.json();
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        throw new Error(err.message);
-      }
-      throw new Error("未知错误");
+      console.error("捕获到异常：",err);
+      return null as unknown as Response<D>;
     }
   }
 
@@ -56,7 +51,7 @@ class Request {
   }
 }
 
-const baseUrl = process.env.API_BASE_URL;
+const baseUrl = process.env.NEXT_PUBLIC_PROJECT_API;
 if (!baseUrl) {
   throw new Error("baseUrl未设置，将读取默认配置");
 }

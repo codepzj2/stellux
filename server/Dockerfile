@@ -8,9 +8,6 @@ ENV GO111MODULE=on \
     GOOS=linux \
     GOARCH=amd64
 
-# 设置为生产环境
-ENV APP_ENV=production
-
 # 设置工作目录
 WORKDIR /app
 
@@ -31,8 +28,14 @@ FROM alpine:3.21
 
 WORKDIR /app
 
+# 设置为生产环境
+ENV APP_ENV=production
+
 # 复制编译好的二进制文件
 COPY --from=builder /app/main .
+
+# 复制配置文件
+COPY --from=builder /app/config ./config
 
 # 运行所需的依赖
 RUN apk --no-cache add ca-certificates
