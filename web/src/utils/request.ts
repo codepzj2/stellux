@@ -21,14 +21,14 @@ class Request {
         "Content-Type": "application/json",
       },
       body: data ? JSON.stringify(data) : undefined, // body携带参数
-      next: { revalidate: 300 },
+      next: { revalidate: 30 },
     };
 
     try {
       const res = await fetch(`${this.baseUrl}${url}`, options);
       return await res?.json();
     } catch (err: unknown) {
-      console.error("捕获到异常：",err);
+      console.error("捕获到异常：", err);
       return null as unknown as Response<D>;
     }
   }
