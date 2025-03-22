@@ -1,5 +1,14 @@
 @use "tailwindcss";
 
+.container-wrapper {
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  max-width: 1400px;
+  border-style: dashed;
+  border-color: hsl(var(--border) / 0.7);
+}
+
 @plugin "tailwindcss-animate";
 
 @custom-variant dark (&:is(.dark *));

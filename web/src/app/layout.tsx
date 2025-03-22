@@ -5,8 +5,6 @@ import NavBar from "@/components/navbar";
 // 引入全局样式
 import "@/styles/global.scss";
 
-import "@/styles/var.scss";
-
 export default function RootLayout({
   children,
 }: {
@@ -14,7 +12,13 @@ export default function RootLayout({
 }) {
   return (
     <html suppressHydrationWarning lang="zh-CN">
-      <body>
+      <head>
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/cn-fontsource-lxgw-wen-kai-gb-screen/font.css"
+        />
+      </head>
+      <body style={{ fontFamily: "LXGW WenKai GB Screen" }}>
         {/* 亮暗模式容器 */}
         <ThemeProvider
           attribute="class"
@@ -24,7 +28,7 @@ export default function RootLayout({
         >
           <div className="flex flex-col h-screen">
             <NavBar />
-            <div className="flex-1">{children}</div>
+            <div className="flex-1 mt-12">{children}</div>
           </div>
         </ThemeProvider>
       </body>
