@@ -15,7 +15,6 @@
   </div>
   <MdEditor
     class="h-[calc(100vh-180px)]"
-    :style="{ fontFamily: 'LXGW WenKai GB Screen' }"
     v-model="configForm.content"
     :theme="theme"
     previewTheme="vuepress"

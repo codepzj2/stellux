@@ -15,9 +15,10 @@ export function DashboardTableOfContents({ toc }: TocProps) {
     () =>
       toc
         ? toc
-            .flatMap((item) => [
+            .flatMap(item => [
               item.url?.replace(/^#/, ""), // 处理 #header-xx
-              ...(item.items?.map((subItem) => subItem.url?.replace(/^#/, "")) || []),
+              ...(item.items?.map(subItem => subItem.url?.replace(/^#/, "")) ||
+                []),
             ])
             .filter(Boolean) // 确保非空
         : [],
@@ -44,8 +45,8 @@ function useActiveItem(itemIds: string[]) {
 
   React.useEffect(() => {
     const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
+      entries => {
+        entries.forEach(entry => {
           if (entry.isIntersecting) {
             setActiveId(entry.target.id);
           }
@@ -54,7 +55,7 @@ function useActiveItem(itemIds: string[]) {
       { rootMargin: `0% 0% -80% 0%` }
     );
 
-    itemIds?.forEach((id) => {
+    itemIds?.forEach(id => {
       const element = document.getElementById(id);
       if (element) {
         observer.observe(element);
@@ -62,7 +63,7 @@ function useActiveItem(itemIds: string[]) {
     });
 
     return () => {
-      itemIds?.forEach((id) => {
+      itemIds?.forEach(id => {
         const element = document.getElementById(id);
         if (element) {
           observer.unobserve(element);
@@ -81,9 +82,12 @@ interface TreeProps {
 }
 
 function Tree({ tree, level = 1, activeItem }: TreeProps) {
-  function hasActiveChild(items: TableOfContents[], activeItem: string): boolean {
+  function hasActiveChild(
+    items: TableOfContents[],
+    activeItem: string
+  ): boolean {
     return items?.some(
-      (item) =>
+      item =>
         item.url?.replace(/^#/, "") === activeItem || // 处理 #header-xx
         (item.items && hasActiveChild(item.items, activeItem))
     );
@@ -116,15 +120,16 @@ function Tree({ tree, level = 1, activeItem }: TreeProps) {
             </a>
             {item.items?.length ? (
               <ul
-                className={cn(
-                  "pl-3 transition-all duration-300 ease-in-out",
-                  {
-                    block: isActiveParent || isActive, // 激活时展开
-                    "hidden group-hover:block": !isActiveParent && !isActive, // 非激活项在 hover 时展开
-                  }
-                )}
+                className={cn("pl-3 transition-all duration-300 ease-in-out", {
+                  block: isActiveParent || isActive, // 激活时展开
+                  "hidden group-hover:block": !isActiveParent && !isActive, // 非激活项在 hover 时展开
+                })}
               >
-                <Tree tree={item.items} level={level + 1} activeItem={activeItem} />
+                <Tree
+                  tree={item.items}
+                  level={level + 1}
+                  activeItem={activeItem}
+                />
               </ul>
             ) : null}
           </li>

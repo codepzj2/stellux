@@ -19,6 +19,8 @@ type IPostsDao interface {
 	FindAll(ctx context.Context) ([]*domain.Posts, error)
 	GetAllCount(ctx context.Context) (int64, error)
 	GetAllCountByKeyword(ctx context.Context, keyword string) (int64, error)
+	AdminFindListByCondition(ctx context.Context, skip int64, limit int64, keyword string, field string, order int) ([]*domain.Posts, error)
+	AdminGetAllCountByKeyword(ctx context.Context, keyword string) (int64, error)
 	AdminFindOneAndUpdateStatus(ctx context.Context, id bson.ObjectID, isPublish *bool) error
 	AdminCreate(ctx context.Context, posts *domain.Posts) error
 	AdminResumePostById(ctx context.Context, id bson.ObjectID) error
@@ -99,6 +101,42 @@ func (p *PostsDao) GetAllCountByKeyword(ctx context.Context, keyword string) (in
 		bson.D{{Key: "description", Value: bson.D{{Key: "$regex", Value: keyword}}}},
 	}}}
 
+	filter := bson.D{{Key: "$and", Value: bson.A{filter1, filter2}}}
+	return p.postColl.CountDocuments(ctx, filter)
+}
+
+// AdminFindListByCondition 管理员分页，关键词查询文章列表，筛除删除的文章,不区分是否发布
+func (p *PostsDao) AdminFindListByCondition(ctx context.Context, skip int64, limit int64, keyword string, field string, order int) ([]*domain.Posts, error) {
+	findOptions := options.Find().SetSkip(skip).SetLimit(limit).SetSort(bson.M{field: order})
+
+	filter1 := bson.D{{Key: "deleted_at", Value: nil}}
+	filter2 := bson.D{{Key: "$or", Value: bson.A{
+		bson.D{{Key: "title", Value: bson.D{{Key: "$regex", Value: keyword}}}},
+		bson.D{{Key: "description", Value: bson.D{{Key: "$regex", Value: keyword}}}},
+	}}}
+
+	filter := bson.D{{Key: "$and", Value: bson.A{filter1, filter2}}}
+
+	cursor, err := p.postColl.Find(ctx, filter, findOptions)
+	if err != nil {
+		return nil, err
+	}
+	var posts []domain.Posts
+	if err := cursor.All(ctx, &posts); err != nil {
+		return nil, err
+	}
+	return domain.ToPtr(posts), nil
+}
+
+// AdminGetAllCountByKeyword 管理员通过关键词获取文章总数
+func (p *PostsDao) AdminGetAllCountByKeyword(ctx context.Context, keyword string) (int64, error) {
+	// 筛除删除的文章
+	filter1 := bson.D{{Key: "deleted_at", Value: nil}}
+	// 筛选搜索内容在title、description中出现
+	filter2 := bson.D{{Key: "$or", Value: bson.A{
+		bson.D{{Key: "title", Value: bson.D{{Key: "$regex", Value: keyword}}}},
+		bson.D{{Key: "description", Value: bson.D{{Key: "$regex", Value: keyword}}}},
+	}}}
 	filter := bson.D{{Key: "$and", Value: bson.A{filter1, filter2}}}
 	return p.postColl.CountDocuments(ctx, filter)
 }

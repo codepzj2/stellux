@@ -31,7 +31,12 @@ const routes: RouteRecordRaw[] = [
     path: "/",
     component: Layout,
     children: [
-      { path: "/", component: Dashboard, name: "Dashboard", meta: { title: "仪表盘" } },
+      {
+        path: "/",
+        component: Dashboard,
+        name: "Dashboard",
+        meta: { title: "仪表盘" },
+      },
       {
         path: "/user/list",
         component: UserList,

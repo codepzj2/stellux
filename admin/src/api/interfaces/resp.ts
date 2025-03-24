@@ -15,3 +15,11 @@ export interface PageResponse<T> {
     list: T[];
   };
 }
+
+export interface PageReq {
+  page_no: number;
+  size: number;
+  keyword?: string;
+  field?: string;
+  order?: "ASC" | "DESC";
+}

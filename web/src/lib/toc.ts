@@ -73,7 +73,7 @@ const updateUrlsWithIncrement = (items, counter = { count: 1 }) => {
 
     return newItem;
   });
-}
+};
 
 const getToc = () => (node, file) => {
   const table = toc(node);

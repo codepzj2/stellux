@@ -16,6 +16,7 @@ type IPostHandler interface {
 	FindPostById(ctx *gin.Context) (*wrap.Response[any], error)
 	FindAllPosts(ctx *gin.Context) (*wrap.Response[any], error)
 	FindPostsByCondition(ctx *gin.Context, page wrap.Page) (*wrap.Response[any], error)
+	AdminFindPostsByCondition(ctx *gin.Context, page wrap.Page) (*wrap.Response[any], error)
 	AdminUpdatePostsStatus(ctx *gin.Context, updatePublishStatusReq UpdatePublishStatusReq) (*wrap.Response[any], error)
 	AdminCreatePost(ctx *gin.Context, postsReq PostsReq) (*wrap.Response[any], error)
 	AdminResumePostSoftById(ctx *gin.Context) (*wrap.Response[any], error)
@@ -34,10 +35,11 @@ func (h *PostsHandler) RegisterGinRoutes(router *gin.Engine) {
 	{
 		postsGroup.GET("/:id", wrap.Wrap(h.FindPostById))                  // 获取特定文章
 		postsGroup.GET("/list/all", wrap.Wrap(h.FindAllPosts))             // 获取所有文章
-		postsGroup.GET("/list", wrap.WrapWithBody(h.FindPostsByCondition)) // 根据条件获取文章（分页，排序，关键词）
+		postsGroup.GET("/list", wrap.WrapWithBody(h.FindPostsByCondition)) // 根据条件获取文章（分页，排序，关键词，发布）
 	}
 	adminPostsGroup := router.Group("/admin-api/posts")
 	{
+		adminPostsGroup.POST("/list", wrap.WrapWithBody(h.AdminFindPostsByCondition)) // 管理员根据条件获取文章（分页，排序，关键词，不区分发布）
 		adminPostsGroup.POST("/create", wrap.WrapWithBody(h.AdminCreatePost))         // 管理员创建文章
 		adminPostsGroup.PATCH("/status", wrap.WrapWithBody(h.AdminUpdatePostsStatus)) // 管理员更新文章发布状态
 		adminPostsGroup.PATCH("/resume/:id", wrap.WrapWithUri(h.AdminResumePostSoftById))    // 管理员恢复删除文章
@@ -78,6 +80,21 @@ func (h *PostsHandler) FindPostsByCondition(ctx *gin.Context, page wrap.Page) (*
 		return wrap.Fail[any](http.StatusBadRequest, nil, err.Error()), err
 	}
 
+	pageVO := wrap.PageVO[PostsVO]{
+		Page:       page,
+		TotalCount: totalCount,
+		TotalPage:  totalPage,
+		List:       DTOsToVOs(posts),
+	}
+	return wrap.Success[any](pageVO, "获取文章列表成功"), nil
+}
+
+// AdminFindPostsByCondition 管理员根据条件获取文章（分页，排序，关键词）
+func (h *PostsHandler) AdminFindPostsByCondition(ctx *gin.Context, page wrap.Page) (*wrap.Response[any], error) {
+	posts, totalCount, totalPage, err := h.serv.AdminFindPostByCondition(ctx, &page)
+	if err != nil {
+		return wrap.Fail[any](http.StatusBadRequest, nil, err.Error()), err
+	}
 	pageVO := wrap.PageVO[PostsVO]{
 		Page:       page,
 		TotalCount: totalCount,

@@ -2,7 +2,6 @@ import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 import rehypeHighlight from "rehype-highlight";
-import "highlight.js/styles/atom-one-dark.css";
 import "@/styles/md.scss";
 import { Terminal } from "lucide-react";
 import CopyButton from "./copy";

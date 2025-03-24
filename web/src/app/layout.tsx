@@ -12,13 +12,7 @@ export default function RootLayout({
 }) {
   return (
     <html suppressHydrationWarning lang="zh-CN">
-      <head>
-        <link
-          rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/cn-fontsource-lxgw-wen-kai-gb-screen/font.css"
-        />
-      </head>
-      <body style={{ fontFamily: "LXGW WenKai GB Screen" }}>
+      <body>
         {/* 亮暗模式容器 */}
         <ThemeProvider
           attribute="class"

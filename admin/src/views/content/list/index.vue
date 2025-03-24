@@ -90,7 +90,10 @@ const posts = reactive({
 });
 
 onMounted(async () => {
-  const res = await getPostsByPage(1, 10);
+  const res = await getPostsByPage({
+    page_no: 1,
+    size: 10,
+  });
   posts.list = res.data.list;
 });
 

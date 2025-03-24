@@ -3,7 +3,7 @@ import type {
   PostUpdateStatusReq,
   PostVO,
 } from "@/api/interfaces/posts";
-import type { PageResponse, Response } from "@/api/interfaces/resp";
+import type { PageReq, PageResponse, Response } from "@/api/interfaces/resp";
 import request from "@/utils/request";
 
 export const createPost: (data: PostReq) => Promise<Response<any>> = data => {
@@ -11,11 +11,23 @@ export const createPost: (data: PostReq) => Promise<Response<any>> = data => {
 };
 
 // 分页获取文章列表
-export const getPostsByPage: (
-  pageNo?: number,
-  pageSize?: number
-) => Promise<PageResponse<PostVO>> = (page_no = 1, size = 10) => {
-  return request.get("/posts/list", { params: { page_no, size } });
+export const getPostsByPage: ({
+  page_no,
+  size,
+}: PageReq) => Promise<PageResponse<PostVO>> = ({
+  page_no = 1,
+  size = 10,
+  keyword,
+  field,
+  order,
+}) => {
+  return request.post("/admin-api/posts/list", {
+    page_no,
+    size,
+    keyword,
+    field,
+    order,
+  });
 };
 
 // 更新文章状态

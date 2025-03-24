@@ -14,6 +14,7 @@ type IPostsService interface {
 	FindPostById(ctx context.Context, id bson.ObjectID) (*PostsDTO, error)
 	FindAllPosts(ctx context.Context) ([]*PostsDTO, error)
 	FindPostByCondition(ctx context.Context, page *wrap.Page) ([]*PostsDTO, int64, int64, error)
+	AdminFindPostByCondition(ctx context.Context, page *wrap.Page) ([]*PostsDTO, int64, int64, error)
 	AdminUpdatePostStatus(ctx context.Context, id bson.ObjectID, isPublish *bool) error
 	AdminDeletePostSoftById(ctx context.Context, id bson.ObjectID) error
 	AdminCreatePost(ctx context.Context, posts *domain.Posts) error
@@ -58,6 +59,16 @@ func (p *PostsService) FindPostByCondition(ctx context.Context, page *wrap.Page)
 
 	return DOsToDTOs(posts), totalCount, totalPage, nil
 
+}
+
+// AdminFindPostByCondition 管理员根据条件获取文章（分页，排序，关键词）
+func (p *PostsService) AdminFindPostByCondition(ctx context.Context, page *wrap.Page) ([]*PostsDTO, int64, int64, error) {
+	pageDTO := PageToPageDTO(page)
+	posts, totalCount, totalPage, err := p.repo.AdminFindPostsByCondition(ctx, pageDTO.PageNo, pageDTO.PageSize, pageDTO.Keyword, pageDTO.Field, pageDTO.OrderConvertToInt())
+	if err != nil {
+		return make([]*PostsDTO, 0), 0, 0, err
+	}
+	return DOsToDTOs(posts), totalCount, totalPage, nil
 }
 
 // AdminCreatePost 管理员创建文章

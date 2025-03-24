@@ -15,6 +15,8 @@ type IPostsRepo interface {
 	FindPostsByCondition(ctx context.Context, pageNo int64, pageSize int64, keyword string, field string, order int) ([]*domain.Posts, int64, int64, error)
 	GetAllCount(ctx context.Context) (int64, error)
 	GetAllCountByKeyword(ctx context.Context, keyword string) (int64, error)
+	AdminFindPostsByCondition(ctx context.Context, pageNo int64, pageSize int64, keyword string, field string, order int) ([]*domain.Posts, int64, int64, error)
+	AdminGetAllCountByKeyword(ctx context.Context, keyword string) (int64, error)
 	AdminCreatePost(ctx context.Context, posts *domain.Posts) error
 	AdminUpdatePostStatus(ctx context.Context, id bson.ObjectID, isPublish *bool) error
 	AdminResumePostById(ctx context.Context, id bson.ObjectID) error
@@ -64,6 +66,25 @@ func (p *PostsRepo) GetAllCount(ctx context.Context) (int64, error) {
 // GetAllCountByKeyword 用户通过关键词获取文章总数
 func (p *PostsRepo) GetAllCountByKeyword(ctx context.Context, keyword string) (int64, error) {
 	return p.dao.GetAllCountByKeyword(ctx, keyword)
+}
+
+// AdminFindPostsByCondition 管理员分页，关键词查询文章列表，筛除删除的文章,不区分是否发布
+func (p *PostsRepo) AdminFindPostsByCondition(ctx context.Context, pageNo int64, pageSize int64, keyword string, field string, order int) ([]*domain.Posts, int64, int64, error) {
+	totalCount, err := p.AdminGetAllCountByKeyword(ctx, keyword)
+	if err != nil {
+		return nil, 0, 0, err
+	}
+	totalPage := (totalCount + pageSize - 1) / pageSize
+	list, err := p.dao.AdminFindListByCondition(ctx, (pageNo-1)*pageSize, pageSize, keyword, field, order)
+	if err != nil {
+		return nil, 0, 0, err
+	}
+	return list, totalCount, totalPage, nil
+}
+
+// AdminGetAllCountByKeyword 管理员通过关键词获取文章总数
+func (p *PostsRepo) AdminGetAllCountByKeyword(ctx context.Context, keyword string) (int64, error) {
+	return p.dao.AdminGetAllCountByKeyword(ctx, keyword)
 }
 
 // AdminCreatePost 管理员创建文章
