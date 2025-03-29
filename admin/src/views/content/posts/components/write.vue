@@ -1,184 +1,106 @@
 <template>
   <div class="flex h-14 items-center justify-between">
     <a-input
-      v-model:value="configForm.title"
+      v-model:value="processedTitle"
       addon-before="标题"
       show-count
-      :maxlength="20"
-      class="w-2/5"
+      :maxlength="50"
+      class="md:w-2/5 w-[300px]"
+      @change="updateTitle"
     />
-    <div class="flex items-center gap-2">
-      <a-button type="dashed">保存</a-button>
-      <a-button type="dashed">设置</a-button>
-      <a-button type="primary" @click="handleCreatePost">发布</a-button>
-    </div>
+    <slot name="action" />
   </div>
   <MdEditor
     class="h-[calc(100vh-180px)]"
-    v-model="configForm.content"
+    v-model="processedContent"
     :theme="theme"
-    previewTheme="vuepress"
+    previewTheme="github"
+    @change="handleContentChange"
   />
-  <a-modal
-    v-model:open="open"
-    title="文章配置信息"
-    :confirm-loading="confirmLoading"
-    okText="确定"
-    cancelText="取消"
-    @ok="handleOk"
-    style="top: 20px"
-    width="800px"
-  >
-    <a-form
-      :layout="layout"
-      :model="configForm"
-      :rules="rules"
-      ref="configFormRef"
-    >
-      <a-form-item label="标题" name="title">
-        <a-input v-model:value="configForm.title" placeholder="请输入标题" />
-      </a-form-item>
-      <a-form-item label="作者" name="author">
-        <a-input v-model:value="configForm.author" placeholder="请输入作者" />
-      </a-form-item>
-      <a-form-item label="内容" name="content">
-        <a-textarea
-          v-model:value="configForm.content"
-          placeholder="请输入内容"
-        />
-      </a-form-item>
-      <a-form-item label="简介" name="description">
-        <a-input
-          v-model:value="configForm.description"
-          placeholder="请输入简介"
-        />
-      </a-form-item>
-      <a-form-item label="分类" name="category">
-        <a-select
-          v-model:value="configForm.category"
-          style="width: 100%"
-          placeholder="请选择分类"
-          :options="options.category"
-        ></a-select>
-      </a-form-item>
-      <a-form-item label="标签" name="tags">
-        <a-select
-          v-model:value="configForm.tags"
-          mode="multiple"
-          style="width: 100%"
-          placeholder="请选择标签"
-          :options="options.tags"
-        ></a-select>
-      </a-form-item>
-      <a-form-item label="封面" name="cover">
-        <a-input v-model:value="configForm.cover" placeholder="请输入封面" />
-      </a-form-item>
-      <a-form-item label="操作">
-        <a-space>
-          <span>置顶</span>
-          <a-switch v-model:checked="configForm.is_top" />
-          <a-divider type="vertical" />
-          <span>发布</span>
-          <a-switch v-model:checked="configForm.is_publish" />
-        </a-space>
-      </a-form-item>
-    </a-form>
-  </a-modal>
 </template>
+
 <script lang="ts" setup>
-import { ref, reactive, computed } from "vue";
+import { computed, ref, watch } from "vue";
 import { useThemeStore } from "@/store/theme";
 import { MdEditor } from "md-editor-v3";
 import "md-editor-v3/lib/style.css";
-import { createPost } from "@/api/modules/posts";
-import { message } from "ant-design-vue";
-import type { Rule } from "ant-design-vue/es/form";
-import { useRouter } from "vue-router";
-import type { PostReq } from "@/api/interfaces/posts";
 
-const router = useRouter();
 const themeStore = useThemeStore();
 const theme = computed(() => themeStore.tailwindTheme);
-const open = ref<boolean>(false);
-const confirmLoading = ref<boolean>(false);
-const layout = ref<string>("vertical");
-const configFormRef = ref();
-const key = "submit-post";
-const configForm = reactive<PostReq>({
-  title: "",
-  content: "",
-  author: "codepzj",
-  description: "",
-  category: "",
-  tags: [],
-  cover: "",
-  is_top: false,
-  is_publish: true,
-});
-const options = reactive({
-  category: [
-    { value: "技术", label: "技术" },
-    { value: "生活", label: "生活" },
-    { value: "学习", label: "学习" },
-    { value: "其他", label: "其他" },
-  ],
-  tags: [
-    { value: "golang", label: "Golang" },
-    { value: "javascript", label: "JavaScript" },
-    { value: "typescript", label: "TypeScript" },
-    { value: "python", label: "Python" },
-    { value: "java", label: "Java" },
-    { value: "csharp", label: "C#" },
-  ],
-});
-const handleCreatePost = async () => {
-  open.value = true;
+
+const props = defineProps<{
+  mode: "create" | "update";
+  title?: string;
+  content?: string;
+}>();
+
+const emit = defineEmits(["update:title", "update:content"]);
+
+// 使用 ref 管理处理后的值
+const processedTitle = ref(props.title?.trim() || "");
+const processedContent = ref(props.content?.trim() || "");
+
+// 处理 content 并提取一级标题
+const processContent = (content: string) => {
+  const trimmedContent = (content || "").trim();
+  let newTitle = processedTitle.value;
+  let newContent = trimmedContent;
+
+  // 检查是否有内容
+  if (trimmedContent) {
+    const lines = trimmedContent.split("\n");
+    const firstLine = lines[0].trim();
+
+    // 如果第一行是一级标题，则提取标题并移除该行
+    if (firstLine.startsWith("# ")) {
+      newTitle = firstLine.substring(2).trim();
+      newContent = lines.slice(1).join("\n").trim();
+    }
+  }
+
+  return { newTitle, newContent };
 };
 
-const handleOk = async () => {
-  configFormRef.value
-    .validate()
-    .then(async () => {
-      message.loading({
-        content: "文章发布中...",
-        key,
-      });
-      try {
-        const result = await createPost(configForm);
-        open.value = false;
-        confirmLoading.value = false;
-        configFormRef.value.resetFields();
-        message.success({
-          content: result.msg,
-          key,
-        });
-        router.push({ name: "ArticleList" });
-      } catch (error: any) {
-        message.error({
-          content: error,
-          key,
-        });
-      } finally {
-        confirmLoading.value = false;
-      }
-    })
-    .catch(() => {
-      message.error({
-        content: "文章发布失败",
-        key,
-      });
-    });
+// 处理 Markdown 编辑器内容变化
+const handleContentChange = (value: string) => {
+  const { newTitle, newContent } = processContent(value);
+  processedTitle.value = newTitle;
+  processedContent.value = newContent;
+  emit("update:title", newTitle);
+  emit("update:content", newContent);
 };
 
-const rules: Record<string, Rule[]> = {
-  title: [{ required: true, message: "请输入标题" }],
-  content: [{ required: true, message: "请输入内容" }],
-  author: [{ required: true, message: "请输入作者" }],
-  description: [{ required: true, message: "请输入简介" }],
-  category: [{ required: true, message: "请选择分类" }],
-  tags: [{ required: true, message: "请选择标签" }],
+// 处理标题输入框变化
+const updateTitle = (e: InputEvent) => {
+  const newTitle = (e.target as HTMLInputElement).value.trim();
+  processedTitle.value = newTitle;
+  emit("update:title", newTitle);
 };
+
+// 监听 props 变化以同步外部更新
+watch(
+  () => props.content,
+  newContent => {
+    if (newContent?.trim() !== processedContent.value) {
+      const { newTitle, newContent: processed } = processContent(
+        newContent || ""
+      );
+      processedTitle.value = newTitle;
+      processedContent.value = processed;
+    }
+  }
+);
+
+watch(
+  () => props.title,
+  newTitle => {
+    if (newTitle?.trim() !== processedTitle.value) {
+      processedTitle.value = newTitle?.trim() || "";
+    }
+  }
+);
 </script>
+
 <style lang="scss">
 .md-editor-toolbar-wrapper {
   height: 40px;

@@ -10,8 +10,12 @@ export interface PostReq {
   is_publish: boolean;
 }
 
-export interface PostVO {
+export interface PostUpdateReq extends PostReq {
   id: string;
+}
+
+export interface PostVO {
+  id?: string;
   created_at: string;
   updated_at: string;
   title: string;
@@ -28,4 +32,9 @@ export interface PostVO {
 export interface PostUpdateStatusReq {
   id: string;
   is_publish: boolean;
+}
+
+export interface PostLabel {
+  label: string;
+  value: string;
 }
