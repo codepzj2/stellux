@@ -9,18 +9,19 @@ import Image from "next/image";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { FolderOpen, Tag } from "lucide-react";
-
 import { useRouter } from "next/navigation";
 
+// 假设这些工具函数和类型已定义
 import { timeAgo } from "@/utils/time";
 import { IPostCard } from "@/types/posts";
 import NotFoundPng from "@/assets/png/not-found.png";
 
 export default function PostsCard({ post }: { post: IPostCard }) {
   const router = useRouter();
+
   return (
     <Card
-      className="w-full py-4 cursor-pointer transition-all duration-150 active:scale-[0.99] hover:shadow-lg dark:hover:-translate-y-0.5 active:bg-gray-100 dark:active:bg-gray-800"
+      className="w-full py-4 cursor-pointer hover:shadow-xl dark:hover:-translate-y-1 active:bg-gray-300 dark:active:bg-gray-800"
       onClick={() => {
         router.push(`/posts/${post.id}`);
       }}
@@ -31,7 +32,7 @@ export default function PostsCard({ post }: { post: IPostCard }) {
             src={post.cover || NotFoundPng}
             alt={post.title}
             fill
-            className="border-1 border-gray-200 rounded-sm"
+            className="border-1 border-gray-200 rounded-sm object-cover"
           />
         </div>
         <div className="flex-1 flex flex-col justify-between">
@@ -47,12 +48,12 @@ export default function PostsCard({ post }: { post: IPostCard }) {
             </div>
             <div className="flex items-center space-x-2 py-1">
               <Badge variant="secondary">
-                <FolderOpen />
+                <FolderOpen className="w-4 h-4 mr-1" />
                 {post.category}
               </Badge>
-              {post.tags?.map(tag => (
+              {post.tags?.map((tag) => (
                 <Badge variant="secondary" key={tag}>
-                  <Tag />
+                  <Tag className="w-4 h-4 mr-1" />
                   {tag}
                 </Badge>
               ))}

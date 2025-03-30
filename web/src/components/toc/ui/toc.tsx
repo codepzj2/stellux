@@ -16,11 +16,11 @@ export default function TocSimple({ toc }: TocProps) {
       toc
         ? toc
             .flatMap(item => [
-              item.url?.replace(/^#/, ""), // 处理 #header-xx
+              item.url?.replace(/^#/, ""),
               ...(item.items?.map(subItem => subItem.url?.replace(/^#/, "")) ||
                 []),
             ])
-            .filter(Boolean) // 确保非空
+            .filter(Boolean)
         : [],
     [toc]
   );
@@ -32,14 +32,13 @@ export default function TocSimple({ toc }: TocProps) {
   }
 
   return (
-    <nav className="space-y-4 rounded-lg border p-4">
-      <p className="text-lg font-semibold">目录</p>
+    <nav className="space-y-2 rounded-lg border p-4">
+      <p className="text-md font-bold">目录</p>
       <Tree tree={toc} activeItem={activeHeading} />
     </nav>
   );
 }
 
-// 监听滚动位置，确定当前激活的标题
 function useActiveItem(itemIds: string[]) {
   const [activeId, setActiveId] = React.useState(null);
 
@@ -88,7 +87,7 @@ function Tree({ tree, level = 1, activeItem }: TreeProps) {
   ): boolean {
     return items?.some(
       item =>
-        item.url?.replace(/^#/, "") === activeItem || // 处理 #header-xx
+        item.url?.replace(/^#/, "") === activeItem ||
         (item.items && hasActiveChild(item.items, activeItem))
     );
   }
@@ -96,23 +95,23 @@ function Tree({ tree, level = 1, activeItem }: TreeProps) {
   return tree?.length && level < 3 ? (
     <ul
       className={cn("m-0 list-none", {
-        "pl-3 border-l border-muted": level === 1, // 只在最外层加边框
+        "pl-3 border-l border-muted": level === 1,
       })}
     >
       {tree.map((item, index) => {
-        const itemId = item.url?.replace(/^#/, ""); // 处理 #header-xx
+        const itemId = item.url?.replace(/^#/, "");
         const isActive = itemId === activeItem;
         const isActiveParent = hasActiveChild(item.items || [], activeItem);
 
         return (
-          <li key={index} className="relative group">
+          <li key={index} className="relative group text-sm">
             <a
               href={item.url}
               className={cn(
-                "block transition-colors duration-200 px-2 py-1",
+                "block transition-colors duration-200 px-2 py-1 relative",
                 "hover:text-primary",
                 isActive
-                  ? "font-semibold text-primary"
+                  ? "font-semibold text-primary before:absolute before:left-[-8px] before:top-1/2 before:-translate-y-1/2 before:w-1 before:h-4 before:bg-primary before:rounded-full"
                   : "text-muted-foreground"
               )}
             >
@@ -120,9 +119,9 @@ function Tree({ tree, level = 1, activeItem }: TreeProps) {
             </a>
             {item.items?.length ? (
               <ul
-                className={cn("pl-3 transition-all duration-300 ease-in-out", {
-                  block: isActiveParent || isActive, // 激活时展开
-                  "hidden group-hover:block": !isActiveParent && !isActive, // 非激活项在 hover 时展开
+                className={cn("pl-3 transition-all duration-300 ease-in-out text-xs", {
+                  block: isActiveParent || isActive,
+                  "hidden group-hover:block": !isActiveParent && !isActive,
                 })}
               >
                 <Tree

@@ -1,7 +1,6 @@
 <template>
   <a-modal
     :open="props.open"
-    @update:open="emit('update:open', $event)"
     title="文章配置信息"
     centered
     width="800px"
@@ -14,14 +13,12 @@
           v-model:value="localForm.title"
           placeholder="请输入标题"
           :maxlength="50"
-          @change="updateForm"
         />
       </a-form-item>
       <a-form-item has-feedback label="作者" name="author">
         <a-input
           v-model:value="localForm.author"
           placeholder="请输入作者"
-          @change="updateForm"
         />
       </a-form-item>
       <a-form-item label="内容" name="content">
@@ -29,14 +26,12 @@
           v-model:value="localForm.content"
           placeholder="请输入内容"
           :rows="5"
-          @change="updateForm"
         />
       </a-form-item>
       <a-form-item label="简介" name="description">
         <a-input
           v-model:value="localForm.description"
           placeholder="请输入简介"
-          @change="updateForm"
         />
       </a-form-item>
       <a-form-item label="分类" name="category">
@@ -45,7 +40,6 @@
           style="width: 100%"
           placeholder="请选择分类"
           :options="props.category"
-          @change="updateForm"
         ></a-select>
       </a-form-item>
       <a-form-item label="标签" name="tags">
@@ -57,7 +51,6 @@
           placeholder="请选择标签"
           :options="props.tags"
           :max-tag-count="2"
-          @change="updateForm"
         >
           <template #maxTagPlaceholder="omittedValues">
             <span style="color: red">+ {{ omittedValues.length }} ...</span>
@@ -76,7 +69,6 @@
         <a-modal
           style="top: 10px"
           :open="pictureModalOpen"
-          @update:open="pictureModalOpen = $event"
           title="选择封面"
           width="610px"
           :footer="null"
@@ -97,13 +89,12 @@
       </a-form-item>
       <div class="flex justify-start items-center gap-4">
         <a-form-item label="是否置顶" name="is_top">
-          <a-switch v-model:checked="localForm.is_top" @change="updateForm" />
+          <a-switch v-model:checked="localForm.is_top" />
         </a-form-item>
         <a-divider type="vertical" />
         <a-form-item label="是否发布" name="is_publish">
           <a-switch
             v-model:checked="localForm.is_publish"
-            @change="updateForm"
           />
         </a-form-item>
       </div>
@@ -140,11 +131,6 @@ const props = defineProps<{
   tags: any[];
 }>();
 
-const emit = defineEmits<{
-  (e: "update:open", value: boolean): void;
-  (e: "update:form", value: any): void;
-}>();
-
 const formRef = ref<any>(null);
 const pictureList = ref<any[]>([]);
 const selectedPicture = ref<string>("");
@@ -162,15 +148,9 @@ watch(
   { deep: true, immediate: true }
 );
 
-// 更新表单数据
-const updateForm = () => {
-  emit("update:form", { ...localForm.value });
-};
-
 // 取消弹窗
 const handleCancel = () => {
   formRef.value?.resetFields();
-  emit("update:open", false);
 };
 
 // 获取图片列表
@@ -193,12 +173,12 @@ const handleSelectPicture = (photos: string[]) => {
 const handleSelectPictureConfirm = () => {
   pictureModalOpen.value = false;
   localForm.value.cover = selectedPicture.value;
-  updateForm();
 };
 
 defineExpose({
   validate: () => {
     return formRef.value?.validate();
   },
+  form: localForm
 });
 </script>

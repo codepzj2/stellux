@@ -26,7 +26,7 @@
   >
     <template #action>
       <a-button type="text" danger @click="open = false">取消</a-button>
-      <a-button type="text" @click="onSubmitPost">更新</a-button>
+      <a-button type="text" @click="onUpdatePost">更新</a-button>
     </template>
   </Modal>
 </template>
@@ -106,9 +106,10 @@ const tags = ref<PostLabel[]>([
   },
 ]);
 
-const onSubmitPost = () => {
+const onUpdatePost = () => {
   modalRef.value.validate().then(() => {
-    updatePost(form).then((res: Response<PostVO>) => {
+    console.log(modalRef.value.form)
+    updatePost(modalRef.value.form).then((res: Response<PostVO>) => {
       message.success(res.msg);
       open.value = false;
       router.push("/content/list");

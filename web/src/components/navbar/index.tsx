@@ -1,11 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import Logo from "./logo";
 import Nav from "./nav";
 import ThemeSwitcher from "./theme-switcher";
-import MdThemeSwitcher from "./md-theme-switcher";
 import DropDownMenu from "./drop-menu";
 import Github from "@/components/icons/github";
 import clsx from "clsx";
@@ -14,7 +12,7 @@ export default function NavBar() {
   return (
     <header
       className={clsx(
-        "fixed top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-transform duration-300"
+        "z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-transform duration-300"
       )}
     >
       <div className="container-wrapper">
@@ -40,7 +38,6 @@ export default function NavBar() {
               >
                 <Github />
               </Button>
-              <MdThemeSwitcher />
               <ThemeSwitcher />
             </div>
           </div>

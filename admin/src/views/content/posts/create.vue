@@ -94,8 +94,8 @@ const tags = ref<PostLabel[]>([
 ]);
 
 const onSubmitPost = () => {
-  modalRef.value.validate().then((res: PostReq) => {
-    createPost(res).then((res: Response<PostVO>) => {
+  modalRef.value.validate().then(() => {
+    createPost(modalRef.value.form).then((res: Response<PostVO>) => {
       message.success(res.msg);
       open.value = false;
       router.push("/content/list");

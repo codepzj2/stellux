@@ -80,19 +80,25 @@
         <span>
           <a-button
             size="small"
+            type="text"
             @click="handleChange(record.is_publish, record.id)"
             >{{ record.is_publish ? "下架" : "发布" }}</a-button
           >
           <a-divider type="vertical" />
           <a-button
             size="small"
+            type="text"
             @click="
               $router.push({ name: 'EditArticle', params: { id: record.id } })
             "
             >编辑</a-button
           >
           <a-divider type="vertical" />
-          <a-button size="small" danger @click="handleDelete(record.id)"
+          <a-button
+            type="text"
+            size="small"
+            danger
+            @click="handleDelete(record.id)"
             >删除</a-button
           >
         </span>

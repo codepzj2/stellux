@@ -4,7 +4,6 @@ import { Book, Clock } from "lucide-react";
 import request from "@/utils/request";
 import Md from "@/components/markdown";
 import Toc from "@/components/toc";
-import "md-editor-rt/lib/preview.css";
 import { getTableOfContents } from "@/lib/toc";
 
 import { timeAgo, readTime } from "@/utils/time";
