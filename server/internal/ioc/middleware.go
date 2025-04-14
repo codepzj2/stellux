@@ -1,7 +1,7 @@
 package ioc
 
 import (
-	"github.com/codepzj/Stellux/server/internal/pkg/middleware"
+	"github.com/codepzj/stellux/server/internal/pkg/middleware"
 
 	"github.com/gin-gonic/gin"
 )

@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/codepzj/Stellux/server/internal/pkg/utils"
+	"github.com/codepzj/stellux/server/internal/pkg/utils"
 
 	"github.com/gin-gonic/gin"
 )

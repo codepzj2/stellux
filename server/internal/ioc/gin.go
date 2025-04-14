@@ -1,16 +1,13 @@
 package ioc
 
 import (
-	"github.com/codepzj/Stellux/server/internal/file"
-	"github.com/codepzj/Stellux/server/internal/posts"
-	"github.com/codepzj/Stellux/server/internal/user"
-	"github.com/codepzj/Stellux/server/internal/user_detail"
+	"github.com/codepzj/stellux/server/internal/post"
 
 	"github.com/gin-gonic/gin"
 )
 
 // NewGin 初始化gin服务器
-func NewGin(userHdl *user.Handler, userDetailHdl *user_detail.Handler, postsHdl *posts.Handler, fileHdl *file.Handler, middleware []gin.HandlerFunc) *gin.Engine {
+func NewGin(postHdl *post.Handler, middleware []gin.HandlerFunc) *gin.Engine {
 	router := gin.New()
 
 	// 中间件
@@ -18,10 +15,7 @@ func NewGin(userHdl *user.Handler, userDetailHdl *user_detail.Handler, postsHdl 
 
 	// 初始化路由
 	{
-		userHdl.RegisterGinRoutes(router)
-		userDetailHdl.RegisterGinRoutes(router)
-		postsHdl.RegisterGinRoutes(router)
-		fileHdl.RegisterGinRoutes(router)
+		postHdl.RegisterGinRoutes(router)
 	}
 
 	return router

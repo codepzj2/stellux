@@ -7,26 +7,18 @@
 package app
 
 import (
-	"github.com/codepzj/Stellux/server/internal/file"
-	"github.com/codepzj/Stellux/server/internal/ioc"
-	"github.com/codepzj/Stellux/server/internal/posts"
-	"github.com/codepzj/Stellux/server/internal/user"
-	"github.com/codepzj/Stellux/server/internal/user_detail"
+	"github.com/codepzj/stellux/server/internal/ioc"
+	"github.com/codepzj/stellux/server/internal/post"
 )
 
 // Injectors from wire.go:
 
 func InitApp() *HttpServer {
-	module := user_detail.InitUserDetailModule()
-	userModule := user.InitUserModule(module)
-	v := userModule.Hdl
-	v2 := module.Hdl
-	postsModule := posts.InitPostsModule()
-	v3 := postsModule.Hdl
-	fileModule := file.InitFileModule()
-	v4 := fileModule.Hdl
-	v5 := ioc.InitMiddleWare()
-	engine := ioc.NewGin(v, v2, v3, v4, v5)
+	database := ioc.NewMongoDB()
+	module := post.InitPostModule(database)
+	postHandler := module.Hdl
+	v := ioc.InitMiddleWare()
+	engine := ioc.NewGin(postHandler, v)
 	httpServer := NewHttpServer(engine)
 	return httpServer
 }

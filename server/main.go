@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/codepzj/Stellux/server/cmd/app"
+	"github.com/codepzj/stellux/server/cmd/app"
 )
 
 func main() {

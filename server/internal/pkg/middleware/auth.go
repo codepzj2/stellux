@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/codepzj/Stellux/server/global"
+	"github.com/codepzj/stellux/server/global"
 
 	"github.com/gin-gonic/gin"
 )
