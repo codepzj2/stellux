@@ -9,7 +9,6 @@ import (
 	"github.com/codepzj/stellux/server/{{.OutputDir}}/internal/service"
 	"github.com/codepzj/stellux/server/{{.OutputDir}}/internal/web"
 	"github.com/google/wire"
-	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
 var {{.DomainName}}Providers = wire.NewSet(web.New{{.DomainName}}Handler, service.New{{.DomainName}}Service, repository.New{{.DomainName}}Repository, dao.New{{.DomainName}}Dao,

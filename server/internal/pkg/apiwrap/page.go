@@ -1,4 +1,4 @@
-package wrap
+package apiwrap
 
 type Page struct {
 	// 当前页

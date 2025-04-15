@@ -1,0 +1,81 @@
+package repository
+
+import (
+	"context"
+
+	"github.com/codepzj/stellux/server/internal/user/internal/domain"
+	"github.com/codepzj/stellux/server/internal/user/internal/repository/dao"
+	"go.mongodb.org/mongo-driver/v2/bson"
+)
+
+type IUserRepository interface {
+	Create(ctx context.Context, user *domain.User) error
+	GetByUsername(ctx context.Context, username string) (*domain.User, error)
+	Update(ctx context.Context, user *domain.User) error
+	Delete(ctx context.Context, id string) error
+}
+
+var _ IUserRepository = (*UserRepository)(nil)
+
+func NewUserRepository(dao dao.IUserDao) *UserRepository {
+	return &UserRepository{dao: dao}
+}
+
+type UserRepository struct {
+	dao dao.IUserDao
+}
+
+func (r *UserRepository) Create(ctx context.Context, user *domain.User) error {
+	return r.dao.Create(ctx, r.DomainToDao(user))
+}
+
+func (r *UserRepository) GetByUsername(ctx context.Context, username string) (*domain.User, error) {
+	user, err := r.dao.GetByUsername(ctx, username)
+	if err != nil {
+		return nil, err
+	}
+	return r.DaoToDomain(user), nil
+}
+
+func (r *UserRepository) Update(ctx context.Context, user *domain.User) error {
+	id, err := bson.ObjectIDFromHex(user.ID)
+	if err != nil {
+		return err
+	}
+	return r.dao.Update(ctx, id, r.DomainToDao(user))
+}
+
+func (r *UserRepository) Delete(ctx context.Context, id string) error {
+	bid, err := bson.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
+	return r.dao.Delete(ctx, bid)
+}
+
+func (r *UserRepository) DomainToDao(user *domain.User) *dao.User {
+	return &dao.User{
+		Username: user.Username,
+		Password: user.Password,
+		RoleId:   user.RoleId,
+		Avatar:   user.Avatar,
+		Email:    user.Email,
+		Sex:      user.Sex,
+		Company:  user.Company,
+		Hobby:    user.Hobby,
+	}
+}
+
+func (r *UserRepository) DaoToDomain(user *dao.User) *domain.User {
+	return &domain.User{
+		ID:       user.ID.Hex(),
+		Username: user.Username,
+		Password: user.Password,
+		RoleId:   user.RoleId,
+		Avatar:   user.Avatar,
+		Email:    user.Email,
+		Sex:      user.Sex,
+		Company:  user.Company,
+		Hobby:    user.Hobby,
+	}
+}

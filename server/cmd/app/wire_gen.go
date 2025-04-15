@@ -9,16 +9,19 @@ package app
 import (
 	"github.com/codepzj/stellux/server/internal/ioc"
 	"github.com/codepzj/stellux/server/internal/post"
+	"github.com/codepzj/stellux/server/internal/user"
 )
 
 // Injectors from wire.go:
 
 func InitApp() *HttpServer {
 	database := ioc.NewMongoDB()
-	module := post.InitPostModule(database)
-	postHandler := module.Hdl
+	module := user.InitUserModule(database)
+	userHandler := module.Hdl
+	postModule := post.InitPostModule(database)
+	postHandler := postModule.Hdl
 	v := ioc.InitMiddleWare()
-	engine := ioc.NewGin(postHandler, v)
+	engine := ioc.NewGin(userHandler, postHandler, v)
 	httpServer := NewHttpServer(engine)
 	return httpServer
 }
