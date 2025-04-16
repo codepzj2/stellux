@@ -22,9 +22,9 @@ db.posts.createIndex({
     "description": "text"
 });
 
-let AdminId = ObjectId();
-let UserId = ObjectId();
-let TestId = ObjectId();
+let AdminId = ObjectId("67c453eda04b00c407b431fd");
+let UserId = ObjectId("67c453eda04b00c407b431fe");
+let TestId = ObjectId("67c453eda04b00c407b431ff");
 
 // 管理员所有权限
 db.casbin_rule.insertMany([{
@@ -105,17 +105,17 @@ db.casbin_rule.insertMany([{
 db.casbin_rule.insertMany([{
     "_id": ObjectId(),
     "ptype": "g",
-    "v0": AdminId,
+    "v0": "67c453eda04b00c407b431fd",
     "v1": "admin"
 }, {
     "_id": ObjectId(),
     "ptype": "g",
-    "v0": UserId,
+    "v0": "67c453eda04b00c407b431fe",
     "v1": "user"
 }, {
     "_id": ObjectId(),
     "ptype": "g",
-    "v0": TestId,
+    "v0": "67c453eda04b00c407b431ff",
     "v1": "test"
 }]);
 
@@ -123,21 +123,21 @@ db.casbin_rule.insertMany([{
 db.user.insertMany([{
     "_id": AdminId,
     "username": "admin",
-    "password": "123456",
+    "password": "\$2a\$10\$SLcnDmaJc1nLtUOsZS4yquXyVeu5E6qJHNTVeKSzTk4JO4Xq/FPSy",
     "role_id": 0,
     "created_at": new Date(),
     "updated_at": new Date()
 }, {
     "_id": UserId,
     "username": "alice",
-    "password": "123456",
+    "password": "\$2a\$10\$SLcnDmaJc1nLtUOsZS4yquXyVeu5E6qJHNTVeKSzTk4JO4Xq/FPSy",
     "role_id": 1,
     "created_at": new Date(),
     "updated_at": new Date()
 }, {
     "_id": TestId,
     "username": "test",
-    "password": "123456",
+    "password": "\$2a\$10\$SLcnDmaJc1nLtUOsZS4yquXyVeu5E6qJHNTVeKSzTk4JO4Xq/FPSy",
     "role_id": 2,
     "created_at": new Date(),
     "updated_at": new Date()

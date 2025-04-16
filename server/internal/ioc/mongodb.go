@@ -2,6 +2,8 @@ package ioc
 
 import (
 	"context"
+	"fmt"
+
 	"github.com/chenmingyong0423/go-mongox/v2"
 
 	"github.com/pkg/errors"
@@ -12,7 +14,8 @@ import (
 )
 
 func NewMongoDB() *mongox.Database {
-	mongoClient, err := mongo.Connect(options.Client().ApplyURI(viper.GetString("mongodb.URL")))
+	url := fmt.Sprintf("mongodb://%s:%s@%s:%d/?authSource=admin", viper.GetString("mongodb.MONGO_INITDB_ROOT_USERNAME"), viper.GetString("mongodb.MONGO_INITDB_ROOT_PASSWORD"), viper.GetString("mongodb.HOST"), viper.GetInt("mongodb.PORT"))
+	mongoClient, err := mongo.Connect(options.Client().ApplyURI(url))
 	if err != nil {
 		panic(errors.Wrap(err, "数据库连接失败"))
 	}

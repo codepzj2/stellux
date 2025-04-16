@@ -1,8 +1,9 @@
 package middleware
 
 import (
-	"log"
+	"log/slog"
 	"net/http"
+	"strings"
 
 	"github.com/codepzj/stellux/server/global"
 
@@ -11,21 +12,33 @@ import (
 
 func Auth() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		// 过滤非管理员接口
+		if !strings.HasPrefix(ctx.Request.RequestURI, "/admin-api") {
+			ctx.Next()
+			return
+		}
 		userId := ctx.GetString("userId")
 		requestURI := ctx.Request.RequestURI
 		method := ctx.Request.Method
-		log.Println("requestURI为:", requestURI, "method为:", method)
+
 		ok, err := global.Enforcer.Enforce(userId, requestURI, method)
 		if err != nil {
-			ctx.Abort()
+			slog.Error("权限校验失败", "error", err)
+			ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{
+				"code": http.StatusForbidden,
+				"msg":  "禁止访问",
+			})
 			return
 		}
 		if ok {
-			log.Println("userId为:", userId, "允许访问")
+			slog.Debug("允许访问", "userId", userId, "requestURI", requestURI, "method", method)
 			ctx.Next()
 		} else {
-			log.Println("userId为:", userId, "禁止访问")
-			ctx.AbortWithStatus(http.StatusForbidden)
+			slog.Debug("禁止访问", "userId", userId, "requestURI", requestURI, "method", method)
+			ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{
+				"code": http.StatusForbidden,
+				"msg":  "禁止访问",
+			})
 		}
 	}
 }

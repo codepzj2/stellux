@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/codepzj/stellux/server/internal/pkg/apiwrap"
+	"github.com/codepzj/stellux/server/internal/pkg/utils"
 	"github.com/codepzj/stellux/server/internal/user/internal/domain"
 	"github.com/codepzj/stellux/server/internal/user/internal/service"
 	"github.com/gin-gonic/gin"
@@ -37,11 +38,23 @@ func (h *UserHandler) Login(c *gin.Context, userRequest UserRequest) (*apiwrap.R
 		Username: userRequest.Username,
 		Password: userRequest.Password,
 	}
-	exist := h.serv.CheckUserExist(c, &user)
+	exist, id := h.serv.CheckUserExist(c, &user)
 	if !exist {
 		return apiwrap.FailWithMsg(http.StatusBadRequest, "用户名或密码错误"), nil
 	}
-	return apiwrap.SuccessWithMsg[any](nil, "登录成功"), nil
+	accessToken, err := utils.GenerateAccessToken(id)
+	if err != nil {
+		return apiwrap.FailWithMsg(http.StatusInternalServerError, err.Error()), err
+	}
+	refreshToken, err := utils.GenerateRefreshToken(id)
+	if err != nil {
+		return apiwrap.FailWithMsg(http.StatusInternalServerError, err.Error()), err
+	}
+	loginVO := LoginVO{
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+	}
+	return apiwrap.SuccessWithMsg[any](loginVO, "登录成功"), nil
 }
 
 func (h *UserHandler) AdminCreateUser(c *gin.Context, userRequest UserRequest) (*apiwrap.Response[any], error) {

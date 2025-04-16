@@ -7,13 +7,14 @@ import (
 )
 
 func InitViper(mode string) {
-	if mode == "development" {
+	switch mode {
+	case "development":
 		viper.SetConfigFile("config/stellux.development.yaml")
 		slog.Info("使用开发环境配置文件")
-	} else if mode == "production" {
+	case "production":
 		viper.SetConfigFile("config/stellux.production.yaml")
 		slog.Info("使用生产环境配置文件")
-	} else {
+	default:
 		panic("mode参数无效")
 	}
 	err := viper.ReadInConfig()

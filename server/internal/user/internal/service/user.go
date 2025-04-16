@@ -11,7 +11,7 @@ import (
 )
 
 type IUserService interface {
-	CheckUserExist(ctx context.Context, user *domain.User) bool
+	CheckUserExist(ctx context.Context, user *domain.User) (bool, string)
 	AdminCreate(ctx context.Context, user *domain.User) error
 	AdminUpdate(ctx context.Context, user *domain.User) error
 	AdminDelete(ctx context.Context, id string) error
@@ -29,15 +29,15 @@ type UserService struct {
 	repo repository.IUserRepository
 }
 
-func (s *UserService) CheckUserExist(ctx context.Context, user *domain.User) bool {
+func (s *UserService) CheckUserExist(ctx context.Context, user *domain.User) (bool, string) {
 	u, err := s.repo.GetByUsername(ctx, user.Username)
 	if err != nil && err != mongo.ErrNoDocuments {
-		return false
+		return false, ""
 	}
 	if u == nil {
-		return false
+		return false, ""
 	}
-	return utils.CompareHashAndPassword(u.Password, user.Password)
+	return utils.CompareHashAndPassword(u.Password, user.Password), u.ID
 }
 
 func (s *UserService) AdminCreate(ctx context.Context, user *domain.User) error {

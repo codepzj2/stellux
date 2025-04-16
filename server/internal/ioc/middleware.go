@@ -9,9 +9,8 @@ import (
 func InitMiddleWare() []gin.HandlerFunc {
 	return []gin.HandlerFunc{
 		gin.Recovery(),
-		middleware.GinLogger(),
 		middleware.Cors(),
-		// middleware.JWT(),
-		// middleware.Auth(),
+		middleware.JWT(),
+		middleware.Auth(),
 	}
 }

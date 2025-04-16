@@ -5,22 +5,39 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/pkg/errors"
+	"github.com/spf13/viper"
 )
 
-var jwtKey = []byte("codepzj")
+var jwtKey = []byte(viper.GetString("JWT_SECRET"))
 
 type JwtCustomClaims struct {
 	ID string
 	jwt.RegisteredClaims
 }
 
-func GenerateJwt(id string) (string, error) {
+func GenerateAccessToken(id string) (string, error) {
 	now := time.Now().Local()
 	claims := JwtCustomClaims{
 		ID: id,
 		RegisteredClaims: jwt.RegisteredClaims{
-			Issuer:    "codepzj",
-			Subject:   "codepzj",
+			Issuer:    "stellux",
+			Subject:   "stellux",
+			IssuedAt:  jwt.NewNumericDate(now),
+			NotBefore: jwt.NewNumericDate(now),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(30 * time.Minute)),
+		},
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString(jwtKey)
+}
+
+func GenerateRefreshToken(id string) (string, error) {
+	now := time.Now().Local()
+	claims := JwtCustomClaims{
+		ID: id,
+		RegisteredClaims: jwt.RegisteredClaims{
+			Issuer:    "stellux",
+			Subject:   "stellux",
 			IssuedAt:  jwt.NewNumericDate(now),
 			NotBefore: jwt.NewNumericDate(now),
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(7 * 24 * time.Hour)),
@@ -30,7 +47,7 @@ func GenerateJwt(id string) (string, error) {
 	return token.SignedString(jwtKey)
 }
 
-func ParseJwt(jwtStr string) (*JwtCustomClaims, error) {
+func ParseToken(jwtStr string) (*JwtCustomClaims, error) {
 	claims := new(JwtCustomClaims)
 	token, err := jwt.ParseWithClaims(jwtStr, claims, func(token *jwt.Token) (any, error) {
 		return jwtKey, nil
