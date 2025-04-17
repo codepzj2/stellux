@@ -8,6 +8,7 @@ import (
 	"github.com/chenmingyong0423/go-mongox/v2/builder/update"
 	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/v2/bson"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
 type User struct {
@@ -27,6 +28,7 @@ type IUserDao interface {
 	GetByUsername(ctx context.Context, username string) (*User, error)
 	Update(ctx context.Context, id bson.ObjectID, user *User) error
 	Delete(ctx context.Context, id bson.ObjectID) error
+	FindByCondition(ctx context.Context, findOptions *options.FindOptionsBuilder) ([]*User, int64, error)
 }
 
 var _ IUserDao = (*UserDao)(nil)
@@ -74,4 +76,16 @@ func (d *UserDao) Delete(ctx context.Context, id bson.ObjectID) error {
 		return errors.New("删除用户失败")
 	}
 	return nil
+}
+
+func (d *UserDao) FindByCondition(ctx context.Context, findOptions *options.FindOptionsBuilder) ([]*User, int64, error) {
+	count, err := d.coll.Finder().Count(ctx)
+	if err != nil {
+		return nil, 0, err
+	}
+	users, err := d.coll.Finder().Find(ctx, findOptions)
+	if err != nil {
+		return nil, 0, err
+	}
+	return users, count, nil
 }

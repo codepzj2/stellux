@@ -9,7 +9,7 @@ export interface PageResponse<T> {
   msg: string;
   data: {
     page_no: number;
-    size: number;
+    page_size: number;
     total_count: number;
     total_page: number;
     list: T[];
@@ -18,7 +18,7 @@ export interface PageResponse<T> {
 
 export interface PageReq {
   page_no: number;
-  size: number;
+  page_size: number;
   keyword?: string;
   field?: string;
   order?: "ASC" | "DESC";

@@ -1,13 +1,17 @@
-import type { LoginForm, LoginVO, UserListVO } from "@/types/user";
-import type { Response } from "@/types/response";
+import type { LoginReq, LoginVO, UserVO } from "@/types/user";
+import type { Response, PageReq, PageResponse } from "@/types/response";
 import request from "@/utils/request";
 
+// 用户登录
 export const userLogin: (
-  data: LoginForm
+  data: LoginReq
 ) => Promise<Response<LoginVO>> = data => {
   return request.post("/user/login", data);
 };
 
-export const getUserList: () => Promise<Response<UserListVO>> = () => {
-  return request.post("/user/list");
+// 获取用户列表
+export const getUserList: (
+  params: PageReq
+) => Promise<PageResponse<UserVO>> = params => {
+  return request.get("/admin-api/user/list", { params });
 };

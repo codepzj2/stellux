@@ -15,3 +15,8 @@ type User struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
+
+type Page struct {
+	PageNo   int64
+	PageSize int64
+}

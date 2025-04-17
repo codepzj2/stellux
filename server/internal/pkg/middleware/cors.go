@@ -11,7 +11,8 @@ func Cors() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		method := c.Request.Method
 		origin := c.Request.Header.Get("Origin") //请求头部
-		slog.Info("请求来源origin:", "origin", origin)
+		requestURI := c.Request.RequestURI
+		slog.Info("请求", "origin", origin, "requestURI", requestURI, "method", method)
 		if origin != "" {
 			c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
 			c.Header("Access-Control-Allow-Headers", "Origin, X-Requested-With, X-Extra-Header, Content-Type, Accept, Authorization")

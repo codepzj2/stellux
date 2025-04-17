@@ -1,11 +1,12 @@
-export interface User {
+export interface UserVO {
   id: string;
   username: string;
   role_id: number;
-}
-
-export interface LoginForm extends LoginReq {
-  remember: boolean;
+  avatar: string;
+  email: string;
+  sex: string;
+  company: string;
+  hobby: string;
 }
 
 export interface LoginReq {
@@ -14,17 +15,6 @@ export interface LoginReq {
 }
 
 export interface LoginVO {
-  token: string; // 令牌
-  user: User;
+  access_token: string; // 访问令牌
+  refresh_token: string; // 刷新令牌
 }
-
-export interface UserManage {
-  id: string;
-  created_at: string;
-  updated_at: string;
-  username: string;
-  password: string;
-  role_id: number;
-}
-
-export type UserListVO = UserManage[];

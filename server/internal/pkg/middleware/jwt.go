@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/codepzj/stellux/server/global"
 	"github.com/codepzj/stellux/server/internal/pkg/utils"
 
 	"github.com/gin-gonic/gin"
@@ -22,18 +23,12 @@ func JWT() gin.HandlerFunc {
 		slog.Debug("用户携带的token", "access_token", access_token)
 		// 若非GET请求的token为空
 		if access_token == "" || !strings.HasPrefix(access_token, "Bearer ") {
-			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-				"code": http.StatusUnauthorized,
-				"msg":  "未携带token",
-			})
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, global.AccessTokenNotFound)
 			return
 		}
 		claims, err := utils.ParseToken(strings.TrimPrefix(access_token, "Bearer "))
 		if err != nil {
-			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-				"code":    http.StatusUnauthorized,
-				"message": "未携带token",
-			})
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, global.AccessTokenExpired)
 			return
 		}
 		slog.Debug("解析后的用户ID", "userId", claims.ID)

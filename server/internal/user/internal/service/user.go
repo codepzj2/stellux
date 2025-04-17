@@ -15,6 +15,7 @@ type IUserService interface {
 	AdminCreate(ctx context.Context, user *domain.User) error
 	AdminUpdate(ctx context.Context, user *domain.User) error
 	AdminDelete(ctx context.Context, id string) error
+	GetUserList(ctx context.Context, page *domain.Page) ([]*domain.User, int64, error)
 }
 
 var _ IUserService = (*UserService)(nil)
@@ -62,4 +63,8 @@ func (s *UserService) AdminUpdate(ctx context.Context, user *domain.User) error 
 
 func (s *UserService) AdminDelete(ctx context.Context, id string) error {
 	return s.repo.Delete(ctx, id)
+}
+
+func (s *UserService) GetUserList(ctx context.Context, page *domain.Page) ([]*domain.User, int64, error) {
+	return s.repo.FindByPage(ctx, page)
 }

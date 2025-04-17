@@ -6,6 +6,7 @@ import (
 	"github.com/codepzj/stellux/server/internal/user/internal/domain"
 	"github.com/codepzj/stellux/server/internal/user/internal/repository/dao"
 	"go.mongodb.org/mongo-driver/v2/bson"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
 type IUserRepository interface {
@@ -13,6 +14,7 @@ type IUserRepository interface {
 	GetByUsername(ctx context.Context, username string) (*domain.User, error)
 	Update(ctx context.Context, user *domain.User) error
 	Delete(ctx context.Context, id string) error
+	FindByPage(ctx context.Context, page *domain.Page) ([]*domain.User, int64, error)
 }
 
 var _ IUserRepository = (*UserRepository)(nil)
@@ -53,6 +55,15 @@ func (r *UserRepository) Delete(ctx context.Context, id string) error {
 	return r.dao.Delete(ctx, bid)
 }
 
+func (r *UserRepository) FindByPage(ctx context.Context, page *domain.Page) ([]*domain.User, int64, error) {
+	findOptions := options.Find().SetSkip((page.PageNo - 1) * page.PageSize).SetLimit(page.PageSize).SetSort(bson.M{"role_id": 1})
+	users, count, err := r.dao.FindByCondition(ctx, findOptions)
+	if err != nil {
+		return nil, 0, err
+	}
+	return r.DaoToDomainList(users), count, nil
+}
+
 func (r *UserRepository) DomainToDao(user *domain.User) *dao.User {
 	return &dao.User{
 		Username: user.Username,
@@ -78,4 +89,12 @@ func (r *UserRepository) DaoToDomain(user *dao.User) *domain.User {
 		Company:  user.Company,
 		Hobby:    user.Hobby,
 	}
+}
+
+func (r *UserRepository) DaoToDomainList(users []*dao.User) []*domain.User {
+	domainUsers := make([]*domain.User, len(users))
+	for i, user := range users {
+		domainUsers[i] = r.DaoToDomain(user)
+	}
+	return domainUsers
 }

@@ -1,26 +1,37 @@
 import { defineStore } from "pinia";
 
-import type { User } from "@/types/user";
 import { ref } from "vue";
 
 export const useUserStore = defineStore(
   "user",
   () => {
-    const user = ref<User | null>(null);
-    const token = ref<string | null>(null);
-    const setUser = (newUser: User) => {
-      user.value = newUser;
+    const access_token = ref<string | null>(null);
+    const refresh_token = ref<string | null>(null);
+
+    const setAccessToken = (accessToken: string) => {
+      access_token.value = accessToken;
     };
 
-    const setToken = (newToken: string) => {
-      token.value = newToken;
+    const setRefreshToken = (refreshToken: string) => {
+      refresh_token.value = refreshToken;
     };
 
-    const clearToken = () => {
-      token.value = null;
+    const clearAccessToken = () => {
+      access_token.value = null;
     };
 
-    return { user, token, setUser, setToken, clearToken };
+    const clearRefreshToken = () => {
+      refresh_token.value = null;
+    };
+
+    return {
+      access_token,
+      refresh_token,
+      setAccessToken,
+      setRefreshToken,
+      clearAccessToken,
+      clearRefreshToken,
+    };
   },
   {
     persist: true,

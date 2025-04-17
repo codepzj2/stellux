@@ -4,7 +4,7 @@ type Page struct {
 	// 当前页
 	PageNo int64 `form:"page_no" json:"page_no" binding:"required,gte=1"`
 	// 每页条数
-	Size int64 `form:"size" json:"size" binding:"required,gte=1"`
+	PageSize int64 `form:"page_size" json:"page_size" binding:"required,gte=1"`
 	// 排序字段
 	Field string `form:"field" json:"field,omitempty" `
 	// 排序方式
@@ -22,14 +22,14 @@ type PageVO[T any] struct {
 	List      []*T  `json:"list"`
 }
 
-func ToPageVO[T any](pageNo int64, size int64, totalCount int64, totalPage int64, list []*T) *PageVO[T] {
+func ToPageVO[T any](pageNo int64, pageSize int64, totalCount int64,list []*T) *PageVO[T] {
 	return &PageVO[T]{
 		Page: Page{
-			PageNo: pageNo,
-			Size:   size,
+			PageNo:   pageNo,
+			PageSize: pageSize,
 		},
 		TotalCount: totalCount,
-		TotalPage:  totalPage,
+		TotalPage:  (totalCount + pageSize - 1) / pageSize,
 		List:       list,
 	}
 }

@@ -1,20 +1,11 @@
 package global
 
 import (
-	"flag"
 	"fmt"
 
 	"github.com/casbin/casbin/v2"
 	mongodbadapter "github.com/casbin/mongodb-adapter/v3"
 )
-
-var (
-	Mode = flag.String("mode", "development", "运行模式,eg: development/production")
-)
-
-func ParseFlag() {
-	flag.Parse()
-}
 
 func NewEnforcer(url string) *casbin.Enforcer {
 	adapter, err := mongodbadapter.NewAdapter(url)
