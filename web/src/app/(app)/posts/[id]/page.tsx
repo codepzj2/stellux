@@ -15,7 +15,8 @@ export default async function PostPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const post = await request.get<PostVO>(`/posts/${id}`);
+  const post = await request.get<PostVO>(`/post/${id}`);
+  console.log(post);
   const { data } = post;
   const { words, minutes } = readTime(data.content);
   const toc = await getTableOfContents(data.content);

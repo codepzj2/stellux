@@ -24,7 +24,7 @@ func Auth() gin.HandlerFunc {
 		ok, err := global.Enforcer.Enforce(userId, requestURI, method)
 		if err != nil {
 			slog.Error("权限校验失败", "error", err)
-			ctx.AbortWithStatusJSON(http.StatusForbidden, global.LoadPermissionFailed)
+			ctx.AbortWithStatusJSON(http.StatusOK, global.LoadPermissionFailed)
 			return
 		}
 		if ok {
@@ -32,7 +32,7 @@ func Auth() gin.HandlerFunc {
 			ctx.Next()
 		} else {
 			slog.Debug("禁止访问", "userId", userId, "requestURI", requestURI, "method", method)
-			ctx.AbortWithStatusJSON(http.StatusForbidden, global.PermissionDenied)
+			ctx.AbortWithStatusJSON(http.StatusOK, global.PermissionDenied)
 		}
 	}
 }

@@ -1,19 +1,24 @@
 import axios from "axios";
-import { useUserStore } from "@/store/user";
+import { useUserStore } from "@/store";
+import { message } from "ant-design-vue";
+import { Code } from "@/global";
+import { backToLogin } from "./clear";
 
 const baseURL = import.meta.env.VITE_API_URL;
 
 const request = axios.create({
-  baseURL: baseURL,
+  baseURL,
   timeout: 5000,
 });
 
 // 请求拦截器
 request.interceptors.request.use(
   config => {
-    const accessToken = useUserStore().access_token;
-    // 设置请求头
-    config.headers.Authorization = `Bearer ${accessToken}`;
+    const userStore = useUserStore();
+    const accessToken = userStore.access_token;
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
+    }
     return config;
   },
   error => Promise.reject(error)
@@ -21,53 +26,48 @@ request.interceptors.request.use(
 
 // 响应拦截器
 request.interceptors.response.use(
-  response => response.data,
-  async error => {
-    if (!error.response) {
-      return Promise.reject(error);
-    }
+  async response => {
+    const userStore = useUserStore();
+    const refresh_token = userStore.refresh_token;
 
-    if (error.response.status === 401) {
-      const userStore = useUserStore();
-      const refresh_token = userStore.refresh_token;
-      try {
-        const res = await request.get(
-          `/user/refresh?refresh_token=${refresh_token}`
-        );
-        console.log(res);
-        const newAccessToken = res.data.access_token;
-        const newRefreshToken = res.data.refresh_token;
+    if (response.data.code === Code.RequestAccessTokenExpired) {
+      if (refresh_token) {
+        try {
+          const res = await request.get(
+            `/user/refresh?refresh_token=${refresh_token}`
+          );
+          const newAccessToken = res.data.access_token;
+          const newRefreshToken = res.data.refresh_token;
 
-        // 更新store中的token
-        userStore.setAccessToken(newAccessToken);
-        userStore.setRefreshToken(newRefreshToken);
-        console.log(newAccessToken, newRefreshToken);
-        // 使用新的access token重新发送请求
-        error.config.headers["Authorization"] = `Bearer ${newAccessToken}`;
-        console.log(error.config);
-        return request(error.config);
-      } catch (error) {
-        return Promise.reject(error);
+          userStore.setAccessToken(newAccessToken);
+          userStore.setRefreshToken(newRefreshToken);
+
+          response.config.headers["Authorization"] = `Bearer ${newAccessToken}`;
+          return request(response.config);
+        } catch (refreshError) {
+          backToLogin();
+          return Promise.reject(refreshError);
+        }
+      } else {
+        backToLogin();
+        return Promise.reject(new Error("access_token已过期,请重新登录"));
       }
     }
 
-    let errMessage = "";
-    switch (error.response.status) {
-      case 400:
-        errMessage = error.response.data.msg || "请求错误";
-        break;
-      case 401:
-        errMessage = "登录过期，请重新登录";
-        break;
-      case 403:
-        errMessage = "没有权限";
-        break;
-      case 500:
-        errMessage = error.response.data.msg || "服务器错误";
-        break;
-      default:
-        errMessage = "服务器内部错误";
-        break;
+    if (response.data.code !== Code.RequestSuccess) {
+      console.log(response.data);
+      const errMessage = response.data.msg || "操作失败";
+      message.error(errMessage);
+      return Promise.reject(new Error(errMessage));
+    }
+
+    return response.data;
+  },
+  error => {
+    if (!error.response) {
+      message.error("网络错误，请稍后重试");
+    } else {
+      message.error(error.response.data.msg || "操作失败");
     }
     return Promise.reject(error);
   }

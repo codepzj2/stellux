@@ -15,6 +15,7 @@ type IUserRepository interface {
 	Update(ctx context.Context, user *domain.User) error
 	Delete(ctx context.Context, id string) error
 	FindByPage(ctx context.Context, page *domain.Page) ([]*domain.User, int64, error)
+	GetByID(ctx context.Context, id string) (*domain.User, error)
 }
 
 var _ IUserRepository = (*UserRepository)(nil)
@@ -44,9 +45,16 @@ func (r *UserRepository) Update(ctx context.Context, user *domain.User) error {
 	if err != nil {
 		return err
 	}
-	return r.dao.Update(ctx, id, r.DomainToDao(user))
+	return r.dao.Update(ctx, id, &dao.User{
+		Username: user.Username,
+		Nickname: user.Nickname,
+		RoleId:   user.RoleId,
+		Avatar:   user.Avatar,
+		Email:    user.Email,
+		Sex:      user.Sex,
+		Hobby:    user.Hobby,
+	})
 }
-
 func (r *UserRepository) Delete(ctx context.Context, id string) error {
 	bid, err := bson.ObjectIDFromHex(id)
 	if err != nil {
@@ -64,15 +72,27 @@ func (r *UserRepository) FindByPage(ctx context.Context, page *domain.Page) ([]*
 	return r.DaoToDomainList(users), count, nil
 }
 
+func (r *UserRepository) GetByID(ctx context.Context, id string) (*domain.User, error) {
+	bid, err := bson.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+	user, err := r.dao.GetByID(ctx, bid)
+	if err != nil {
+		return nil, err
+	}
+	return r.DaoToDomain(user), nil
+}
+
 func (r *UserRepository) DomainToDao(user *domain.User) *dao.User {
 	return &dao.User{
 		Username: user.Username,
 		Password: user.Password,
+		Nickname: user.Nickname,
 		RoleId:   user.RoleId,
 		Avatar:   user.Avatar,
 		Email:    user.Email,
 		Sex:      user.Sex,
-		Company:  user.Company,
 		Hobby:    user.Hobby,
 	}
 }
@@ -82,11 +102,11 @@ func (r *UserRepository) DaoToDomain(user *dao.User) *domain.User {
 		ID:       user.ID.Hex(),
 		Username: user.Username,
 		Password: user.Password,
+		Nickname: user.Nickname,
 		RoleId:   user.RoleId,
 		Avatar:   user.Avatar,
 		Email:    user.Email,
 		Sex:      user.Sex,
-		Company:  user.Company,
 		Hobby:    user.Hobby,
 	}
 }
@@ -98,3 +118,4 @@ func (r *UserRepository) DaoToDomainList(users []*dao.User) []*domain.User {
 	}
 	return domainUsers
 }
+

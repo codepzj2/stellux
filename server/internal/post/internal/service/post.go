@@ -11,8 +11,8 @@ type IPostService interface {
 	AdminCreatePost(ctx context.Context, post *domain.Post) error
 	AdminUpdatePost(ctx context.Context, post *domain.Post) error
 	AdminDeletePost(ctx context.Context, id string) error
-	AdminGetPost(ctx context.Context, id string) (*domain.Post, error)
-	AdminGetPostList(ctx context.Context, page *domain.Page) ([]*domain.Post, int64, error)
+	GetPostById(ctx context.Context, id string) (*domain.Post, error)
+	GetPostList(ctx context.Context, page *domain.Page) ([]*domain.Post, int64, error)
 }
 
 var _ IPostService = (*PostService)(nil)
@@ -39,10 +39,10 @@ func (s *PostService) AdminDeletePost(ctx context.Context, id string) error {
 	return s.repo.Delete(ctx, id)
 }
 
-func (s *PostService) AdminGetPost(ctx context.Context, id string) (*domain.Post, error) {
+func (s *PostService) GetPostById(ctx context.Context, id string) (*domain.Post, error) {
 	return s.repo.Get(ctx, id)
 }
 
-func (s *PostService) AdminGetPostList(ctx context.Context, page *domain.Page) ([]*domain.Post, int64, error) {
+func (s *PostService) GetPostList(ctx context.Context, page *domain.Page) ([]*domain.Post, int64, error) {
 	return s.repo.GetList(ctx, page)
 }

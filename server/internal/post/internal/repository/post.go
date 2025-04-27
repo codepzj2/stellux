@@ -44,7 +44,11 @@ func (r *PostRepository) Delete(ctx context.Context, id string) error {
 
 // Get 获取文章
 func (r *PostRepository) Get(ctx context.Context, id string) (*domain.Post, error) {
-	post, err := r.dao.Get(ctx, id)
+	bid, err := bson.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+	post, err := r.dao.Get(ctx, bid)
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +88,7 @@ func (r *PostRepository) DomainToDao(post *domain.Post) *dao.Post {
 		Author:      post.Author,
 		Category:    post.Category,
 		Tags:        post.Tags,
-		IsPublished: post.IsPublished,
+		IsPublish:   post.IsPublish,
 		IsTop:       post.IsTop,
 		Thumbnail:   post.Thumbnail,
 	}
@@ -94,13 +98,15 @@ func (r *PostRepository) DomainToDao(post *domain.Post) *dao.Post {
 func (r *PostRepository) DaoToDomain(post *dao.Post) *domain.Post {
 	return &domain.Post{
 		ID:          post.ID.Hex(),
+		CreatedAt:   post.CreatedAt,
+		UpdatedAt:   post.UpdatedAt,
 		Title:       post.Title,
 		Content:     post.Content,
 		Description: post.Description,
 		Author:      post.Author,
 		Category:    post.Category,
 		Tags:        post.Tags,
-		IsPublished: post.IsPublished,
+		IsPublish:   post.IsPublish,
 		IsTop:       post.IsTop,
 		Thumbnail:   post.Thumbnail,
 		LikeCount:   post.LikeCount,

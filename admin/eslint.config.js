@@ -17,8 +17,11 @@ export default [
   },
   {
     rules: {
-      "vue/multi-word-component-names": "off", // 禁用 vue/multi-word-component-names 规则
-      "@typescript-eslint/no-explicit-any": ["off"], // 禁用 @typescript-eslint/no-explicit-any 规则
+      "vue/multi-word-component-names": "off", // 禁用 文件大驼峰 规则
+      "@typescript-eslint/no-explicit-any": ["off"], // 允许 any 类型
+      "no-undef": "off", // 允许未定义的变量
+      "@typescript-eslint/no-unused-vars": "off", // 允许未使用的变量
+      "@typescript-eslint/no-empty-object-type": "off", // 允许空对象类型
     },
   },
 ];

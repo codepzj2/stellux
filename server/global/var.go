@@ -2,9 +2,9 @@ package global
 
 import (
 	"flag"
-	"net/http"
 
 	"github.com/casbin/casbin/v2"
+	"github.com/codepzj/stellux/server/internal/pkg/apiwrap"
 	"github.com/gin-gonic/gin"
 )
 
@@ -20,8 +20,8 @@ var (
 
 // 常量
 var (
-	AccessTokenNotFound  = gin.H{"code": http.StatusUnauthorized, "msg": "未携带access_token"}
-	AccessTokenExpired   = gin.H{"code": http.StatusUnauthorized, "msg": "access_token已过期"}
-	LoadPermissionFailed = gin.H{"code": http.StatusInternalServerError, "msg": "权限加载失败"}
-	PermissionDenied     = gin.H{"code": http.StatusForbidden, "msg": "禁止访问"}
+	AccessTokenNotFound  = gin.H{"code": apiwrap.RequestAccessTokenNotFound, "msg": "未携带access_token"}
+	AccessTokenExpired   = gin.H{"code": apiwrap.RequestAccessTokenExpired, "msg": "access_token已过期"}
+	LoadPermissionFailed = gin.H{"code": apiwrap.RequestLoadPermissionFailed, "msg": "权限加载失败"}
+	PermissionDenied     = gin.H{"code": apiwrap.RequestPermissionDenied, "msg": "禁止访问"}
 )

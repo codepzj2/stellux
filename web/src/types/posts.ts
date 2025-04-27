@@ -1,11 +1,10 @@
 export interface PostVO {
   id: string;
+  created_at: string;
   title: string;
   content: string;
-  created_at: string;
-  updated_at: string;
-  author: string;
   description: string;
+  author: string;
   category: string;
   tags: string[];
   cover: string;

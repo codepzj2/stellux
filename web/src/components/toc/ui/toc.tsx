@@ -16,8 +16,8 @@ export default function TocSimple({ toc }: TocProps) {
       toc
         ? toc
             .flatMap(item => [
-              item.url?.replace(/^#/, ""),
-              ...(item.items?.map(subItem => subItem.url?.replace(/^#/, "")) ||
+              item.url?.replace(/^@/, ""),
+              ...(item.items?.map(subItem => subItem.url?.replace(/^@/, "")) ||
                 []),
             ])
             .filter(Boolean)
@@ -87,7 +87,7 @@ function Tree({ tree, level = 1, activeItem }: TreeProps) {
   ): boolean {
     return items?.some(
       item =>
-        item.url?.replace(/^#/, "") === activeItem ||
+        item.url?.replace(/^@/, "") === activeItem ||
         (item.items && hasActiveChild(item.items, activeItem))
     );
   }
@@ -99,7 +99,7 @@ function Tree({ tree, level = 1, activeItem }: TreeProps) {
       })}
     >
       {tree.map((item, index) => {
-        const itemId = item.url?.replace(/^#/, "");
+        const itemId = item.url?.replace(/^@/, "");
         const isActive = itemId === activeItem;
         const isActiveParent = hasActiveChild(item.items || [], activeItem);
 

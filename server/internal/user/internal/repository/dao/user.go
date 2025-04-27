@@ -13,14 +13,25 @@ import (
 
 type User struct {
 	mongox.Model `bson:",inline"`
-	Username     string `bson:"username"`
-	Password     string `bson:"password"`
-	RoleId       int    `bson:"role_id"`
-	Avatar       string `bson:"avatar"`
-	Email        string `bson:"email"`
-	Sex          string `bson:"sex"`
-	Company      string `bson:"company"`
-	Hobby        string `bson:"hobby"`
+	Username     string `bson:"username,omitempty"`
+	Password     string `bson:"password,omitempty"`
+	Nickname     string `bson:"nickname,omitempty"`
+	RoleId       int    `bson:"role_id,omitempty"`
+	Avatar       string `bson:"avatar,omitempty"`
+	Email        string `bson:"email,omitempty"`
+	Sex          string `bson:"sex,omitempty"`
+	Hobby        string `bson:"hobby,omitempty"`
+}
+
+type UserUpdate struct {
+	Username string `bson:"username,omitempty"`
+	Password string `bson:"password,omitempty"`
+	Nickname string `bson:"nickname,omitempty"`
+	RoleId   int    `bson:"role_id,omitempty"`
+	Avatar   string `bson:"avatar,omitempty"`
+	Email    string `bson:"email,omitempty"`
+	Sex      string `bson:"sex,omitempty"`
+	Hobby    string `bson:"hobby,omitempty"`
 }
 
 type IUserDao interface {
@@ -29,6 +40,7 @@ type IUserDao interface {
 	Update(ctx context.Context, id bson.ObjectID, user *User) error
 	Delete(ctx context.Context, id bson.ObjectID) error
 	FindByCondition(ctx context.Context, findOptions *options.FindOptionsBuilder) ([]*User, int64, error)
+	GetByID(ctx context.Context, id bson.ObjectID) (*User, error)
 }
 
 var _ IUserDao = (*UserDao)(nil)
@@ -57,7 +69,7 @@ func (d *UserDao) GetByUsername(ctx context.Context, username string) (*User, er
 }
 
 func (d *UserDao) Update(ctx context.Context, id bson.ObjectID, user *User) error {
-	res, err := d.coll.Updater().Filter(query.Id(id)).Updates(update.NewBuilder().Set("username", user.Username).Set("password", user.Password).Set("avatar", user.Avatar).Set("email", user.Email).Set("sex", user.Sex).Set("company", user.Company).Set("hobby", user.Hobby).Build()).UpdateOne(ctx)
+	res, err := d.coll.Updater().Filter(query.Id(id)).Updates(update.SetFields(d.UserToUpdate(user))).UpdateOne(ctx)
 	if err != nil {
 		return err
 	}
@@ -88,4 +100,21 @@ func (d *UserDao) FindByCondition(ctx context.Context, findOptions *options.Find
 		return nil, 0, err
 	}
 	return users, count, nil
+}
+
+func (d *UserDao) GetByID(ctx context.Context, id bson.ObjectID) (*User, error) {
+	return d.coll.Finder().Filter(query.Id(id)).FindOne(ctx)
+}
+
+func (d *UserDao) UserToUpdate(user *User) *UserUpdate {
+	return &UserUpdate{
+		Username: user.Username,
+		Password: user.Password,
+		Nickname: user.Nickname,
+		RoleId:   user.RoleId,
+		Avatar:   user.Avatar,
+		Email:    user.Email,
+		Sex:      user.Sex,
+		Hobby:    user.Hobby,
+	}
 }

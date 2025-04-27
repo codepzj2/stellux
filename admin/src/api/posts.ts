@@ -3,34 +3,38 @@ import type { PageReq, PageResponse, Response } from "@/types/response";
 import request from "@/utils/request";
 
 // 创建文章
-export const createPost: (data: PostReq) => Promise<Response<any>> = data => {
-  return request.post("/admin-api/posts/create", data);
+export const createPostAPI: (
+  data: PostReq
+) => Promise<Response<any>> = data => {
+  return request.post("/admin-api/post/create", data);
 };
 
 // 更新文章
-export const updatePost: (data: PostReq) => Promise<Response<any>> = data => {
-  return request.put("/admin-api/posts/update", data);
+export const updatePostAPI: (
+  data: PostReq
+) => Promise<Response<any>> = data => {
+  return request.put("/admin-api/post/update", data);
 };
 
 // 根据id获取文章
-export const getPostById: (id: string) => Promise<Response<PostVO>> = id => {
-  return request.get(`/posts/${id}`);
+export const getPostByIdAPI: (id: string) => Promise<Response<PostVO>> = id => {
+  return request.get(`/admin-api/post/${id}`);
 };
 
 // 分页获取文章列表
-export const getPostsByPage: ({
+export const getPostsByPageAPI: ({
   page_no,
-  size,
+  page_size,
 }: PageReq) => Promise<PageResponse<PostVO>> = ({
   page_no = 1,
-  size = 10,
+  page_size = 10,
   keyword,
   field,
   order,
 }) => {
-  return request.post("/admin-api/posts/list", {
+  return request.post("/admin-api/post/list", {
     page_no,
-    size,
+    page_size,
     keyword,
     field,
     order,
@@ -38,13 +42,13 @@ export const getPostsByPage: ({
 };
 
 // 更新文章状态
-export const updatePostStatus: (
+export const updatePostStatusAPI: (
   data: PostUpdateStatusReq
 ) => Promise<PageResponse<any>> = data => {
-  return request.patch("/admin-api/posts/status", data);
+  return request.patch("/admin-api/post/status", data);
 };
 
 // 软删除文章
-export const deletePostSoft: (id: string) => Promise<Response<any>> = id => {
-  return request.patch(`/admin-api/posts/delete/${id}`);
+export const deletePostSoftAPI: (id: string) => Promise<Response<any>> = id => {
+  return request.patch(`/admin-api/post/delete/${id}`);
 };

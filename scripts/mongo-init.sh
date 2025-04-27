@@ -64,8 +64,8 @@ db.casbin_rule.insertMany([{
     "_id": ObjectId(),
     "ptype": "p",
     "v0": "user",
-    "v1": "/user/list",
-    "v2": "POST"
+    "v1": "/admin-api/user/list*",
+    "v2": "GET"
 }]);
 
 // 测试用户权限
@@ -73,7 +73,7 @@ db.casbin_rule.insertMany([{
     "_id": ObjectId(),
     "ptype": "p",
     "v0": "*",
-    "v1": "/posts/list",
+    "v1": "/admin-api/user/info",
     "v2": "GET"
 }, {
     "_id": ObjectId(),
@@ -124,41 +124,64 @@ db.user.insertMany([{
     "_id": AdminId,
     "username": "admin",
     "password": "\$2a\$10\$SLcnDmaJc1nLtUOsZS4yquXyVeu5E6qJHNTVeKSzTk4JO4Xq/FPSy",
+    "nickname": "老王",
     "role_id": 0,
     "created_at": new Date(),
-    "updated_at": new Date()
+    "updated_at": new Date(),
+    "avatar": "https://github.githubassets.com/assets/pull-shark-default-498c279a747d.png",
+    "email": "admin@example.com",
+    "sex": "男",
+    "hobby": "打篮球",
 }, {
     "_id": UserId,
     "username": "alice",
     "password": "\$2a\$10\$SLcnDmaJc1nLtUOsZS4yquXyVeu5E6qJHNTVeKSzTk4JO4Xq/FPSy",
+    "nickname": "小李",
     "role_id": 1,
     "created_at": new Date(),
-    "updated_at": new Date()
+    "updated_at": new Date(),
+    "avatar": "https://github.githubassets.com/assets/quickdraw-default-39c6aec8ff89.png",
+    "email": "alice@example.com",
+    "sex": "女",
+    "hobby": "打羽毛球",
 }, {
     "_id": TestId,
     "username": "test",
     "password": "\$2a\$10\$SLcnDmaJc1nLtUOsZS4yquXyVeu5E6qJHNTVeKSzTk4JO4Xq/FPSy",
+    "nickname": "小张",
     "role_id": 2,
     "created_at": new Date(),
-    "updated_at": new Date()
+    "updated_at": new Date(),
+    "avatar": "https://github.githubassets.com/assets/yolo-default-be0bbff04951.png",
+    "email": "test@example.com",
+    "sex": "男",
+    "hobby": "打乒乓球",
 }]);
 
-// 插入文章
-db.posts.insertMany([{
-    _id: ObjectId("67c453eda04b00c407b431fd"),
-    created_at: new Date(),
-    updated_at: new Date(),
-    title: "stellux博客",
-    content: "如果你看到这篇文章，说明你已经成功了。",
-    author: "codepzj",
-    description: "stellux博客",
-    category: "技术",
-    tags: [
-        "golang"
-    ],
-    cover: "https://avatars.githubusercontent.com/u/183695872?v=4",
-    is_top: true,
-    is_publish: true
+// 初始化分类
+db.label.insertMany([{
+    "_id": ObjectId(),
+    "label_type": "category",
+    "name": "技术",
+}, {
+    "_id": ObjectId(),
+    "label_type": "category",
+    "name": "生活",
+}]);
+
+// 初始化标签
+db.label.insertMany([{
+    "_id": ObjectId(),
+    "label_type": "tag",
+    "name": "golang",
+}, {
+    "_id": ObjectId(),
+    "label_type": "tag",
+    "name": "python",
+}, {
+    "_id": ObjectId(),
+    "label_type": "tag",
+    "name": "java",
 }]);
 
 EOF

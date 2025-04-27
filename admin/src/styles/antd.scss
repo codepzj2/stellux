@@ -1,0 +1,14 @@
+// 服了,傻逼antv,默认配色下导航栏和侧边栏的背景色都是黑色
+:root {
+  .ant-layout .ant-layout-header,
+  .ant-layout .ant-layout-sider {
+    background: #ffffff;
+  }
+}
+
+:root .dark {
+  .ant-layout .ant-layout-header,
+  .ant-layout .ant-layout-sider {
+    background: #141414;
+  }
+}

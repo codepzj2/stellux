@@ -16,6 +16,7 @@ type IUserService interface {
 	AdminUpdate(ctx context.Context, user *domain.User) error
 	AdminDelete(ctx context.Context, id string) error
 	GetUserList(ctx context.Context, page *domain.Page) ([]*domain.User, int64, error)
+	GetUserInfo(ctx context.Context, id string) (*domain.User, error)
 }
 
 var _ IUserService = (*UserService)(nil)
@@ -41,6 +42,7 @@ func (s *UserService) CheckUserExist(ctx context.Context, user *domain.User) (bo
 	return utils.CompareHashAndPassword(u.Password, user.Password), u.ID
 }
 
+// 管理员创建用户
 func (s *UserService) AdminCreate(ctx context.Context, user *domain.User) error {
 	u, err := s.repo.GetByUsername(ctx, user.Username)
 	if err != nil && err != mongo.ErrNoDocuments {
@@ -57,14 +59,22 @@ func (s *UserService) AdminCreate(ctx context.Context, user *domain.User) error 
 	return s.repo.Create(ctx, user)
 }
 
+// 管理员更新用户
 func (s *UserService) AdminUpdate(ctx context.Context, user *domain.User) error {
 	return s.repo.Update(ctx, user)
 }
 
+// 管理员删除用户
 func (s *UserService) AdminDelete(ctx context.Context, id string) error {
 	return s.repo.Delete(ctx, id)
 }
 
+// 获取用户列表
 func (s *UserService) GetUserList(ctx context.Context, page *domain.Page) ([]*domain.User, int64, error) {
 	return s.repo.FindByPage(ctx, page)
+}
+
+// 获取用户信息
+func (s *UserService) GetUserInfo(ctx context.Context, id string) (*domain.User, error) {
+	return s.repo.GetByID(ctx, id)
 }

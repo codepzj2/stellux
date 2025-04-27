@@ -12,25 +12,25 @@ import (
 
 type Post struct {
 	mongox.Model `bson:",inline"`
-	Title        string   `bson:"title"`
-	Content      string   `bson:"content"`
-	Description  string   `bson:"description"`
-	Author       string   `bson:"author"`
-	Category     string   `bson:"category"`
-	Tags         []string `bson:"tags"`
-	IsPublished  bool     `bson:"is_published"`
-	IsTop        bool     `bson:"is_top"`
-	Thumbnail    string   `bson:"thumbnail"`
-	LikeCount    int      `bson:"like_count"`
-	ViewCount    int      `bson:"view_count"`
-	ShareCount   int      `bson:"share_count"`
+	Title        string   `bson:"title,omitempty"`
+	Content      string   `bson:"content,omitempty"`
+	Description  string   `bson:"description,omitempty"`
+	Author       string   `bson:"author,omitempty"`
+	Category     string   `bson:"category,omitempty"`
+	Tags         []string `bson:"tags,omitempty"`
+	IsPublish    bool     `bson:"is_publish,omitempty"`
+	IsTop        bool     `bson:"is_top,omitempty"`
+	Thumbnail    string   `bson:"thumbnail,omitempty"`
+	LikeCount    int      `bson:"like_count,omitempty"`
+	ViewCount    int      `bson:"view_count,omitempty"`
+	ShareCount   int      `bson:"share_count,omitempty"`
 }
 
 type IPostDao interface {
 	Create(ctx context.Context, post *Post) error
 	Update(ctx context.Context, id string, post *Post) error
 	Delete(ctx context.Context, id string) error
-	Get(ctx context.Context, id string) (*Post, error)
+	Get(ctx context.Context, id bson.ObjectID) (*Post, error)
 	GetList(ctx context.Context, cond bson.D, findOptions *options.FindOptionsBuilder) ([]*Post, int64, error)
 }
 
@@ -52,7 +52,7 @@ func (d *PostDao) Create(ctx context.Context, post *Post) error {
 
 // Update 更新文章(排除点赞数、浏览数、分享数)
 func (d *PostDao) Update(ctx context.Context, id string, post *Post) error {
-	_, err := d.coll.Updater().Filter(query.Id(id)).Updates(update.NewBuilder().Set("title", post.Title).Set("content", post.Content).Set("description", post.Description).Set("author", post.Author).Set("category", post.Category).Set("tags", post.Tags).Set("is_published", post.IsPublished).Set("thumbnail", post.Thumbnail).Build()).UpdateOne(ctx)
+	_, err := d.coll.Updater().Filter(query.Id(id)).Updates(update.NewBuilder().Set("title", post.Title).Set("content", post.Content).Set("description", post.Description).Set("author", post.Author).Set("category", post.Category).Set("tags", post.Tags).Set("is_published", post.IsPublish).Set("thumbnail", post.Thumbnail).Build()).UpdateOne(ctx)
 	return err
 }
 
@@ -63,7 +63,7 @@ func (d *PostDao) Delete(ctx context.Context, id string) error {
 }
 
 // Get 获取文章
-func (d *PostDao) Get(ctx context.Context, id string) (*Post, error) {
+func (d *PostDao) Get(ctx context.Context, id bson.ObjectID) (*Post, error) {
 	post, err := d.coll.Finder().Filter(query.Id(id)).FindOne(ctx)
 	return post, err
 }

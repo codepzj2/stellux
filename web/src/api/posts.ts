@@ -4,5 +4,5 @@ import request from "@/utils/request";
 
 // 获取首页文章列表
 export const getPostsList = (page: Page) => {
-  return request.get<PageVO<PostVO>>("/posts/list", page);
+  return request.get<PageVO<PostVO>>("/post/list", page);
 };

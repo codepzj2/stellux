@@ -7,7 +7,7 @@ type PostRequest struct {
 	Author      string   `json:"author" binding:"required"`
 	Category    string   `json:"category"`
 	Tags        []string `json:"tags"`
-	IsPublished bool     `json:"is_published"`
+	IsPublish   bool     `json:"is_publish"`
 	IsTop       bool     `json:"is_top"`
-	Thumbnail   string   `json:"thumbnail"`
+	Thumbnail   string   `json:"thumbnail" binding:"required"`
 }

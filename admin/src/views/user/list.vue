@@ -1,106 +1,244 @@
 <template>
-  <div class="px-4 sm:px-6 lg:px-8">
-    <div class="sm:flex sm:items-center">
-      <div class="sm:flex-auto">
-        <h1 class="text-base font-semibold text-gray-900">Users</h1>
-        <p class="mt-2 text-sm text-gray-700">
-          A list of all the users in your account including their name, title,
-          email and role.
-        </p>
-      </div>
-      <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-        <button
-          type="button"
-          class="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-        >
-          Add user
-        </button>
-      </div>
-    </div>
-    <div class="mt-8 flow-root">
-      <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-        <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-          <table class="min-w-full divide-y divide-gray-300">
-            <tbody class="divide-y divide-gray-200 bg-white">
-              <tr v-for="user in userList" :key="user.id">
-                <td class="w-64 py-5 pr-3 pl-4 text-sm whitespace-nowrap sm:pl-0">
-                  <div class="flex items-center">
-                    <div class="size-11 shrink-0">
-                      <img
-                        class="size-11 rounded-full"
-                        :src="user.avatar"
-                        alt=""
-                      />
-                    </div>
-                    <div class="ml-4">
-                      <div class="font-medium text-gray-900">
-                        {{ user.username }}
-                      </div>
-                      <div class="mt-1 text-gray-500">{{ user.email }}</div>
-                    </div>
-                  </div>
-                </td>
-                <td class="px-3 py-5 text-sm whitespace-nowrap text-gray-500">
-                  <span
-                    :class="[
-                      'inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset',
-                      user.role_id === 0
-                        ? 'bg-blue-50 text-blue-700 ring-blue-600/20'
-                        : '',
-                      user.role_id === 1
-                        ? 'bg-green-50 text-green-700 ring-green-600/20'
-                        : '',
-                      user.role_id === 2
-                        ? 'bg-yellow-50 text-yellow-700 ring-yellow-600/20'
-                        : '',
-                    ]"
-                  >
-                    {{
-                      user.role_id === 0
-                        ? "管理员"
-                        : user.role_id === 1
-                          ? "普通用户"
-                          : "游客"
-                    }}
-                  </span>
-                </td>
-                <td
-                  class="relative py-5 pr-4 pl-3 text-right text-sm font-medium whitespace-nowrap space-x-2 sm:pr-0"
-                >
-                  <a href="#" class="text-indigo-600 hover:text-indigo-900"
-                    >编辑<span class="sr-only">, {{ user.username }}</span></a
-                  >
-                  <a href="#" class="text-red-600 hover:text-red-900"
-                    >删除<span class="sr-only">, {{ user.username }}</span></a
-                  >
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
+  <a-table :columns="columns" :data-source="userList">
+    <template #bodyCell="{ column, record }">
+      <template v-if="column.key === 'avatar'">
+        <a-avatar :src="record.avatar" />
+      </template>
+      <template v-else-if="column.key === 'role_id'">
+        <a-tag :color="roleColors[record.role_id as keyof typeof roleColors]">
+          {{ roleNames[record.role_id as keyof typeof roleNames] }}
+        </a-tag>
+      </template>
+      <template v-else-if="column.key === 'action'">
+        <span>
+          <a-button type="link" size="small" @click="onHandleEdit(record)">
+            编辑
+          </a-button>
+          <a-divider type="vertical" />
+          <a-popconfirm
+            placement="bottomRight"
+            title="确定删除该用户吗？"
+            ok-text="确定"
+            cancel-text="取消"
+            @confirm="onHandleDelete(record)"
+          >
+            <a-button type="link" size="small" danger>删除</a-button>
+          </a-popconfirm>
+        </span>
+      </template>
+    </template>
+  </a-table>
+
+  <!-- 新增弹窗 -->
+  <a-modal v-model:open="createModalOpen" title="新增用户" @ok="handleCreateOk">
+    <a-form ref="createFormRef" :model="createForm" :rules="createRules">
+      <a-form-item label="用户名" name="username">
+        <a-input v-model:value="createForm.username" />
+      </a-form-item>
+      <a-form-item label="密码" name="password">
+        <a-input-password v-model:value="createForm.password" />
+      </a-form-item>
+      <a-form-item label="角色" name="role_id">
+        <a-select v-model:value="createForm.role_id">
+          <a-select-option :value="0">管理员</a-select-option>
+          <a-select-option :value="1">普通用户</a-select-option>
+          <a-select-option :value="2">游客</a-select-option>
+        </a-select>
+      </a-form-item>
+      <a-form-item label="昵称" name="nickname">
+        <a-input v-model:value="createForm.nickname" />
+      </a-form-item>
+      <a-form-item label="邮箱" name="email">
+        <a-input v-model:value="createForm.email" />
+      </a-form-item>
+      <a-form-item label="性别" name="sex">
+        <a-select v-model:value="createForm.sex">
+          <a-select-option value="男">男</a-select-option>
+          <a-select-option value="女">女</a-select-option>
+        </a-select>
+      </a-form-item>
+      <a-form-item label="爱好" name="hobby">
+        <a-input v-model:value="createForm.hobby" />
+      </a-form-item>
+    </a-form>
+  </a-modal>
+
+  <!-- 编辑弹窗 -->
+  <a-modal v-model:open="editModalOpen" title="编辑用户" @ok="handleEditOk">
+    <a-form ref="editFormRef" :model="editForm" :rules="editRules">
+      <a-form-item label="用户名" name="username">
+        <a-input v-model:value="editForm.username" />
+      </a-form-item>
+      <a-form-item label="角色" name="role_id">
+        <a-select v-model:value="editForm.role_id">
+          <a-select-option :value="0">管理员</a-select-option>
+          <a-select-option :value="1">普通用户</a-select-option>
+          <a-select-option :value="2">游客</a-select-option>
+        </a-select>
+      </a-form-item>
+      <a-form-item label="昵称" name="nickname">
+        <a-input v-model:value="editForm.nickname" />
+      </a-form-item>
+      <a-form-item label="邮箱" name="email">
+        <a-input v-model:value="editForm.email" />
+      </a-form-item>
+      <a-form-item label="性别" name="sex">
+        <a-select v-model:value="editForm.sex">
+          <a-select-option value="男">男</a-select-option>
+          <a-select-option value="女">女</a-select-option>
+        </a-select>
+      </a-form-item>
+      <a-form-item label="爱好" name="hobby">
+        <a-input v-model:value="editForm.hobby" />
+      </a-form-item>
+    </a-form>
+  </a-modal>
 </template>
 
 <script lang="ts" setup>
 import { ref, onMounted } from "vue";
-import type { UserVO } from "@/types/user";
-import { getUserList } from "@/api/user";
-const userList = ref<UserVO[]>([]);
+import { message, type FormInstance } from "ant-design-vue";
+import {
+  createUserAPI,
+  editUserAPI,
+  getUserListAPI,
+  deleteUserAPI,
+} from "@/api/user";
+import type { CreateUserReq, EditUserReq, UserInfoVO } from "@/types/user";
+import { Code, roleNames, roleColors } from "@/global";
+import { useHeaderStore } from "@/store";
+import { PlusOutlined } from "@ant-design/icons-vue";
 
-const GetUserList = async ({
-  page_no,
-  page_size,
-}: {
-  page_no: number;
-  page_size: number;
-}) => {
-  const res = await getUserList({ page_no, page_size });
+const headerStore = useHeaderStore();
+const userList = ref<UserInfoVO[]>([]);
+const createModalOpen = ref(false);
+const createFormRef = ref<FormInstance>();
+const createForm = ref<CreateUserReq>({
+  username: "",
+  password: "",
+  nickname: "",
+  role_id: 0,
+  avatar: "",
+  email: "",
+  sex: "",
+  hobby: "",
+});
+const createRules = ref({
+  username: [{ required: true, message: "请输入用户名" }],
+  password: [{ required: true, message: "请输入密码" }],
+  role_id: [{ required: true, message: "请选择角色" }],
+});
+
+const editModalOpen = ref(false);
+const editFormRef = ref<FormInstance>();
+const editForm = ref<EditUserReq>({
+  id: "",
+  username: "",
+  nickname: "",
+  role_id: 0,
+  avatar: "",
+  email: "",
+  sex: "",
+  hobby: "",
+});
+const originalEditForm = ref<EditUserReq>({ ...editForm.value });
+const editRules = ref({
+  username: [{ required: true, message: "请输入用户名" }],
+  role_id: [{ required: true, message: "请选择角色" }],
+});
+
+const getUserList = async () => {
+  const res = await getUserListAPI({ page_no: 1, page_size: 10 });
   userList.value = res.data.list;
 };
 
+const onHandleCreate = () => {
+  createModalOpen.value = true;
+};
+const onHandleEdit = (record: UserInfoVO) => {
+  editForm.value = { ...record };
+  originalEditForm.value = { ...record };
+  editModalOpen.value = true;
+};
+const onHandleDelete = async (record: UserInfoVO) => {
+  const res = await deleteUserAPI(record.id);
+  if (res.code === Code.RequestSuccess) {
+    message.success(res.msg);
+    await getUserList();
+  }
+};
+const handleCreateOk = () => {
+  createFormRef.value?.validate().then(async () => {
+    const res = await createUserAPI(createForm.value);
+    if (res.code === Code.RequestSuccess) {
+      message.success(res.msg);
+      createModalOpen.value = false;
+      clearCreateForm();
+      await getUserList();
+    }
+  });
+};
+
+const clearCreateForm = () => {
+  createForm.value = {
+    username: "",
+    password: "",
+    nickname: "",
+    role_id: 0,
+    avatar: "",
+    email: "",
+    sex: "",
+    hobby: "",
+  };
+};
+const clearEditForm = () => {
+  editForm.value = {
+    id: "",
+    username: "",
+    nickname: "",
+    role_id: 0,
+    avatar: "",
+    email: "",
+    sex: "",
+    hobby: "",
+  };
+  originalEditForm.value = { ...editForm.value };
+};
+const handleEditOk = () => {
+  if (
+    JSON.stringify(editForm.value) === JSON.stringify(originalEditForm.value)
+  ) {
+    message.warning("没有修改");
+    return;
+  }
+  editFormRef.value?.validate().then(async () => {
+    const res = await editUserAPI(editForm.value);
+    message.success(res.msg);
+    editModalOpen.value = false;
+    clearEditForm();
+    await getUserList();
+  });
+};
+
 onMounted(() => {
-  GetUserList({ page_no: 1, page_size: 10 });
+  getUserList();
 });
+
+const columns = [
+  { title: "头像", dataIndex: "avatar", key: "avatar" },
+  { title: "用户名", dataIndex: "username", key: "username" },
+  { title: "昵称", dataIndex: "nickname", key: "nickname" },
+  { title: "角色", dataIndex: "role_id", key: "role_id" },
+  { title: "邮箱", dataIndex: "email", key: "email" },
+  { title: "操作", key: "action", width: 300, fixed: "right" },
+];
+
+headerStore.setRightHeaderActions([
+  {
+    label: "新增用户",
+    type: "primary",
+    icon: h(PlusOutlined),
+    onClick: onHandleCreate,
+  },
+]);
 </script>

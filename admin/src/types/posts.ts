@@ -3,11 +3,11 @@ export interface PostReq {
   content: string;
   author: string;
   description: string;
-  category: string;
+  category: string | undefined;
   tags: string[];
-  cover: string;
   is_top: boolean;
   is_publish: boolean;
+  thumbnail: string;
 }
 
 export interface PostUpdateReq extends PostReq {
@@ -24,7 +24,7 @@ export interface PostVO {
   description: string;
   category: string;
   tags: string[];
-  cover: string;
+  thumbnail: string;
   is_top: boolean;
   is_publish: boolean;
 }

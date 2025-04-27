@@ -14,7 +14,7 @@ type Post struct {
 	Author      string    // 作者
 	Category    string    // 分类
 	Tags        []string  // 标签
-	IsPublished bool      // 是否发布
+	IsPublish   bool      // 是否发布
 	IsTop       bool      // 是否置顶
 	Thumbnail   string    // 缩略图
 	LikeCount   int       // 点赞数
