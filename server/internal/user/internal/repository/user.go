@@ -118,4 +118,3 @@ func (r *UserRepository) DaoToDomainList(users []*dao.User) []*domain.User {
 	}
 	return domainUsers
 }
-

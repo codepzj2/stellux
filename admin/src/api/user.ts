@@ -16,9 +16,7 @@ export const userLoginAPI: (
 };
 
 // 通过access_token找到用户
-export const getUserInfoAPI: () => Promise<
-  Response<UserInfoVO>
-> = () => {
+export const getUserInfoAPI: () => Promise<Response<UserInfoVO>> = () => {
   return request.get("/admin-api/user/info");
 };
 

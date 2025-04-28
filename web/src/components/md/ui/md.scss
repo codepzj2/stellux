@@ -1,5 +1,9 @@
 @import "github-markdown-css/github-markdown.css";
 
+[id^="header-"] {
+  scroll-margin-top: 60px;
+}
+
 .markdown-body {
   color-scheme: light;
   --focus-outlineColor: #0969da;
@@ -57,6 +61,7 @@
 
 .dark .markdown-body {
   color-scheme: dark;
+  background-color: transparent;
   --focus-outlineColor: #1f6feb;
   --fgColor-default: #f0f6fc;
   --fgColor-muted: #9198a1;
@@ -116,7 +121,6 @@
   margin: 0;
   color: var(--fgColor-default);
   background-color: var(--bgColor-default);
-  font-family: sans-serif;
   font-size: 16px;
   line-height: 1.5;
   word-wrap: break-word;
@@ -131,9 +135,8 @@
 }
 
 .blockquote {
-  p{
+  p {
     margin: 0;
     padding: 0;
   }
 }
-

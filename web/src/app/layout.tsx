@@ -25,8 +25,8 @@ export default function RootLayout({
             <div className="h-screen flex flex-col">
               <div className="fixed top-0 left-0 right-0 z-50">
                 <NavBar />
-            </div>
-            <div className="mt-14">{children}</div>
+              </div>
+              <div className="mt-14">{children}</div>
             </div>
           </ProgressProvider>
         </ThemeProvider>

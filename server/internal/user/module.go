@@ -8,7 +8,7 @@ import (
 type (
 	Handler = web.UserHandler
 	Service = service.IUserService
-	Module   struct {
+	Module  struct {
 		Svc Service
 		Hdl *Handler
 	}

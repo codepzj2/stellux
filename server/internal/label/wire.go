@@ -3,7 +3,7 @@
 package label
 
 import (
-    "github.com/chenmingyong0423/go-mongox/v2"
+	"github.com/chenmingyong0423/go-mongox/v2"
 	"github.com/codepzj/stellux/server/internal/label/internal/repository"
 	"github.com/codepzj/stellux/server/internal/label/internal/repository/dao"
 	"github.com/codepzj/stellux/server/internal/label/internal/service"
@@ -15,7 +15,7 @@ var LabelProviders = wire.NewSet(web.NewLabelHandler, service.NewLabelService, r
 	wire.Bind(new(service.ILabelService), new(*service.LabelService)),
 	wire.Bind(new(repository.ILabelRepository), new(*repository.LabelRepository)),
 	wire.Bind(new(dao.ILabelDao), new(*dao.LabelDao)))
-	
+
 func InitLabelModule(mongoDB *mongox.Database) *Module {
 	panic(wire.Build(
 		LabelProviders,

@@ -7,8 +7,8 @@ import (
 	"github.com/codepzj/stellux/server/internal/ioc"
 	"github.com/codepzj/stellux/server/internal/user"
 
-	"github.com/codepzj/stellux/server/internal/post"
 	"github.com/codepzj/stellux/server/internal/label"
+	"github.com/codepzj/stellux/server/internal/post"
 	"github.com/google/wire"
 )
 

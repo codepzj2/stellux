@@ -7,7 +7,6 @@ import (
 	"github.com/codepzj/stellux/server/internal/label/internal/repository"
 )
 
-
 type ILabelService interface {
 	Create(ctx context.Context, label *domain.Label) error
 	Update(ctx context.Context, id string, label *domain.Label) error

@@ -8,7 +8,7 @@ import (
 type (
 	Handler = web.PostHandler
 	Service = service.IPostService
-	Module   struct {
+	Module  struct {
 		Svc Service
 		Hdl *Handler
 	}

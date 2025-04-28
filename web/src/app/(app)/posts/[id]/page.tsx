@@ -2,12 +2,12 @@ import { Separator } from "@/components/ui/separator";
 import { Book, Clock } from "lucide-react";
 
 import request from "@/utils/request";
-import Md from "@/components/markdown";
-import Toc from "@/components/toc";
+import Md from "@/components/md";
 import { getTableOfContents } from "@/lib/toc";
 
 import { timeAgo, readTime } from "@/utils/time";
 import { PostVO } from "@/types/posts";
+import TocButton from "@/components/button/toc-button";
 
 export default async function PostPage({
   params,
@@ -16,15 +16,15 @@ export default async function PostPage({
 }) {
   const { id } = await params;
   const post = await request.get<PostVO>(`/post/${id}`);
-  console.log(post);
   const { data } = post;
   const { words, minutes } = readTime(data.content);
   const toc = await getTableOfContents(data.content);
 
   return (
-    <div className="flex justify-center gap-6 p-6 my-4 max-w-[1200px] mx-auto">
-      {/* 文章内容区域 */}
-      <div className="max-w-[850px] w-full">
+    <div className="relative p-6 my-4 max-w-screen-xl mx-auto">
+      <TocButton className="fixed right-4 top-1/2 -translate-y-1/2" toc={toc} />
+      {/* 主内容区 */}
+      <div className="max-w-[700px] w-full mx-auto">
         <h1 className="text-4xl font-bold my-4">{data.title}</h1>
         <div className="h-4 flex justify-start items-center gap-3 text-sm text-gray-500">
           <span className="text-gray-700 dark:text-slate-400">
@@ -42,12 +42,7 @@ export default async function PostPage({
         <Md content={data.content} />
       </div>
 
-      {/* 目录（TOC）固定在右侧 */}
-      {toc && (
-        <div className="hidden lg:block w-[200px] sticky top-32 h-fit">
-          <Toc toc={toc} />
-        </div>
-      )}
+      {/* 目录（固定在右上角） */}
     </div>
   );
 }

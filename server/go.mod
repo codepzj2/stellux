@@ -3,7 +3,7 @@ module github.com/codepzj/stellux/server
 go 1.24
 
 require (
-	github.com/casbin/casbin/v2 v2.104.0
+	github.com/casbin/casbin/v2 v2.105.0
 	github.com/casbin/mongodb-adapter/v3 v3.7.0
 	github.com/chenmingyong0423/go-mongox/v2 v2.5.1
 	github.com/gin-gonic/gin v1.10.0
@@ -29,7 +29,7 @@ require (
 	github.com/casbin/govaluate v1.3.0 // indirect
 	github.com/chenmingyong0423/gkit v0.6.0
 	github.com/cloudwego/base64x v0.1.5 // indirect
-	github.com/gabriel-vasile/mimetype v1.4.8 // indirect
+	github.com/gabriel-vasile/mimetype v1.4.9 // indirect
 	github.com/gin-contrib/sse v1.1.0 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect

@@ -8,7 +8,7 @@ import (
 type (
 	Handler = web.LabelHandler
 	Service = service.ILabelService
-	Module   struct {
+	Module  struct {
 		Svc Service
 		Hdl *Handler
 	}

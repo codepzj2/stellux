@@ -22,7 +22,7 @@ type PageVO[T any] struct {
 	List      []*T  `json:"list"`
 }
 
-func ToPageVO[T any](pageNo int64, pageSize int64, totalCount int64,list []*T) *PageVO[T] {
+func ToPageVO[T any](pageNo int64, pageSize int64, totalCount int64, list []*T) *PageVO[T] {
 	return &PageVO[T]{
 		Page: Page{
 			PageNo:   pageNo,

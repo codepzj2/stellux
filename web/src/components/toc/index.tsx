@@ -1,8 +1,14 @@
 "use client";
 
-import TocSimple from "@/components/toc/ui/toc";
+import Toc from "./ui/toc";
 import { TableOfContents } from "@/lib/toc";
 
-export default function Toc({ toc }: { toc: TableOfContents }) {
-  return <TocSimple toc={toc} />;
-}
+export default ({
+  toc,
+  className,
+}: {
+  toc: TableOfContents;
+  className?: string;
+}) => {
+  return <Toc toc={toc} className={className} />;
+};

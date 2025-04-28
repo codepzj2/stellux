@@ -68,7 +68,11 @@
 
         <a-col :span="12">
           <a-form-item label="标签" name="tags">
-            <a-select mode="multiple" v-model:value="post.tags" placeholder="请选择标签">
+            <a-select
+              mode="multiple"
+              v-model:value="post.tags"
+              placeholder="请选择标签"
+            >
               <a-select-option v-for="t in tagsType" :key="t.id" :value="t.id">
                 {{ t.name }}
               </a-select-option>

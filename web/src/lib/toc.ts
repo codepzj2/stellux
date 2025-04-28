@@ -25,7 +25,7 @@ interface Items {
   items?: Item[];
 }
 
-function getItems(node, current): Items {
+function getItems(node, current, level = 1): Items {
   if (!node) {
     return {};
   }
@@ -46,14 +46,19 @@ function getItems(node, current): Items {
   }
 
   if (node.type === "list") {
-    current.items = node.children.map(i => getItems(i, {}));
+    // 如果当前是列表，递归获取列表项
+    if (level >= 3) {
+      return current; // 超过三级，停止递归
+    }
+
+    current.items = node.children.map(i => getItems(i, {}, level + 1));
 
     return current;
   } else if (node.type === "listItem") {
-    const heading = getItems(node.children[0], {});
+    const heading = getItems(node.children[0], {}, level);
 
     if (node.children.length > 1) {
-      getItems(node.children[1], heading);
+      getItems(node.children[1], heading, level);
     }
 
     return heading;
@@ -76,7 +81,7 @@ const updateUrlsWithIncrement = (items, counter = { count: 1 }) => {
 
 const getToc = () => (node, file) => {
   const table = toc(node);
-  const items = getItems(table.map, {});
+  const items = getItems(table.map, {}, 1); // 从一级开始递归
 
   file.data = updateUrlsWithIncrement(items.items);
 };

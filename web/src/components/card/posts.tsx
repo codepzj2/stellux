@@ -21,7 +21,7 @@ export default function PostsCard({ post }: { post: IPostCard }) {
 
   return (
     <Card
-      className="w-full py-4 cursor-pointer hover:shadow-xl dark:hover:-translate-y-1 active:bg-gray-300 dark:active:bg-gray-800"
+      className="w-full py-6 cursor-pointer transition-shadow hover:shadow-xl active:scale-95"
       onClick={() => {
         router.push(`/posts/${post.id}`);
       }}
@@ -29,7 +29,7 @@ export default function PostsCard({ post }: { post: IPostCard }) {
       <CardContent className="flex flex-row-reverse items-center gap-4">
         <div className="w-[108px] h-[84px] relative hidden md:block">
           <Image
-            src={post.cover || NotFoundPng}
+            src={post.thumbnail || NotFoundPng}
             alt={post.title}
             fill
             className="border-1 border-gray-200 rounded-sm object-cover"
@@ -51,7 +51,7 @@ export default function PostsCard({ post }: { post: IPostCard }) {
                 <FolderOpen className="w-4 h-4 mr-1" />
                 {post.category}
               </Badge>
-              {post.tags?.map((tag) => (
+              {post.tags?.map(tag => (
                 <Badge variant="secondary" key={tag}>
                   <Tag className="w-4 h-4 mr-1" />
                   {tag}

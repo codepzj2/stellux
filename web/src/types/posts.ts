@@ -7,7 +7,7 @@ export interface PostVO {
   author: string;
   category: string;
   tags: string[];
-  cover: string;
+  thumbnail: string;
   is_top: boolean;
   is_publish: boolean;
 }
@@ -19,7 +19,7 @@ export interface IPostCard {
   description: string;
   created_at: string;
   author: string;
-  cover?: string;
+  thumbnail?: string;
   category?: string;
   tags?: string[];
 }
