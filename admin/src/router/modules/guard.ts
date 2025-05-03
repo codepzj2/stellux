@@ -1,7 +1,7 @@
 // 路由守卫
 import { routes } from "./router";
 import type { Router, RouteRecordRaw } from "vue-router";
-import { useHeaderStore, useSidebarStore, useTabStore } from "@/store";
+import {  useSidebarStore, useTabStore } from "@/store";
 const createRouterGuard = (router: Router) => {
   // 监听标签栏
   router.beforeEach((to, _from, next) => {
@@ -76,12 +76,6 @@ const createRouterGuard = (router: Router) => {
     }
 
     next();
-  });
-
-  // 监听路由变化
-  router.afterEach(() => {
-    const headerStore = useHeaderStore();
-    headerStore.clearHeaderActions();
   });
 };
 

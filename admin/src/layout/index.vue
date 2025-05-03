@@ -1,43 +1,45 @@
 <template>
-  <a-layout class="h-screen flex flex-col overflow-hidden">
+  <a-layout class="h-screen flex flex-col">
     <a-layout-sider
-      class="hidden"
-      :class="{
-        'md:block': !sidebarStore.collapse, // 根据 sidebarStore 的 collapse 状态动态显示
-      }"
-      width="224"
+      width="200"
+      :trigger="null"
+      collapsible
+      v-model:collapsed="sidebarStore.collapse"
     >
       <!-- 侧边栏内容 -->
-      <SideBar />
+      <SideBar :collapsed="sidebarStore.collapse" />
     </a-layout-sider>
 
-    <a-layout class="flex-1 overflow-scroll">
-      <a-layout-header class="!h-12 !px-4">
+    <a-layout class="flex-1 mb-0">
+      <a-layout-header class="!h-12 !px-0">
         <Header />
       </a-layout-header>
-      <div class="h-[1px]"></div>
-      <a-layout class="mt-2 mx-2 my-0">
+      <a-layout class="!py-0 mt-2 mx-2">
         <a-layout-content>
           <Main class="h-full overflow-y-scroll"></Main>
         </a-layout-content>
       </a-layout>
     </a-layout>
   </a-layout>
-  <!-- 侧边栏抽屉 -->
-  <SiderBarDrawer />
 </template>
 
 <script setup lang="ts">
-import SideBar from "./components/SideBar.vue";
-import SiderBarDrawer from "./components/SiderBarDrawer.vue";
-import Header from "./components/Header.vue";
-import Main from "./components/Main.vue";
+import SideBar from "./sidebar/index.vue";
+import Header from "./header/index.vue";
+import Main from "./main/index.vue";
 import { useSidebarStore, useUserStore } from "@/store";
 import { getUserInfoAPI } from "@/api/user";
-const sidebarStore = useSidebarStore();
+import { useMobile } from "@/hooks/useMobile";
+
+// 判断是否为移动端设备
+const isMobile = ref(useMobile());
 
 const userStore = useUserStore();
 const { userInfo } = storeToRefs(userStore);
+
+const sidebarStore = useSidebarStore();
+// 加载界面时初始化侧边栏状态
+sidebarStore.setCollapse(isMobile.value);
 
 // 加载界面时初始化用户信息
 const getUserInfo = async () => {

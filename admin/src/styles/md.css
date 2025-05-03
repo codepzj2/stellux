@@ -1,0 +1,126 @@
+@import "bytemd/dist/index.min.css";
+
+.bytemd {
+  height: 100vh;
+}
+
+/* ByteMD editor overrides	*/
+.dark .bytemd {
+  @apply !bg-zinc-900 !text-white !border-zinc-800 rounded-lg;
+}
+
+.dark .bytemd-toolbar {
+  @apply !bg-zinc-800 !border-zinc-800 rounded-t-lg;
+}
+
+/* 空两格 */
+.CodeMirror-cursor {
+  @apply !pl-4 !border-l-1 !border-blue-500;
+}
+
+.dark .CodeMirror {
+  @apply !bg-zinc-900 !text-white;
+}
+
+.dark .bytemd-split {
+  @apply !border-l-zinc-800;
+}
+
+.dark .bytemd-status {
+  @apply !border-t-zinc-800;
+}
+
+.dark .bytemd-toolbar-icon {
+  @apply hover:!bg-zinc-700 transition-all duration-100;
+}
+
+.bytemd-editor {
+  .cm-header {
+    color: #569cd6;
+    font-weight: bold;
+  }
+  .cm-s-default {
+    .cm-quote {
+      color: #6a9955;
+    }
+    .cm-link {
+      color: #3794ff;
+      text-decoration: underline;
+    }
+    .cm-strong {
+      font-weight: bold;
+    }
+    .cm-em {
+      font-style: italic;
+    }
+    .cm-strikethrough {
+      text-decoration: line-through;
+    }
+
+    /* 语法高亮色 */
+    .cm-keyword {
+      color: #c586c0;
+    }
+    .cm-atom {
+      color: #dcdcaa;
+    }
+    .cm-number {
+      color: #b5cea8;
+    }
+    .cm-def {
+      color: #9cdcfe;
+    }
+    .cm-variable-2 {
+      color: #6bbead;
+    }
+    .cm-variable-3,
+    .cm-type {
+      color: #4fc1ff;
+    }
+    .cm-comment {
+      color: #6a9955;
+    }
+    .cm-string {
+      color: #ce9178;
+    }
+    .cm-string-2 {
+      color: #d7ba7d;
+    }
+    .cm-meta,
+    .cm-qualifier {
+      color: #c8c8c8;
+    }
+    .cm-builtin {
+      color: #dcdcaa;
+    }
+    .cm-bracket,
+    .cm-hr {
+      color: #d4d4d4;
+    }
+    .cm-tag {
+      color: #569cd6;
+    }
+    .cm-attribute {
+      color: #9cdcfe;
+    }
+    .cm-error,
+    .cm-invalidchar {
+      color: #f44747;
+    }
+  }
+}
+
+.markdown-body {
+  &>pre {
+    @apply !p-0;
+  }
+  @apply !bg-white !text-black;
+  @import "github-markdown-css/github-markdown-light.css";
+  @import "highlight.js/styles/atom-one-light.css";
+}
+
+.dark .markdown-body {
+  @apply !bg-zinc-900 !text-white;
+  @import "github-markdown-css/github-markdown-dark.css";
+  @import "highlight.js/styles/atom-one-dark.css";
+}

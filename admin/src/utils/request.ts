@@ -2,8 +2,8 @@ import axios from "axios";
 import { useUserStore } from "@/store";
 import { message } from "ant-design-vue";
 import { Code } from "@/global";
-import { backToLogin } from "./clear";
-
+import { clearStore } from "./clear";
+import router from "@/router";
 const baseURL = import.meta.env.VITE_API_URL;
 
 const request = axios.create({
@@ -45,11 +45,15 @@ request.interceptors.response.use(
           response.config.headers["Authorization"] = `Bearer ${newAccessToken}`;
           return request(response.config);
         } catch (refreshError) {
-          backToLogin();
+          clearStore();
+          message.warning("登录已过期，请重新登录");
+          router.push("/login");
           return Promise.reject(refreshError);
         }
       } else {
-        backToLogin();
+        clearStore();
+        message.warning("令牌已过期，请重新登录");
+        router.push("/login");
         return Promise.reject(new Error("access_token已过期,请重新登录"));
       }
     }

@@ -21,7 +21,8 @@
     "src/**/*.tsx",
     "src/**/*.vue",
     "src/shims-vue.d.ts",
-    "./auto-imports.d.ts" // 自动导入vue,vue-router,pinia
-, "src/lib/editor.js"  ],
+    "./auto-imports.d.ts", // 自动导入vue,vue-router,pinia
+    "src/lib/editor.js"
+  ],
   "exclude": ["node_modules"]
 }

@@ -37,6 +37,11 @@ export const useTabStore = defineStore(
       router.push({ name: key });
     };
 
+    const ResetTabStore = () => {
+      panes.value = [{ title: "仪表盘", key: "Dashboard", closable: false }];
+      activeKey.value = "Dashboard";
+    };
+
     return {
       panes,
       activeKey,
@@ -44,6 +49,7 @@ export const useTabStore = defineStore(
       removeTab, // 删除tab
       editTab, // 编辑tab
       changeTab, // 切换tab
+      ResetTabStore, // 重置tab
     };
   },
   {

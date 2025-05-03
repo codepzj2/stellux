@@ -62,8 +62,6 @@ import {
 } from "@/api/label";
 import type { CreateLabelReq, EditLabelReq, LabelVO } from "@/types/label";
 import { Code } from "@/global";
-import { PlusOutlined } from "@ant-design/icons-vue";
-import { useHeaderStore } from "@/store";
 const labelList = ref<LabelVO[]>([]);
 const createModalOpen = ref(false);
 const createFormRef = ref<FormInstance>();
@@ -75,7 +73,6 @@ const createRules = ref({
   label_type: [{ required: true, message: "请输入标签类型" }],
   name: [{ required: true, message: "请输入标签名称" }],
 });
-const headerStore = useHeaderStore();
 
 const editModalOpen = ref(false);
 const editFormRef = ref<FormInstance>();
@@ -164,13 +161,4 @@ const columns = [
   { title: "标签名称", dataIndex: "name", key: "name" },
   { title: "操作", key: "action", width: 300, fixed: "right" },
 ];
-
-headerStore.setRightHeaderActions([
-  {
-    label: "新增标签",
-    type: "primary",
-    onClick: onHandleCreate,
-    icon: h(PlusOutlined),
-  },
-]);
 </script>

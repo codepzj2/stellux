@@ -106,10 +106,7 @@ import {
 } from "@/api/user";
 import type { CreateUserReq, EditUserReq, UserInfoVO } from "@/types/user";
 import { Code, roleNames, roleColors } from "@/global";
-import { useHeaderStore } from "@/store";
-import { PlusOutlined } from "@ant-design/icons-vue";
 
-const headerStore = useHeaderStore();
 const userList = ref<UserInfoVO[]>([]);
 const createModalOpen = ref(false);
 const createFormRef = ref<FormInstance>();
@@ -232,13 +229,4 @@ const columns = [
   { title: "邮箱", dataIndex: "email", key: "email" },
   { title: "操作", key: "action", width: 300, fixed: "right" },
 ];
-
-headerStore.setRightHeaderActions([
-  {
-    label: "新增用户",
-    type: "primary",
-    icon: h(PlusOutlined),
-    onClick: onHandleCreate,
-  },
-]);
 </script>

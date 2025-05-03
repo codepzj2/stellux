@@ -1,3 +1,11 @@
+<script setup lang="ts">
+defineOptions({
+  name: "index",
+});
+</script>
+
 <template>
-  <div>测试</div>
+  <div>test</div>
 </template>
+
+<style lang="scss" scoped></style>

@@ -1,40 +1,46 @@
+import { theme } from "ant-design-vue";
+
 export const useSystemStore = defineStore(
   "system",
   () => {
-    const darkMode = ref(false);
-    const spinning = ref(false);
-    const loading = ref(false);
+    const themeColor = ref("#1677FF");
+    const themeMode = ref("light");
+
+    const appTheme = computed(() => {
+      return {
+        algorithm: themeMode.value === "dark" ? theme.darkAlgorithm : theme.defaultAlgorithm,
+        token: {
+          colorPrimary: themeColor.value,
+          fontSize: 15,
+          fontFamily: "var(--font-sans)",
+        },
+      };
+    });
 
     // 设置暗黑模式
-    const setDarkMode = (value: boolean) => {
-      darkMode.value = value;
+    const setThemeMode = (value: string) => {
+      themeMode.value = value;
     };
 
-    // 设置页面加载状态
-    const setSpinning = (value: boolean) => {
-      spinning.value = value;
+    const setThemeColor = (value: string) => {
+      themeColor.value = value;
     };
 
-    // 设置骨架屏加载状态
-    const setSkeleton = (value: boolean) => {
-      loading.value = value;
+    const ResetSystemStore = () => {
+      themeMode.value = "light";
+      themeColor.value = "#1677FF";
     };
 
     return {
-      darkMode,
-      setDarkMode,
-      spinning,
-      setSpinning,
-      loading,
-      setSkeleton,
+      themeMode,
+      setThemeMode,
+      themeColor,
+      setThemeColor,
+      appTheme,
+      ResetSystemStore,
     };
   },
   {
-    persist: [
-      {
-        pick: ["darkMode"],
-        storage: localStorage,
-      },
-    ],
+    persist: true,
   }
 );

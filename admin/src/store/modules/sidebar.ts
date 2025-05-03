@@ -17,6 +17,12 @@ export const useSidebarStore = defineStore(
       collapse.value = value;
     }
 
+    const ResetSidebarStore = () => {
+      selectedKeys.value = [];
+      openKeys.value = [];
+      collapse.value = false;
+    };
+
     return {
       selectedKeys,
       openKeys,
@@ -24,6 +30,7 @@ export const useSidebarStore = defineStore(
       setOpenKeys,
       collapse,
       setCollapse,
+      ResetSidebarStore,
     };
   },
   {

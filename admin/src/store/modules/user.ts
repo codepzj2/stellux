@@ -27,6 +27,12 @@ export const useUserStore = defineStore(
       refresh_token.value = null;
     };
 
+    const ResetUserStore = () => {
+      userInfo.value = null;
+      access_token.value = null;
+      refresh_token.value = null;
+    };
+
     return {
       access_token,
       refresh_token,
@@ -36,6 +42,7 @@ export const useUserStore = defineStore(
       clearAccessToken,
       clearRefreshToken,
       setUserInfo,
+      ResetUserStore,
     };
   },
   {

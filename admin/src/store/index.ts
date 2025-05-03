@@ -2,7 +2,6 @@ import { useSidebarStore } from "./modules/sidebar";
 import { useTabStore } from "./modules/tab";
 import { useSystemStore } from "./modules/system";
 import { useUserStore } from "./modules/user";
-import { useHeaderStore } from "./modules/header";
 import { createPinia } from "pinia";
 import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 
@@ -16,7 +15,6 @@ export {
   useTabStore,
   useSystemStore,
   useUserStore,
-  useHeaderStore,
 };
 
 export default pinia;

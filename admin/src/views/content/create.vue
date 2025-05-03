@@ -129,7 +129,6 @@
 <script lang="ts" setup>
 import Editor from "@/lib/editor";
 import zhHans from "bytemd/locales/zh_Hans.json";
-import "./md.scss";
 
 import gfm from "@bytemd/plugin-gfm";
 import gemoji from "@bytemd/plugin-gemoji";
@@ -150,13 +149,8 @@ import type { FormInstance } from "ant-design-vue";
 import type { PostReq } from "@/types/posts";
 import type { LabelVO } from "@/types/label";
 import { Code } from "@/global";
-import { useHeaderStore } from "@/store";
-import { useRouter } from "vue-router";
 import { getLabelListAPI } from "@/api/label";
 defineOptions({ name: "CreateContent" });
-
-const router = useRouter();
-const headerStore = useHeaderStore();
 
 const mdPlugins = ref([
   gfm(),
@@ -235,17 +229,4 @@ const onSubmit = async () => {
     console.error("验证失败", e);
   }
 };
-
-onActivated(() => {
-  headerStore.setRightHeaderActions([
-    {
-      label: "分类",
-      onClick: () => router.push({ name: "LabelCategory" }),
-    },
-    {
-      label: "标签",
-      onClick: () => router.push({ name: "LabelTag" }),
-    },
-  ]);
-});
 </script>

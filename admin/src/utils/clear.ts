@@ -1,11 +1,13 @@
-import { message } from "ant-design-vue";
+import {
+  useUserStore,
+  useSystemStore,
+  useSidebarStore,
+  useTabStore,
+} from "@/store";
 
-export const clearStorage = () => {
-  localStorage.clear();
-};
-
-export const backToLogin = () => {
-  clearStorage();
-  window.location.href = "/login";
-  message.warn("请重新登录");
+export const clearStore = () => {
+  useSystemStore().ResetSystemStore();
+  useSidebarStore().ResetSidebarStore();
+  useTabStore().ResetTabStore();
+  useUserStore().ResetUserStore();
 };
