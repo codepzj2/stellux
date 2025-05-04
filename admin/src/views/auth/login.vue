@@ -6,7 +6,11 @@
       <div class="flex justify-center">
         <img
           class="my-6 w-32"
-          :src="systemStore.darkMode ? '/logo-dark.png' : '/logo-light.png'"
+          :src="
+            systemStore.themeMode === 'dark'
+              ? '/logo-dark.png'
+              : '/logo-light.png'
+          "
         />
       </div>
       <a-form

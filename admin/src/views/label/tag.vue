@@ -1,54 +1,60 @@
 <template>
-  <a-table :columns="columns" :data-source="labelList">
-    <template #bodyCell="{ column, record }">
-      <template v-if="column.key === 'name'">
-        <a-tag>
-          {{ record.name }}
-        </a-tag>
+  <div>
+    <a-table :columns="columns" :data-source="labelList">
+      <template #bodyCell="{ column, record }">
+        <template v-if="column.key === 'name'">
+          <a-tag>
+            {{ record.name }}
+          </a-tag>
+        </template>
+        <template v-else-if="column.key === 'action'">
+          <span>
+            <a-button size="small" type="link" @click="onHandleEdit(record)">
+              编辑
+            </a-button>
+            <a-divider type="vertical" />
+            <a-popconfirm
+              placement="bottomRight"
+              title="确定删除该标签吗？"
+              ok-text="确定"
+              cancel-text="取消"
+              @confirm="onHandleDelete(record)"
+            >
+              <a-button size="small" type="link" danger>删除</a-button>
+            </a-popconfirm>
+          </span>
+        </template>
       </template>
-      <template v-else-if="column.key === 'action'">
-        <span>
-          <a-button size="small" type="link" @click="onHandleEdit(record)">
-            编辑
-          </a-button>
-          <a-divider type="vertical" />
-          <a-popconfirm
-            placement="bottomRight"
-            title="确定删除该标签吗？"
-            ok-text="确定"
-            cancel-text="取消"
-            @confirm="onHandleDelete(record)"
-          >
-            <a-button size="small" type="link" danger>删除</a-button>
-          </a-popconfirm>
-        </span>
-      </template>
-    </template>
-  </a-table>
+    </a-table>
 
-  <!-- 新增弹窗 -->
-  <a-modal v-model:open="createModalOpen" title="新增标签" @ok="handleCreateOk">
-    <a-form ref="createFormRef" :model="createForm" :rules="createRules">
-      <a-form-item label="标签类型" name="label_type">
-        <a-input disabled v-model:value="createForm.label_type" />
-      </a-form-item>
-      <a-form-item label="标签名称" name="name">
-        <a-input v-model:value="createForm.name" />
-      </a-form-item>
-    </a-form>
-  </a-modal>
+    <!-- 新增弹窗 -->
+    <a-modal
+      v-model:open="createModalOpen"
+      title="新增标签"
+      @ok="handleCreateOk"
+    >
+      <a-form ref="createFormRef" :model="createForm" :rules="createRules">
+        <a-form-item label="标签类型" name="label_type">
+          <a-input disabled v-model:value="createForm.label_type" />
+        </a-form-item>
+        <a-form-item label="标签名称" name="name">
+          <a-input v-model:value="createForm.name" />
+        </a-form-item>
+      </a-form>
+    </a-modal>
 
-  <!-- 编辑弹窗 -->
-  <a-modal v-model:open="editModalOpen" title="编辑标签" @ok="handleEditOk">
-    <a-form ref="editFormRef" :model="editForm" :rules="editRules">
-      <a-form-item label="标签类型" name="label_type">
-        <a-input disabled v-model:value="editForm.label_type" />
-      </a-form-item>
-      <a-form-item label="标签名称" name="name">
-        <a-input v-model:value="editForm.name" />
-      </a-form-item>
-    </a-form>
-  </a-modal>
+    <!-- 编辑弹窗 -->
+    <a-modal v-model:open="editModalOpen" title="编辑标签" @ok="handleEditOk">
+      <a-form ref="editFormRef" :model="editForm" :rules="editRules">
+        <a-form-item label="标签类型" name="label_type">
+          <a-input disabled v-model:value="editForm.label_type" />
+        </a-form-item>
+        <a-form-item label="标签名称" name="name">
+          <a-input v-model:value="editForm.name" />
+        </a-form-item>
+      </a-form>
+    </a-modal>
+  </div>
 </template>
 
 <script lang="ts" setup>

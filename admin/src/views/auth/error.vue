@@ -1,9 +1,11 @@
 <template>
-  <a-result status="404" :title="title" :sub-title="subTitle">
-    <template #extra>
-      <a-button type="primary" @click="$router.push('/')">返回首页</a-button>
-    </template>
-  </a-result>
+  <div class="flex items-center justify-center h-screen w-full">
+    <a-result status="404" :title="title" :sub-title="subTitle">
+      <template #extra>
+        <a-button type="primary" @click="$router.push('/')">返回首页</a-button>
+      </template>
+    </a-result>
+  </div>
 </template>
 
 <script setup lang="ts">

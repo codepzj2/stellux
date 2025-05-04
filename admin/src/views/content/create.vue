@@ -1,133 +1,140 @@
 <template>
-  <div class="my-2 mr-2 flex items-center justify-between">
-    <div class="w-[300px] md:w-[50%]">
-      <a-input
-        v-model:value="post.title"
-        placeholder="请输入标题"
-        addon-before="标题"
-        show-count
-        :maxlength="50"
+  <div>
+    <div class="my-2 mr-2 flex items-center justify-between">
+      <div class="w-[300px] md:w-[50%]">
+        <a-input
+          v-model:value="post.title"
+          placeholder="请输入标题"
+          addon-before="标题"
+          show-count
+          :maxlength="50"
+        />
+      </div>
+      <a-button type="primary" @click="onHandleCreate">发布文章</a-button>
+    </div>
+
+    <div class="md-editor markdown-body">
+      <Editor
+        :value="post.content"
+        :locale="zhHans"
+        :plugins="mdPlugins"
+        @change="post.content = $event"
       />
     </div>
-    <a-button type="primary" @click="onHandleCreate">发布文章</a-button>
-  </div>
 
-  <div class="md-editor markdown-body">
-    <Editor
-      :value="post.content"
-      :locale="zhHans"
-      :plugins="mdPlugins"
-      @change="post.content = $event"
-    />
-  </div>
+    <a-drawer
+      title="发布文章"
+      :open="open"
+      :width="width < 768 ? '100%' : '768px'"
+      :body-style="{ paddingBottom: '80px' }"
+      :footer-style="{ textAlign: 'right' }"
+      @close="open = false"
+    >
+      <a-form ref="postFormRef" :model="post" :rules="rules" layout="vertical">
+        <a-row :gutter="16">
+          <a-col :span="12">
+            <a-form-item label="标题" name="title">
+              <a-input
+                v-model:value="post.title"
+                placeholder="请输入标题"
+                :maxlength="50"
+              />
+            </a-form-item>
+          </a-col>
+          <a-col :span="12">
+            <a-form-item label="作者" name="author">
+              <a-input
+                v-model:value="post.author"
+                disabled
+                placeholder="作者昵称"
+              />
+            </a-form-item>
+          </a-col>
+        </a-row>
 
-  <a-drawer
-    title="发布文章"
-    :open="open"
-    :width="width < 768 ? '100%' : '768px'"
-    :body-style="{ paddingBottom: '80px' }"
-    :footer-style="{ textAlign: 'right' }"
-    @close="open = false"
-  >
-    <a-form ref="postFormRef" :model="post" :rules="rules" layout="vertical">
-      <a-row :gutter="16">
-        <a-col :span="12">
-          <a-form-item label="标题" name="title">
-            <a-input
-              v-model:value="post.title"
-              placeholder="请输入标题"
-              :maxlength="50"
-            />
-          </a-form-item>
-        </a-col>
-        <a-col :span="12">
-          <a-form-item label="作者" name="author">
-            <a-input
-              v-model:value="post.author"
-              disabled
-              placeholder="作者昵称"
-            />
-          </a-form-item>
-        </a-col>
-      </a-row>
+        <a-row :gutter="16">
+          <a-col :span="12">
+            <a-form-item label="分类" name="category">
+              <a-select v-model:value="post.category" placeholder="请选择分类">
+                <a-select-option
+                  v-for="c in categoriesType"
+                  :key="c.id"
+                  :value="c.id"
+                >
+                  {{ c.name }}
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
 
-      <a-row :gutter="16">
-        <a-col :span="12">
-          <a-form-item label="分类" name="category">
-            <a-select v-model:value="post.category" placeholder="请选择分类">
-              <a-select-option
-                v-for="c in categoriesType"
-                :key="c.id"
-                :value="c.id"
+          <a-col :span="12">
+            <a-form-item label="标签" name="tags">
+              <a-select
+                mode="multiple"
+                v-model:value="post.tags"
+                placeholder="请选择标签"
               >
-                {{ c.name }}
-              </a-select-option>
-            </a-select>
-          </a-form-item>
-        </a-col>
+                <a-select-option
+                  v-for="t in tagsType"
+                  :key="t.id"
+                  :value="t.id"
+                >
+                  {{ t.name }}
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+        </a-row>
 
-        <a-col :span="12">
-          <a-form-item label="标签" name="tags">
-            <a-select
-              mode="multiple"
-              v-model:value="post.tags"
-              placeholder="请选择标签"
-            >
-              <a-select-option v-for="t in tagsType" :key="t.id" :value="t.id">
-                {{ t.name }}
-              </a-select-option>
-            </a-select>
-          </a-form-item>
-        </a-col>
-      </a-row>
+        <a-row :gutter="16">
+          <a-col :span="12">
+            <a-form-item label="封面" name="thumbnail">
+              <a-input
+                v-model:value="post.thumbnail"
+                placeholder="请输入封面地址"
+              />
+            </a-form-item>
+          </a-col>
+        </a-row>
 
-      <a-row :gutter="16">
-        <a-col :span="12">
-          <a-form-item label="封面" name="thumbnail">
-            <a-input
-              v-model:value="post.thumbnail"
-              placeholder="请输入封面地址"
-            />
-          </a-form-item>
-        </a-col>
-      </a-row>
+        <a-form-item label="描述" name="description">
+          <a-textarea
+            v-model:value="post.description"
+            placeholder="请输入描述"
+            :rows="2"
+          />
+        </a-form-item>
 
-      <a-form-item label="描述" name="description">
-        <a-textarea
-          v-model:value="post.description"
-          placeholder="请输入描述"
-          :rows="2"
-        />
-      </a-form-item>
+        <a-form-item label="内容" name="content">
+          <a-textarea
+            v-model:value="post.content"
+            placeholder="请输入内容"
+            :rows="8"
+          />
+        </a-form-item>
 
-      <a-form-item label="内容" name="content">
-        <a-textarea
-          v-model:value="post.content"
-          placeholder="请输入内容"
-          :rows="8"
-        />
-      </a-form-item>
+        <div class="flex items-center gap-2 my-4">
+          <span>发布</span>
+          <a-switch v-model:checked="post.is_publish" />
+          <a-divider type="vertical" />
+          <span>置顶</span>
+          <a-switch v-model:checked="post.is_top" />
+        </div>
+      </a-form>
 
-      <div class="flex items-center gap-2 my-4">
-        <span>发布</span>
-        <a-switch v-model:checked="post.is_publish" />
-        <a-divider type="vertical" />
-        <span>置顶</span>
-        <a-switch v-model:checked="post.is_top" />
-      </div>
-    </a-form>
-
-    <template #extra>
-      <a-space>
-        <a-button @click="open = false">取消</a-button>
-        <a-button type="primary" @click="onSubmit">提交</a-button>
-      </a-space>
-    </template>
-  </a-drawer>
+      <template #extra>
+        <a-space>
+          <a-button @click="open = false">取消</a-button>
+          <a-button type="primary" @click="onSubmit">提交</a-button>
+        </a-space>
+      </template>
+    </a-drawer>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import Editor from "@/lib/editor";
+// @ts-ignore
+import { Editor } from "@bytemd/vue-next";
 import zhHans from "bytemd/locales/zh_Hans.json";
 
 import gfm from "@bytemd/plugin-gfm";

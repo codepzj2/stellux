@@ -26,9 +26,10 @@ span {
 }
 
 /* 解决antd的动画问题 */
-#app {
+:root .ant-layout-sider,
+:root .ant-tabs,
+:root .ant-input-wrapper {
   transition-duration: 0s !important;
-
   * {
     transition-duration: 0s !important;
   }

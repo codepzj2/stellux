@@ -5,9 +5,7 @@ import Image from "next/image";
 import type { PostVO } from "@/types/posts";
 export default async function PostsListPage() {
   const posts = await getPostsList({ page_no: 1, page_size: 10 });
-  console.log(posts);
   const postsList = posts?.data?.list || [];
-  console.log(postsList);
   return (
     <div className="w-full md:w-4/5 max-w-screen-md mx-auto px-4 py-8 space-y-4">
       {postsList.length > 0 ? (

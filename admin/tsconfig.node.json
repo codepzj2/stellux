@@ -19,7 +19,7 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
-    "verbatimModuleSyntax": false
+    "verbatimModuleSyntax": true
   },
   "include": ["vite.config.ts"]
 }

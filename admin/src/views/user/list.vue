@@ -1,98 +1,107 @@
 <template>
-  <a-table :columns="columns" :data-source="userList">
-    <template #bodyCell="{ column, record }">
-      <template v-if="column.key === 'avatar'">
-        <a-avatar :src="record.avatar" />
+  <div>
+    <div class="flex justify-end items-center rounded-md px-4 py-2 my-2">
+      <a-button type="primary" @click="onHandleCreate">新增用户</a-button>
+    </div>
+    <a-table :columns="columns" :data-source="userList">
+      <template #bodyCell="{ column, record }">
+        <template v-if="column.key === 'avatar'">
+          <a-avatar :src="record.avatar" />
+        </template>
+        <template v-else-if="column.key === 'role_id'">
+          <a-tag :color="roleColors[record.role_id as keyof typeof roleColors]">
+            {{ roleNames[record.role_id as keyof typeof roleNames] }}
+          </a-tag>
+        </template>
+        <template v-else-if="column.key === 'action'">
+          <span>
+            <a-button type="link" size="small" @click="onHandleEdit(record)">
+              编辑
+            </a-button>
+            <a-divider type="vertical" />
+            <a-popconfirm
+              placement="bottomRight"
+              title="确定删除该用户吗？"
+              ok-text="确定"
+              cancel-text="取消"
+              @confirm="onHandleDelete(record)"
+            >
+              <a-button type="link" size="small" danger>删除</a-button>
+            </a-popconfirm>
+          </span>
+        </template>
       </template>
-      <template v-else-if="column.key === 'role_id'">
-        <a-tag :color="roleColors[record.role_id as keyof typeof roleColors]">
-          {{ roleNames[record.role_id as keyof typeof roleNames] }}
-        </a-tag>
-      </template>
-      <template v-else-if="column.key === 'action'">
-        <span>
-          <a-button type="link" size="small" @click="onHandleEdit(record)">
-            编辑
-          </a-button>
-          <a-divider type="vertical" />
-          <a-popconfirm
-            placement="bottomRight"
-            title="确定删除该用户吗？"
-            ok-text="确定"
-            cancel-text="取消"
-            @confirm="onHandleDelete(record)"
-          >
-            <a-button type="link" size="small" danger>删除</a-button>
-          </a-popconfirm>
-        </span>
-      </template>
-    </template>
-  </a-table>
+    </a-table>
 
-  <!-- 新增弹窗 -->
-  <a-modal v-model:open="createModalOpen" title="新增用户" @ok="handleCreateOk">
-    <a-form ref="createFormRef" :model="createForm" :rules="createRules">
-      <a-form-item label="用户名" name="username">
-        <a-input v-model:value="createForm.username" />
-      </a-form-item>
-      <a-form-item label="密码" name="password">
-        <a-input-password v-model:value="createForm.password" />
-      </a-form-item>
-      <a-form-item label="角色" name="role_id">
-        <a-select v-model:value="createForm.role_id">
-          <a-select-option :value="0">管理员</a-select-option>
-          <a-select-option :value="1">普通用户</a-select-option>
-          <a-select-option :value="2">游客</a-select-option>
-        </a-select>
-      </a-form-item>
-      <a-form-item label="昵称" name="nickname">
-        <a-input v-model:value="createForm.nickname" />
-      </a-form-item>
-      <a-form-item label="邮箱" name="email">
-        <a-input v-model:value="createForm.email" />
-      </a-form-item>
-      <a-form-item label="性别" name="sex">
-        <a-select v-model:value="createForm.sex">
-          <a-select-option value="男">男</a-select-option>
-          <a-select-option value="女">女</a-select-option>
-        </a-select>
-      </a-form-item>
-      <a-form-item label="爱好" name="hobby">
-        <a-input v-model:value="createForm.hobby" />
-      </a-form-item>
-    </a-form>
-  </a-modal>
+    <!-- 新增弹窗 -->
+    <a-modal
+      v-model:open="createModalOpen"
+      title="新增用户"
+      @ok="handleCreateOk"
+    >
+      <a-form ref="createFormRef" :model="createForm" :rules="createRules">
+        <a-form-item label="用户名" name="username">
+          <a-input v-model:value="createForm.username" />
+        </a-form-item>
+        <a-form-item label="密码" name="password">
+          <a-input-password v-model:value="createForm.password" />
+        </a-form-item>
+        <a-form-item label="角色" name="role_id">
+          <a-select v-model:value="createForm.role_id">
+            <a-select-option :value="0">管理员</a-select-option>
+            <a-select-option :value="1">普通用户</a-select-option>
+            <a-select-option :value="2">游客</a-select-option>
+          </a-select>
+        </a-form-item>
+        <a-form-item label="昵称" name="nickname">
+          <a-input v-model:value="createForm.nickname" />
+        </a-form-item>
+        <a-form-item label="邮箱" name="email">
+          <a-input v-model:value="createForm.email" />
+        </a-form-item>
+        <a-form-item label="性别" name="sex">
+          <a-select v-model:value="createForm.sex">
+            <a-select-option value="男">男</a-select-option>
+            <a-select-option value="女">女</a-select-option>
+          </a-select>
+        </a-form-item>
+        <a-form-item label="爱好" name="hobby">
+          <a-input v-model:value="createForm.hobby" />
+        </a-form-item>
+      </a-form>
+    </a-modal>
 
-  <!-- 编辑弹窗 -->
-  <a-modal v-model:open="editModalOpen" title="编辑用户" @ok="handleEditOk">
-    <a-form ref="editFormRef" :model="editForm" :rules="editRules">
-      <a-form-item label="用户名" name="username">
-        <a-input v-model:value="editForm.username" />
-      </a-form-item>
-      <a-form-item label="角色" name="role_id">
-        <a-select v-model:value="editForm.role_id">
-          <a-select-option :value="0">管理员</a-select-option>
-          <a-select-option :value="1">普通用户</a-select-option>
-          <a-select-option :value="2">游客</a-select-option>
-        </a-select>
-      </a-form-item>
-      <a-form-item label="昵称" name="nickname">
-        <a-input v-model:value="editForm.nickname" />
-      </a-form-item>
-      <a-form-item label="邮箱" name="email">
-        <a-input v-model:value="editForm.email" />
-      </a-form-item>
-      <a-form-item label="性别" name="sex">
-        <a-select v-model:value="editForm.sex">
-          <a-select-option value="男">男</a-select-option>
-          <a-select-option value="女">女</a-select-option>
-        </a-select>
-      </a-form-item>
-      <a-form-item label="爱好" name="hobby">
-        <a-input v-model:value="editForm.hobby" />
-      </a-form-item>
-    </a-form>
-  </a-modal>
+    <!-- 编辑弹窗 -->
+    <a-modal v-model:open="editModalOpen" title="编辑用户" @ok="handleEditOk">
+      <a-form ref="editFormRef" :model="editForm" :rules="editRules">
+        <a-form-item label="用户名" name="username">
+          <a-input v-model:value="editForm.username" />
+        </a-form-item>
+        <a-form-item label="角色" name="role_id">
+          <a-select v-model:value="editForm.role_id">
+            <a-select-option :value="0">管理员</a-select-option>
+            <a-select-option :value="1">普通用户</a-select-option>
+            <a-select-option :value="2">游客</a-select-option>
+          </a-select>
+        </a-form-item>
+        <a-form-item label="昵称" name="nickname">
+          <a-input v-model:value="editForm.nickname" />
+        </a-form-item>
+        <a-form-item label="邮箱" name="email">
+          <a-input v-model:value="editForm.email" />
+        </a-form-item>
+        <a-form-item label="性别" name="sex">
+          <a-select v-model:value="editForm.sex">
+            <a-select-option value="男">男</a-select-option>
+            <a-select-option value="女">女</a-select-option>
+          </a-select>
+        </a-form-item>
+        <a-form-item label="爱好" name="hobby">
+          <a-input v-model:value="editForm.hobby" />
+        </a-form-item>
+      </a-form>
+    </a-modal>
+  </div>
 </template>
 
 <script lang="ts" setup>

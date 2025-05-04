@@ -6,12 +6,18 @@ import {
 
 import Layout from "@/layout/index.vue";
 import Dashboard from "@/views/dashboard/index.vue";
-import UserList from "@/views/user/list.vue";
 import CreateContent from "@/views/content/create.vue";
 import Login from "@/views/auth/login.vue";
-import UserRole from "@/views/user/role.vue";
 import LabelCategory from "@/views/label/category.vue";
 import LabelTag from "@/views/label/tag.vue";
+import {
+  TagOutlined,
+  HomeOutlined,
+  UserOutlined,
+  AppstoreOutlined,
+  FileTextOutlined,
+  ExperimentOutlined,
+} from "@ant-design/icons-vue";
 
 export const routes: RouteRecordRaw[] = [
   {
@@ -22,31 +28,18 @@ export const routes: RouteRecordRaw[] = [
         path: "",
         name: "Dashboard",
         component: Dashboard,
-        meta: { title: "仪表盘", icon: "HomeOutlined" },
+        meta: { title: "仪表盘", icon: () => h(HomeOutlined) },
       },
       {
         path: "/user",
-        name: "User",
-        meta: { title: "用户管理", icon: "UserOutlined" },
-        children: [
-          {
-            path: "list",
-            component: UserList,
-            name: "UserList",
-            meta: { title: "用户列表", icon: "UnorderedListOutlined" },
-          },
-          {
-            path: "role",
-            component: UserRole,
-            name: "UserRole",
-            meta: { title: "用户角色", icon: "UsergroupAddOutlined" },
-          },
-        ],
+        name: "UserManagement",
+        meta: { title: "用户管理", icon: () => h(UserOutlined) },
+        component: () => import("@/views/user/list.vue"),
       },
       {
         path: "/content",
         name: "Content",
-        meta: { title: "内容管理", icon: "AppstoreOutlined" },
+        meta: { title: "内容管理", icon: () => h(AppstoreOutlined) },
         children: [
           {
             path: "create",
@@ -54,36 +47,37 @@ export const routes: RouteRecordRaw[] = [
             name: "CreateContent",
             meta: {
               title: "发布文章",
-              icon: "FileTextOutlined",
+              icon: () => h(FileTextOutlined),
               keepAlive: true,
             },
           },
         ],
       },
       {
-        path: "/label",
+        path: "label",
         name: "Label",
-        meta: { title: "标签分类", icon: "TagOutlined", hidden: true },
+        meta: { title: "标签管理", icon: () => h(TagOutlined) },
         children: [
           {
             path: "category",
             component: LabelCategory,
             name: "LabelCategory",
-            meta: { title: "分类管理", icon: "CategoryOutlined", hidden: true },
+            meta: { title: "文章分类", icon: () => h(TagOutlined) },
           },
           {
             path: "tag",
             component: LabelTag,
             name: "LabelTag",
-            meta: { title: "标签管理", icon: "TagOutlined" },
+            meta: { title: "文章标签", icon: () => h(TagOutlined) },
           },
         ],
       },
+
       {
-        path: "/test/global",
-        component: () => import("@/views/test/global/index.vue"),
-        name: "GlobalTest",
-        meta: { title: "全局测试", icon: "ExperimentOutlined" },
+        path: "/test",
+        component: () => import("@/views/test/index.vue"),
+        name: "Test",
+        meta: { title: "测试", icon: () => h(ExperimentOutlined) },
       },
     ],
   },

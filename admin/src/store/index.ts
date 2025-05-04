@@ -10,11 +10,6 @@ const pinia = createPinia();
 pinia.use(piniaPluginPersistedstate);
 
 // 创建store实例
-export {
-  useSidebarStore,
-  useTabStore,
-  useSystemStore,
-  useUserStore,
-};
+export { useSidebarStore, useTabStore, useSystemStore, useUserStore };
 
 export default pinia;

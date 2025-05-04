@@ -1,7 +1,7 @@
 <template>
-  <a-layout class="h-screen flex flex-col">
+  <a-layout class="h-screen flex flex-col overflow-hidden">
     <a-layout-sider
-      width="200"
+      width="216"
       :trigger="null"
       collapsible
       v-model:collapsed="sidebarStore.collapse"
@@ -11,12 +11,12 @@
     </a-layout-sider>
 
     <a-layout class="flex-1 mb-0">
-      <a-layout-header class="!h-12 !px-0">
+      <a-layout-header class="!h-16 !px-0">
         <Header />
       </a-layout-header>
-      <a-layout class="!py-0 mt-2 mx-2">
+      <a-layout class="!py-0 mt-2 mx-2 overflow-y-scroll">
         <a-layout-content>
-          <Main class="h-full overflow-y-scroll"></Main>
+          <Main class="h-full"></Main>
         </a-layout-content>
       </a-layout>
     </a-layout>

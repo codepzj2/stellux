@@ -23,6 +23,5 @@ import "dayjs/locale/zh-cn";
 
 dayjs.locale("zh-cn");
 const systemStore = useSystemStore();
-const { themeMode  } = storeToRefs(systemStore);
-
+const { themeMode } = storeToRefs(systemStore);
 </script>

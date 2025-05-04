@@ -3,7 +3,7 @@
     <div class="pb-3">
       <template v-for="item in options" :key="item.name">
         <div
-          class="bg-[#e5e7eb] h-12 px-4 rounded-md flex items-center justify-between"
+          class="bg-[#e5e7eb] dark:bg-[#27272a] h-12 px-4 my-1 rounded-md flex items-center justify-between"
           style="cursor: pointer"
           :style="{
             background: item.name === active ? systemStore.themeColor : '',

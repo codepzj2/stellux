@@ -8,10 +8,13 @@ export const useSystemStore = defineStore(
 
     const appTheme = computed(() => {
       return {
-        algorithm: themeMode.value === "dark" ? theme.darkAlgorithm : theme.defaultAlgorithm,
+        algorithm:
+          themeMode.value === "dark"
+            ? theme.darkAlgorithm
+            : theme.defaultAlgorithm,
         token: {
+          fontSize: 14.5,
           colorPrimary: themeColor.value,
-          fontSize: 15,
           fontFamily: "var(--font-sans)",
         },
       };

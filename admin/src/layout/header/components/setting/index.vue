@@ -1,5 +1,10 @@
 <template>
-  <SettingOutlined class="cursor-pointer hover:bg-zinc-200 rounded-md p-1" @click="showDrawer" />
+  <Tooltip title="设置" placement="bottom" :mouse-enter-delay="0.5">
+    <SettingOutlined
+      class="cursor-pointer rounded-md p-1"
+      @click="showDrawer"
+    />
+  </Tooltip>
   <Drawer v-model:open="visible" placement="right" :closable="false">
     <Descriptions title="主题风格" :column="5">
       <Descriptions.Item v-for="theme in themeStyle" :key="theme.value">

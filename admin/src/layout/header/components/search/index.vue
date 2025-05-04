@@ -1,7 +1,11 @@
 <template>
   <Tooltip title="搜索" placement="bottom" :mouse-enter-delay="0.5">
-    <slot><SearchOutlined class="cursor-pointer hover:bg-zinc-200 rounded-md p-1" @click="visible = true" /></slot>
-    <DraggableModal
+    <slot
+      ><SearchOutlined
+        class="cursor-pointer rounded-md p-1"
+        @click="visible = true"
+    /></slot>
+    <a-modal
       v-model:open="visible"
       title="搜索菜单"
       :keyboard="false"
@@ -30,7 +34,7 @@
       <template #footer>
         <search-footer />
       </template>
-    </DraggableModal>
+    </a-modal>
   </Tooltip>
 </template>
 
@@ -42,7 +46,6 @@ import { Empty, Tooltip } from "ant-design-vue";
 import SearchResult from "./components/SearchResult.vue";
 import SearchFooter from "./components/SearchFooter.vue";
 import type { RouteRecordRaw } from "vue-router";
-import DraggableModal from "@/components/core/draggable-modal/index.vue";
 import router, { routes } from "@/router";
 
 const keyword = ref("");
