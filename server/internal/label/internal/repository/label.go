@@ -5,6 +5,7 @@ import (
 
 	"github.com/codepzj/stellux/server/internal/label/internal/domain"
 	"github.com/codepzj/stellux/server/internal/label/internal/repository/dao"
+	"github.com/samber/lo"
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
@@ -14,6 +15,7 @@ type ILabelRepository interface {
 	Delete(ctx context.Context, id string) error
 	Get(ctx context.Context, id string) (*domain.Label, error)
 	GetList(ctx context.Context, labelType string, pageNo int64, pageSize int64) ([]*domain.Label, int64, error)
+	GetAllByType(ctx context.Context, labelType string) ([]*domain.Label, error)
 }
 
 var _ ILabelRepository = (*LabelRepository)(nil)
@@ -27,7 +29,7 @@ type LabelRepository struct {
 }
 
 func (r *LabelRepository) Create(ctx context.Context, label *domain.Label) error {
-	return r.dao.Create(ctx, r.DomainToDao(label))
+	return r.dao.Create(ctx, r.LabelDomainToLabelDO(label))
 }
 
 func (r *LabelRepository) Update(ctx context.Context, id string, label *domain.Label) error {
@@ -35,7 +37,7 @@ func (r *LabelRepository) Update(ctx context.Context, id string, label *domain.L
 	if err != nil {
 		return err
 	}
-	return r.dao.Update(ctx, bid, r.DomainToDao(label))
+	return r.dao.Update(ctx, bid, r.LabelDomainToLabelDO(label))
 }
 
 func (r *LabelRepository) Delete(ctx context.Context, id string) error {
@@ -55,7 +57,7 @@ func (r *LabelRepository) Get(ctx context.Context, id string) (*domain.Label, er
 	if err != nil {
 		return nil, err
 	}
-	return r.DaoToDomain(label), nil
+	return r.LabelDoToDomain(label), nil
 }
 
 func (r *LabelRepository) GetList(ctx context.Context, labelType string, pageNo int64, pageSize int64) ([]*domain.Label, int64, error) {
@@ -63,24 +65,34 @@ func (r *LabelRepository) GetList(ctx context.Context, labelType string, pageNo 
 	if err != nil {
 		return nil, 0, err
 	}
-	domainLabels := make([]*domain.Label, 0, len(labels))
-	for _, label := range labels {
-		domainLabels = append(domainLabels, r.DaoToDomain(label))
-	}
-	return domainLabels, count, nil
+	return r.LabelDoToDomainList(labels), count, nil
 }
 
-func (r *LabelRepository) DomainToDao(label *domain.Label) *dao.Label {
+func (r *LabelRepository) GetAllByType(ctx context.Context, labelType string) ([]*domain.Label, error) {
+	labels, err := r.dao.GetAllByType(ctx, labelType)
+	if err != nil {
+		return nil, err
+	}
+	return r.LabelDoToDomainList(labels), nil
+}
+
+func (r *LabelRepository) LabelDomainToLabelDO(label *domain.Label) *dao.Label {
 	return &dao.Label{
-		LabelType: string(label.LabelType),
-		Name:      label.Name,
-	}
-}
-
-func (r *LabelRepository) DaoToDomain(label *dao.Label) *domain.Label {
-	return &domain.Label{
-		ID:        label.ID.Hex(),
 		LabelType: label.LabelType,
 		Name:      label.Name,
 	}
+}
+
+func (r *LabelRepository) LabelDoToDomain(label *dao.Label) *domain.Label {
+	return &domain.Label{
+		ID:        label.ID,
+		LabelType: label.LabelType,
+		Name:      label.Name,
+	}
+}
+
+func (r *LabelRepository) LabelDoToDomainList(labels []*dao.Label) []*domain.Label {
+	return lo.Map(labels, func(label *dao.Label, _ int) *domain.Label {
+		return r.LabelDoToDomain(label)
+	})
 }

@@ -2,20 +2,23 @@ package repository
 
 import (
 	"context"
+	"fmt"
 
+	"github.com/chenmingyong0423/go-mongox/v2/bsonx"
+	"github.com/chenmingyong0423/go-mongox/v2/builder/aggregation"
 	"github.com/chenmingyong0423/go-mongox/v2/builder/query"
+	"github.com/codepzj/stellux/server/internal/pkg/apiwrap"
 	"github.com/codepzj/stellux/server/internal/post/internal/domain"
 	"github.com/codepzj/stellux/server/internal/post/internal/repository/dao"
 	"go.mongodb.org/mongo-driver/v2/bson"
-	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
 type IPostRepository interface {
 	Create(ctx context.Context, post *domain.Post) error
 	Update(ctx context.Context, post *domain.Post) error
-	Delete(ctx context.Context, id string) error
-	Get(ctx context.Context, id string) (*domain.Post, error)
-	GetList(ctx context.Context, page *domain.Page) ([]*domain.Post, int64, error)
+	Delete(ctx context.Context, id bson.ObjectID) error
+	Get(ctx context.Context, id bson.ObjectID) (*domain.PostDetail, error)
+	GetList(ctx context.Context, page *apiwrap.Page) ([]*domain.PostDetail, int64, error)
 }
 
 var _ IPostRepository = (*PostRepository)(nil)
@@ -29,98 +32,89 @@ type PostRepository struct {
 }
 
 func (r *PostRepository) Create(ctx context.Context, post *domain.Post) error {
-	return r.dao.Create(ctx, r.DomainToDao(post))
+	return r.dao.Create(ctx, r.PostDomainToPostDO(post))
 }
 
-// Update 更新文章(排除点赞数、浏览数、分享数)
 func (r *PostRepository) Update(ctx context.Context, post *domain.Post) error {
-	return r.dao.Update(ctx, post.ID, r.DomainToDao(post))
+	return r.dao.Update(ctx, post.ID, r.PostDomainToPostDO(post))
 }
 
 // Delete 删除文章
-func (r *PostRepository) Delete(ctx context.Context, id string) error {
+func (r *PostRepository) Delete(ctx context.Context, id bson.ObjectID) error {
 	return r.dao.Delete(ctx, id)
 }
 
 // Get 获取文章
-func (r *PostRepository) Get(ctx context.Context, id string) (*domain.Post, error) {
-	bid, err := bson.ObjectIDFromHex(id)
+func (r *PostRepository) Get(ctx context.Context, id bson.ObjectID) (*domain.PostDetail, error) {
+	postCategoryTags, err := r.dao.Get(ctx, id)
 	if err != nil {
 		return nil, err
 	}
-	post, err := r.dao.Get(ctx, bid)
-	if err != nil {
-		return nil, err
-	}
-	return r.DaoToDomain(post), nil
+	return r.PostCategoryTagsDOToPostDetail(postCategoryTags), nil
 }
 
 // GetList 获取文章列表
-func (r *PostRepository) GetList(ctx context.Context, page *domain.Page) ([]*domain.Post, int64, error) {
-	cond := query.NewBuilder()
-	findOptions := options.Find().SetSkip((page.PageNo - 1) * page.PageSize).SetLimit(page.PageSize)
-	sortField := "createdAt"
-	sortOrder := -1
-	// 标题或描述包含关键词
-	if page.Keyword != "" {
-		cond.RegexOptions("title", page.Keyword, "i").RegexOptions("description", page.Keyword, "i")
+func (r *PostRepository) GetList(ctx context.Context, page *apiwrap.Page) ([]*domain.PostDetail, int64, error) {
+	cond := query.NewBuilder().Or(query.Regex("title", page.Keyword), query.Regex("content", page.Keyword), query.Regex("description", page.Keyword)).Build()
+	skip := (page.PageNo - 1) * page.PageSize
+	limit := page.PageSize
+	sortBuilder := bsonx.NewD().Add("created_at", -1)
+	if page.Field != "" {
+		sortBuilder.Add(page.Field, r.OrderConvertToInt(page.Order))
 	}
+	fmt.Println(sortBuilder.Build())
+	pagePipeline := aggregation.NewStageBuilder().Lookup("label", "category", &aggregation.LookUpOptions{
+		LocalField:   "category_id",
+		ForeignField: "_id",
+	}).Unwind("$category", nil).Lookup("label", "tags", &aggregation.LookUpOptions{
+		LocalField:   "tags_id",
+		ForeignField: "_id",
+	}).Skip(skip).Limit(limit).Sort(sortBuilder.Build()).Match(cond).Build()
 
-	if page.Field != "" && page.Order != "" {
-		sortField = page.Field
-		sortOrder = r.OrderConvertToInt(page.Order)
-	}
-	findOptions.SetSort(bson.M{sortField: sortOrder})
-
-	posts, count, err := r.dao.GetList(ctx, cond.Build(), findOptions)
+	posts, count, err := r.dao.GetList(ctx, pagePipeline, cond)
 	if err != nil {
 		return nil, 0, err
 	}
-	return r.DaoToDomainList(posts), count, nil
+	return r.PostCategoryTagsDOToPostDetailList(posts), count, nil
 }
 
-// DomainToDao 将domain.Post转换为dao.Post(排除点赞数、浏览数、分享数)
-func (r *PostRepository) DomainToDao(post *domain.Post) *dao.Post {
+// PostDomain2PostDO 将domain.Post转换为dao.Post
+func (r *PostRepository) PostDomainToPostDO(post *domain.Post) *dao.Post {
 	return &dao.Post{
 		Title:       post.Title,
 		Content:     post.Content,
 		Description: post.Description,
 		Author:      post.Author,
-		Category:    post.Category,
-		Tags:        post.Tags,
+		CategoryID:  post.CategoryID,
+		TagsID:      post.TagsID,
 		IsPublish:   post.IsPublish,
 		IsTop:       post.IsTop,
 		Thumbnail:   post.Thumbnail,
 	}
 }
 
-// DaoToDomain 将dao.Post转换为domain.Post
-func (r *PostRepository) DaoToDomain(post *dao.Post) *domain.Post {
-	return &domain.Post{
-		ID:          post.ID.Hex(),
-		CreatedAt:   post.CreatedAt,
-		UpdatedAt:   post.UpdatedAt,
-		Title:       post.Title,
-		Content:     post.Content,
-		Description: post.Description,
-		Author:      post.Author,
-		Category:    post.Category,
-		Tags:        post.Tags,
-		IsPublish:   post.IsPublish,
-		IsTop:       post.IsTop,
-		Thumbnail:   post.Thumbnail,
-		LikeCount:   post.LikeCount,
-		ViewCount:   post.ViewCount,
-		ShareCount:  post.ShareCount,
+// PostCategoryTagsDOToPostDetail 将dao.PostCategoryTags转换为domain.PostDetail
+func (r *PostRepository) PostCategoryTagsDOToPostDetail(postCategoryTags *dao.PostCategoryTags) *domain.PostDetail {
+	return &domain.PostDetail{
+		ID:          postCategoryTags.ID,
+		CreatedAt:   postCategoryTags.CreatedAt,
+		UpdatedAt:   postCategoryTags.UpdatedAt,
+		Title:       postCategoryTags.Title,
+		Content:     postCategoryTags.Content,
+		Description: postCategoryTags.Description,
+		Author:      postCategoryTags.Author,
+		Category:    postCategoryTags.Category,
+		Tags:        postCategoryTags.Tags,
+		Thumbnail:   postCategoryTags.Thumbnail,
 	}
 }
 
-func (r *PostRepository) DaoToDomainList(posts []*dao.Post) []*domain.Post {
-	domains := make([]*domain.Post, 0, len(posts))
-	for _, post := range posts {
-		domains = append(domains, r.DaoToDomain(post))
+func (r *PostRepository) PostCategoryTagsDOToPostDetailList(postCategoryTags []*dao.PostCategoryTags) []*domain.PostDetail {
+	postDetailList := make([]*domain.PostDetail, len(postCategoryTags))
+	for i, postCategoryTag := range postCategoryTags {
+		postDetailList[i] = r.PostCategoryTagsDOToPostDetail(postCategoryTag)
 	}
-	return domains
+	return postDetailList
 }
 
 func (r *PostRepository) OrderConvertToInt(order string) int {

@@ -1,6 +1,9 @@
 package web
 
-import "github.com/codepzj/stellux/server/internal/user/internal/domain"
+import (
+	"github.com/codepzj/stellux/server/internal/user/internal/domain"
+	"github.com/samber/lo"
+)
 
 type UserVO struct {
 	ID       string `json:"id"`
@@ -9,8 +12,6 @@ type UserVO struct {
 	RoleId   int    `json:"role_id"`
 	Avatar   string `json:"avatar"`
 	Email    string `json:"email"`
-	Sex      string `json:"sex"`
-	Hobby    string `json:"hobby"`
 }
 
 type LoginVO struct {
@@ -18,23 +19,19 @@ type LoginVO struct {
 	RefreshToken string `json:"refresh_token"`
 }
 
-func (h *UserHandler) DomainToVO(user *domain.User) *UserVO {
+func (h *UserHandler) UserDomainToVO(user *domain.User) *UserVO {
 	return &UserVO{
-		ID:       user.ID,
+		ID:       user.ID.Hex(),
 		Username: user.Username,
 		Nickname: user.Nickname,
 		RoleId:   user.RoleId,
 		Avatar:   user.Avatar,
 		Email:    user.Email,
-		Sex:      user.Sex,
-		Hobby:    user.Hobby,
 	}
 }
 
-func (h *UserHandler) DomainToVOList(users []*domain.User) []*UserVO {
-	voList := make([]*UserVO, len(users))
-	for i, user := range users {
-		voList[i] = h.DomainToVO(user)
-	}
-	return voList
+func (h *UserHandler) UserDomainToVOList(users []*domain.User) []*UserVO {
+	return lo.Map(users, func(user *domain.User, _ int) *UserVO {
+		return h.UserDomainToVO(user)
+	})
 }

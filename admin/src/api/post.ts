@@ -1,4 +1,4 @@
-import type { PostReq, PostUpdateStatusReq, PostVO } from "@/types/posts";
+import type { PostReq, PostUpdateStatusReq, PostVO } from "@/types/post";
 import type { PageReq, PageResponse, Response } from "@/types/response";
 import request from "@/utils/request";
 
@@ -18,11 +18,11 @@ export const updatePostAPI: (
 
 // 根据id获取文章
 export const getPostByIdAPI: (id: string) => Promise<Response<PostVO>> = id => {
-  return request.get(`/admin-api/post/${id}`);
+  return request.get(`/post/${id}`);
 };
 
 // 分页获取文章列表
-export const getPostsByPageAPI: ({
+export const QueryPostListAPI: ({
   page_no,
   page_size,
 }: PageReq) => Promise<PageResponse<PostVO>> = ({

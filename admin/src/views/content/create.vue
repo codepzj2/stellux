@@ -1,17 +1,21 @@
 <template>
   <div>
-    <div class="my-2 mr-2 flex items-center justify-between">
-      <div class="w-[300px] md:w-[50%]">
-        <a-input
-          v-model:value="post.title"
-          placeholder="请输入标题"
-          addon-before="标题"
-          show-count
-          :maxlength="50"
-        />
-      </div>
-      <a-button type="primary" @click="onHandleCreate">发布文章</a-button>
-    </div>
+    <PageHeader>
+      <template #left>
+        <div class="w-[300px] md:w-[50%]">
+          <a-input
+            v-model:value="post.title"
+            placeholder="请输入标题"
+            addon-before="标题"
+            show-count
+            :maxlength="50"
+          />
+        </div>
+      </template>
+      <template #right>
+        <a-button type="primary" @click="onHandleCreate">发布文章</a-button>
+      </template>
+    </PageHeader>
 
     <div class="md-editor markdown-body">
       <Editor
@@ -54,8 +58,11 @@
 
         <a-row :gutter="16">
           <a-col :span="12">
-            <a-form-item label="分类" name="category">
-              <a-select v-model:value="post.category" placeholder="请选择分类">
+            <a-form-item label="分类" name="category_id">
+              <a-select
+                v-model:value="post.category_id"
+                placeholder="请选择分类"
+              >
                 <a-select-option
                   v-for="c in categoriesType"
                   :key="c.id"
@@ -68,10 +75,10 @@
           </a-col>
 
           <a-col :span="12">
-            <a-form-item label="标签" name="tags">
+            <a-form-item label="标签" name="tags_id">
               <a-select
                 mode="multiple"
-                v-model:value="post.tags"
+                v-model:value="post.tags_id"
                 placeholder="请选择标签"
               >
                 <a-select-option
@@ -136,6 +143,7 @@
 // @ts-ignore
 import { Editor } from "@bytemd/vue-next";
 import zhHans from "bytemd/locales/zh_Hans.json";
+import PageHeader from "@/components/PageHeader.vue";
 
 import gfm from "@bytemd/plugin-gfm";
 import gemoji from "@bytemd/plugin-gemoji";
@@ -147,16 +155,16 @@ import breaks from "@bytemd/plugin-breaks";
 
 import { useUserStore } from "@/store";
 import { useWindowSize } from "@vueuse/core";
-import { createPostAPI } from "@/api/posts";
+import { createPostAPI } from "@/api/post";
 import { message } from "ant-design-vue";
 
 import { reactive, ref } from "vue";
 import { storeToRefs } from "pinia";
 import type { FormInstance } from "ant-design-vue";
-import type { PostReq } from "@/types/posts";
+import type { PostReq } from "@/types/post";
 import type { LabelVO } from "@/types/label";
 import { Code } from "@/global";
-import { getLabelListAPI } from "@/api/label";
+import { queryAllByTypeAPI } from "@/api/label";
 defineOptions({ name: "CreateContent" });
 
 const mdPlugins = ref([
@@ -181,8 +189,8 @@ const post = reactive<PostReq>({
   content: "",
   description: "",
   author: userInfo.value?.nickname ?? "",
-  category: undefined,
-  tags: [],
+  category_id: undefined,
+  tags_id: [],
   is_publish: true,
   is_top: false,
   thumbnail: "",
@@ -199,21 +207,13 @@ const categoriesType = ref<LabelVO[]>([]);
 const tagsType = ref<LabelVO[]>([]);
 
 const getCategories = async () => {
-  const res = await getLabelListAPI({
-    label_type: "category",
-    page_no: 1,
-    page_size: 20,
-  });
-  categoriesType.value = res.data.list;
+  const res = await queryAllByTypeAPI("category");
+  categoriesType.value = res.data;
 };
 
 const getTags = async () => {
-  const res = await getLabelListAPI({
-    label_type: "tag",
-    page_no: 1,
-    page_size: 20,
-  });
-  tagsType.value = res.data.list;
+  const res = await queryAllByTypeAPI("tag");
+  tagsType.value = res.data;
 };
 
 const onHandleCreate = async () => {

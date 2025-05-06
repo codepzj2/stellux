@@ -3,16 +3,18 @@ package service
 import (
 	"context"
 
+	"github.com/codepzj/stellux/server/internal/pkg/apiwrap"
 	"github.com/codepzj/stellux/server/internal/post/internal/domain"
 	"github.com/codepzj/stellux/server/internal/post/internal/repository"
+	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
 type IPostService interface {
 	AdminCreatePost(ctx context.Context, post *domain.Post) error
 	AdminUpdatePost(ctx context.Context, post *domain.Post) error
-	AdminDeletePost(ctx context.Context, id string) error
-	GetPostById(ctx context.Context, id string) (*domain.Post, error)
-	GetPostList(ctx context.Context, page *domain.Page) ([]*domain.Post, int64, error)
+	AdminDeletePost(ctx context.Context, id bson.ObjectID) error
+	QueryPostById(ctx context.Context, id bson.ObjectID) (*domain.PostDetail, error)
+	QueryPostList(ctx context.Context, page *apiwrap.Page) ([]*domain.PostDetail, int64, error)
 }
 
 var _ IPostService = (*PostService)(nil)
@@ -35,14 +37,14 @@ func (s *PostService) AdminUpdatePost(ctx context.Context, post *domain.Post) er
 	return s.repo.Update(ctx, post)
 }
 
-func (s *PostService) AdminDeletePost(ctx context.Context, id string) error {
+func (s *PostService) AdminDeletePost(ctx context.Context, id bson.ObjectID) error {
 	return s.repo.Delete(ctx, id)
 }
 
-func (s *PostService) GetPostById(ctx context.Context, id string) (*domain.Post, error) {
+func (s *PostService) QueryPostById(ctx context.Context, id bson.ObjectID) (*domain.PostDetail, error) {
 	return s.repo.Get(ctx, id)
 }
 
-func (s *PostService) GetPostList(ctx context.Context, page *domain.Page) ([]*domain.Post, int64, error) {
+func (s *PostService) QueryPostList(ctx context.Context, page *apiwrap.Page) ([]*domain.PostDetail, int64, error) {
 	return s.repo.GetList(ctx, page)
 }

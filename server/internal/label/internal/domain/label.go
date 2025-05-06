@@ -1,9 +1,9 @@
 package domain
 
-type LabelType string
+import "go.mongodb.org/mongo-driver/v2/bson"
 
 type Label struct {
-	ID        string `bson:"_id"`
-	LabelType string `bson:"label_type"`
-	Name      string `bson:"name"`
+	ID        bson.ObjectID `bson:"_id"`
+	LabelType string        `bson:"label_type"`
+	Name      string        `bson:"name"`
 }

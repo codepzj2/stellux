@@ -8,8 +8,6 @@ import Layout from "@/layout/index.vue";
 import Dashboard from "@/views/dashboard/index.vue";
 import CreateContent from "@/views/content/create.vue";
 import Login from "@/views/auth/login.vue";
-import LabelCategory from "@/views/label/category.vue";
-import LabelTag from "@/views/label/tag.vue";
 import {
   TagOutlined,
   HomeOutlined,
@@ -57,20 +55,7 @@ export const routes: RouteRecordRaw[] = [
         path: "label",
         name: "Label",
         meta: { title: "标签管理", icon: () => h(TagOutlined) },
-        children: [
-          {
-            path: "category",
-            component: LabelCategory,
-            name: "LabelCategory",
-            meta: { title: "文章分类", icon: () => h(TagOutlined) },
-          },
-          {
-            path: "tag",
-            component: LabelTag,
-            name: "LabelTag",
-            meta: { title: "文章标签", icon: () => h(TagOutlined) },
-          },
-        ],
+        component: () => import("@/views/label/index.vue"),
       },
 
       {

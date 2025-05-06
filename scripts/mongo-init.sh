@@ -16,7 +16,7 @@ db.auth('$MONGO_USERNAME', '$MONGO_PASSWORD');
 db.user.createIndex({"username": 1}, {"unique": true});
 
 // 文章表创建文本索引
-db.posts.createIndex({
+db.post.createIndex({
     "title": "text",
     "content": "text",
     "description": "text"
@@ -124,14 +124,12 @@ db.user.insertMany([{
     "_id": AdminId,
     "username": "admin",
     "password": "\$2a\$10\$SLcnDmaJc1nLtUOsZS4yquXyVeu5E6qJHNTVeKSzTk4JO4Xq/FPSy",
-    "nickname": "老王",
+    "nickname": "芒果",
     "role_id": 0,
     "created_at": new Date(),
     "updated_at": new Date(),
     "avatar": "https://github.githubassets.com/assets/pull-shark-default-498c279a747d.png",
     "email": "admin@example.com",
-    "sex": "男",
-    "hobby": "打篮球",
 }, {
     "_id": UserId,
     "username": "alice",
@@ -142,8 +140,6 @@ db.user.insertMany([{
     "updated_at": new Date(),
     "avatar": "https://github.githubassets.com/assets/quickdraw-default-39c6aec8ff89.png",
     "email": "alice@example.com",
-    "sex": "女",
-    "hobby": "打羽毛球",
 }, {
     "_id": TestId,
     "username": "test",
@@ -154,34 +150,44 @@ db.user.insertMany([{
     "updated_at": new Date(),
     "avatar": "https://github.githubassets.com/assets/yolo-default-be0bbff04951.png",
     "email": "test@example.com",
-    "sex": "男",
-    "hobby": "打乒乓球",
 }]);
 
 // 初始化分类
 db.label.insertMany([{
-    "_id": ObjectId(),
+    "_id": ObjectId("67c453eda04b00c407b43197"),
     "label_type": "category",
     "name": "技术",
 }, {
-    "_id": ObjectId(),
+    "_id": ObjectId("67c453eda04b00c407b43198"),
     "label_type": "category",
     "name": "生活",
 }]);
 
 // 初始化标签
 db.label.insertMany([{
-    "_id": ObjectId(),
+    "_id": ObjectId("67c453eda04b00c407b43199"),
     "label_type": "tag",
     "name": "golang",
 }, {
-    "_id": ObjectId(),
+    "_id": ObjectId("67c453eda04b00c407b43200"),
     "label_type": "tag",
     "name": "python",
 }, {
-    "_id": ObjectId(),
+    "_id": ObjectId("67c453eda04b00c407b43201"),
     "label_type": "tag",
     "name": "java",
+}]);
+
+// 初始化文章
+db.post.insertMany([{
+    "_id": ObjectId("67c453eda04b00c407b43202"),
+    "created_at": new Date(),
+    "updated_at": new Date(),
+    "title": "STELLUX 是什么?",
+    "content": "STELLUX 是一个基于 Go 语言的博客系统，它可以帮助你快速搭建一个博客，并且支持 Markdown 格式\n\n## 什么是 STELLUX?\n\nSTELLUX 是一个基于 Go 语言的博客系统，它可以帮助你快速搭建一个博客，并且支持 Markdown 格式。\n\n## 为什么选择 STELLUX?\n\nSTELLUX 是一个基于 Go 语言的博客系统，它可以帮助你快速搭建一个博客，并且支持 Markdown 格式。\n\n## 如何使用 STELLUX?\n\nSTELLUX 是一个基于 Go 语言的博客系统，它可以帮助你快速搭建一个博客，并且支持 Markdown 格式。",
+    "description": "STELLUX 是一个基于 Go 语言的博客系统，它可以帮助你快速搭建一个博客，并且支持 Markdown 格式。",
+    "category_id": ObjectId("67c453eda04b00c407b43197"),
+    "tags_id": [ObjectId("67c453eda04b00c407b43199"), ObjectId("67c453eda04b00c407b43201")],
 }]);
 
 EOF

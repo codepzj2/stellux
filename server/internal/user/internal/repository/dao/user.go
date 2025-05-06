@@ -13,25 +13,21 @@ import (
 
 type User struct {
 	mongox.Model `bson:",inline"`
-	Username     string `bson:"username,omitempty"`
-	Password     string `bson:"password,omitempty"`
-	Nickname     string `bson:"nickname,omitempty"`
-	RoleId       int    `bson:"role_id,omitempty"`
-	Avatar       string `bson:"avatar,omitempty"`
-	Email        string `bson:"email,omitempty"`
-	Sex          string `bson:"sex,omitempty"`
-	Hobby        string `bson:"hobby,omitempty"`
+	Username     string `bson:"username"`
+	Password     string `bson:"password"`
+	Nickname     string `bson:"nickname"`
+	RoleId       int    `bson:"role_id"`
+	Avatar       string `bson:"avatar"`
+	Email        string `bson:"email"`
 }
 
 type UserUpdate struct {
-	Username string `bson:"username,omitempty"`
-	Password string `bson:"password,omitempty"`
-	Nickname string `bson:"nickname,omitempty"`
-	RoleId   int    `bson:"role_id,omitempty"`
+	Username string `bson:"username,"`
+	Password string `bson:"password,"`
+	Nickname string `bson:"nickname,"`
+	RoleId   int    `bson:"role_id,"`
 	Avatar   string `bson:"avatar,omitempty"`
 	Email    string `bson:"email,omitempty"`
-	Sex      string `bson:"sex,omitempty"`
-	Hobby    string `bson:"hobby,omitempty"`
 }
 
 type IUserDao interface {
@@ -114,7 +110,5 @@ func (d *UserDao) UserToUpdate(user *User) *UserUpdate {
 		RoleId:   user.RoleId,
 		Avatar:   user.Avatar,
 		Email:    user.Email,
-		Sex:      user.Sex,
-		Hobby:    user.Hobby,
 	}
 }

@@ -12,7 +12,8 @@ type ILabelService interface {
 	Update(ctx context.Context, id string, label *domain.Label) error
 	Delete(ctx context.Context, id string) error
 	Get(ctx context.Context, id string) (*domain.Label, error)
-	GetList(ctx context.Context, labelType string, pageNo int64, pageSize int64) ([]*domain.Label, int64, error)
+	QueryLabelList(ctx context.Context, labelType string, pageNo int64, pageSize int64) ([]*domain.Label, int64, error)
+	QueryAllByType(ctx context.Context, labelType string) ([]*domain.Label, error)
 }
 
 var _ ILabelService = (*LabelService)(nil)
@@ -43,6 +44,10 @@ func (s *LabelService) Get(ctx context.Context, id string) (*domain.Label, error
 	return s.repo.Get(ctx, id)
 }
 
-func (s *LabelService) GetList(ctx context.Context, labelType string, pageNo int64, pageSize int64) ([]*domain.Label, int64, error) {
+func (s *LabelService) QueryLabelList(ctx context.Context, labelType string, pageNo int64, pageSize int64) ([]*domain.Label, int64, error) {
 	return s.repo.GetList(ctx, labelType, pageNo, pageSize)
+}
+
+func (s *LabelService) QueryAllByType(ctx context.Context, labelType string) ([]*domain.Label, error) {
+	return s.repo.GetAllByType(ctx, labelType)
 }

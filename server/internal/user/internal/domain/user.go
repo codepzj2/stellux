@@ -1,19 +1,21 @@
 package domain
 
-import "time"
+import (
+	"time"
+
+	"go.mongodb.org/mongo-driver/v2/bson"
+)
 
 type User struct {
-	ID        string
+	ID        bson.ObjectID
+	CreatedAt time.Time
+	UpdatedAt time.Time
 	Username  string
 	Password  string
 	Nickname  string
 	RoleId    int
 	Avatar    string
 	Email     string
-	Sex       string
-	Hobby     string
-	CreatedAt time.Time
-	UpdatedAt time.Time
 }
 
 type Page struct {

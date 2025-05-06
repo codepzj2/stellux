@@ -5,6 +5,7 @@ import (
 	"github.com/codepzj/stellux/server/internal/label/internal/service"
 	"github.com/codepzj/stellux/server/internal/pkg/apiwrap"
 	"github.com/gin-gonic/gin"
+	"github.com/samber/lo"
 )
 
 func NewLabelHandler(serv service.ILabelService) *LabelHandler {
@@ -27,7 +28,8 @@ func (h *LabelHandler) RegisterGinRoutes(engine *gin.Engine) {
 	labelGroup := engine.Group("/label")
 	{
 		labelGroup.GET("/:id", apiwrap.Wrap(h.GetByID))
-		labelGroup.GET("/list", apiwrap.WrapWithBody(h.GetList))
+		labelGroup.GET("/list", apiwrap.WrapWithBody(h.QueryLabelList))
+		labelGroup.GET("/all", apiwrap.Wrap(h.QueryAllByType))
 	}
 }
 
@@ -43,7 +45,7 @@ func (h *LabelHandler) AdminCreate(c *gin.Context, label *LabelRequest) *apiwrap
 }
 
 func (h *LabelHandler) AdminUpdate(c *gin.Context, label *LabelRequest) *apiwrap.Response[any] {
-	err := h.serv.Update(c, label.ID, h.DTOToDomain(label))
+	err := h.serv.Update(c, label.ID, h.LabelDTOToDomain(label))
 	if err != nil {
 		return apiwrap.FailWithMsg(apiwrap.RuquestInternalServerError, err.Error())
 	}
@@ -65,11 +67,11 @@ func (h *LabelHandler) GetByID(c *gin.Context) *apiwrap.Response[any] {
 	if err != nil {
 		return apiwrap.FailWithMsg(apiwrap.RuquestInternalServerError, err.Error())
 	}
-	return apiwrap.SuccessWithDetail[any](label, "标签获取成功")
+	return apiwrap.SuccessWithDetail[any](h.LabelDomainToVO(label), "标签获取成功")
 }
 
-func (h *LabelHandler) GetList(c *gin.Context, page *Page) *apiwrap.Response[any] {
-	labels, count, err := h.serv.GetList(c, page.LabelType, page.PageNo, page.PageSize)
+func (h *LabelHandler) QueryLabelList(c *gin.Context, page *Page) *apiwrap.Response[any] {
+	labels, count, err := h.serv.QueryLabelList(c, page.LabelType, page.PageNo, page.PageSize)
 	if err != nil {
 		return apiwrap.FailWithMsg(apiwrap.RuquestInternalServerError, err.Error())
 	}
@@ -78,26 +80,36 @@ func (h *LabelHandler) GetList(c *gin.Context, page *Page) *apiwrap.Response[any
 	return apiwrap.SuccessWithDetail[any](pageVO, "标签列表获取成功")
 }
 
-func (h *LabelHandler) DTOToDomain(label *LabelRequest) *domain.Label {
+func (h *LabelHandler) QueryAllByType(c *gin.Context) *apiwrap.Response[any] {
+	labelType := c.Query("label_type")
+	if labelType == "" {
+		return apiwrap.FailWithMsg(apiwrap.RuquestBadRequest, "标签类型不能为空")
+	}
+	labels, err := h.serv.QueryAllByType(c, labelType)
+	if err != nil {
+		return apiwrap.FailWithMsg(apiwrap.RuquestInternalServerError, err.Error())
+	}
+	return apiwrap.SuccessWithDetail[any](h.DomainToVOList(labels), "标签列表获取成功")
+}
+
+func (h *LabelHandler) LabelDTOToDomain(label *LabelRequest) *domain.Label {
 	return &domain.Label{
-		ID:        label.ID,
+		ID:        apiwrap.ConvertBsonID(label.ID),
 		LabelType: label.LabelType,
 		Name:      label.Name,
 	}
 }
 
-func (h *LabelHandler) DomainToVO(label *domain.Label) *LabelVO {
+func (h *LabelHandler) LabelDomainToVO(label *domain.Label) *LabelVO {
 	return &LabelVO{
-		ID:        label.ID,
+		ID:        label.ID.Hex(),
 		LabelType: label.LabelType,
 		Name:      label.Name,
 	}
 }
 
 func (h *LabelHandler) DomainToVOList(labels []*domain.Label) []*LabelVO {
-	voList := make([]*LabelVO, 0)
-	for _, label := range labels {
-		voList = append(voList, h.DomainToVO(label))
-	}
-	return voList
+	return lo.Map(labels, func(label *domain.Label, _ int) *LabelVO {
+		return h.LabelDomainToVO(label)
+	})
 }

@@ -17,8 +17,8 @@ type Label struct {
 }
 
 type LabelUpdate struct {
-	LabelType string `bson:"label_type,omitempty"`
-	Name      string `bson:"name,omitempty"`
+	LabelType string `bson:"label_type"`
+	Name      string `bson:"name"`
 }
 
 type ILabelDao interface {
@@ -27,6 +27,7 @@ type ILabelDao interface {
 	Delete(ctx context.Context, id bson.ObjectID) error
 	Get(ctx context.Context, id bson.ObjectID) (*Label, error)
 	GetList(ctx context.Context, labelType string, limit int64, skip int64) ([]*Label, int64, error)
+	GetAllByType(ctx context.Context, labelType string) ([]*Label, error)
 }
 
 var _ ILabelDao = (*LabelDao)(nil)
@@ -87,6 +88,10 @@ func (d *LabelDao) GetList(ctx context.Context, labelType string, limit int64, s
 		return nil, 0, err
 	}
 	return labelList, count, nil
+}
+
+func (d *LabelDao) GetAllByType(ctx context.Context, labelType string) ([]*Label, error) {
+	return d.coll.Finder().Filter(query.Eq("label_type", labelType)).Find(ctx)
 }
 
 func (d *LabelDao) LabelToUpdate(label *Label) *LabelUpdate {

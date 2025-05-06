@@ -21,9 +21,9 @@ export default function PostsCard({ post }: { post: IPostCard }) {
 
   return (
     <Card
-      className="w-full py-6 cursor-pointer transition-shadow hover:shadow-sm hover:bg-zinc-50 dark:bg-dark dark:hover:bg-zinc-950"
+      className="w-full py-6 cursor-pointer transition-shadow hover:shadow-sm hover:bg-zinc-50 dark:bg-zinc-900 dark:hover:bg-zinc-800"
       onClick={() => {
-        router.push(`/posts/${post.id}`);
+        router.push(`/post/${post.id}`);
       }}
     >
       <CardContent className="flex flex-row-reverse items-center gap-4">

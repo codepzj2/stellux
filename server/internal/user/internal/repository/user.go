@@ -5,6 +5,7 @@ import (
 
 	"github.com/codepzj/stellux/server/internal/user/internal/domain"
 	"github.com/codepzj/stellux/server/internal/user/internal/repository/dao"
+	"github.com/samber/lo"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
@@ -29,7 +30,7 @@ type UserRepository struct {
 }
 
 func (r *UserRepository) Create(ctx context.Context, user *domain.User) error {
-	return r.dao.Create(ctx, r.DomainToDao(user))
+	return r.dao.Create(ctx, r.UserDomainToUserDO(user))
 }
 
 func (r *UserRepository) GetByUsername(ctx context.Context, username string) (*domain.User, error) {
@@ -37,22 +38,16 @@ func (r *UserRepository) GetByUsername(ctx context.Context, username string) (*d
 	if err != nil {
 		return nil, err
 	}
-	return r.DaoToDomain(user), nil
+	return r.UserDoToUserDomain(user), nil
 }
 
 func (r *UserRepository) Update(ctx context.Context, user *domain.User) error {
-	id, err := bson.ObjectIDFromHex(user.ID)
-	if err != nil {
-		return err
-	}
-	return r.dao.Update(ctx, id, &dao.User{
+	return r.dao.Update(ctx, user.ID, &dao.User{
 		Username: user.Username,
 		Nickname: user.Nickname,
 		RoleId:   user.RoleId,
 		Avatar:   user.Avatar,
 		Email:    user.Email,
-		Sex:      user.Sex,
-		Hobby:    user.Hobby,
 	})
 }
 func (r *UserRepository) Delete(ctx context.Context, id string) error {
@@ -69,7 +64,7 @@ func (r *UserRepository) FindByPage(ctx context.Context, page *domain.Page) ([]*
 	if err != nil {
 		return nil, 0, err
 	}
-	return r.DaoToDomainList(users), count, nil
+	return r.UserDoToUserDomainList(users), count, nil
 }
 
 func (r *UserRepository) GetByID(ctx context.Context, id string) (*domain.User, error) {
@@ -81,10 +76,10 @@ func (r *UserRepository) GetByID(ctx context.Context, id string) (*domain.User, 
 	if err != nil {
 		return nil, err
 	}
-	return r.DaoToDomain(user), nil
+	return r.UserDoToUserDomain(user), nil
 }
 
-func (r *UserRepository) DomainToDao(user *domain.User) *dao.User {
+func (r *UserRepository) UserDomainToUserDO(user *domain.User) *dao.User {
 	return &dao.User{
 		Username: user.Username,
 		Password: user.Password,
@@ -92,29 +87,23 @@ func (r *UserRepository) DomainToDao(user *domain.User) *dao.User {
 		RoleId:   user.RoleId,
 		Avatar:   user.Avatar,
 		Email:    user.Email,
-		Sex:      user.Sex,
-		Hobby:    user.Hobby,
 	}
 }
 
-func (r *UserRepository) DaoToDomain(user *dao.User) *domain.User {
+func (r *UserRepository) UserDoToUserDomain(user *dao.User) *domain.User {
 	return &domain.User{
-		ID:       user.ID.Hex(),
+		ID:       user.ID,
 		Username: user.Username,
 		Password: user.Password,
 		Nickname: user.Nickname,
 		RoleId:   user.RoleId,
 		Avatar:   user.Avatar,
 		Email:    user.Email,
-		Sex:      user.Sex,
-		Hobby:    user.Hobby,
 	}
 }
 
-func (r *UserRepository) DaoToDomainList(users []*dao.User) []*domain.User {
-	domainUsers := make([]*domain.User, len(users))
-	for i, user := range users {
-		domainUsers[i] = r.DaoToDomain(user)
-	}
-	return domainUsers
+func (r *UserRepository) UserDoToUserDomainList(users []*dao.User) []*domain.User {
+	return lo.Map(users, func(user *dao.User, _ int) *domain.User {
+		return r.UserDoToUserDomain(user)
+	})
 }

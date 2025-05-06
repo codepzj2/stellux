@@ -39,7 +39,7 @@ func (s *UserService) CheckUserExist(ctx context.Context, user *domain.User) (bo
 	if u == nil {
 		return false, ""
 	}
-	return utils.CompareHashAndPassword(u.Password, user.Password), u.ID
+	return utils.CompareHashAndPassword(u.Password, user.Password), u.ID.Hex()
 }
 
 // 管理员创建用户

@@ -3,8 +3,8 @@ export interface PostReq {
   content: string;
   author: string;
   description: string;
-  category: string | undefined;
-  tags: string[];
+  category_id: string | undefined;
+  tags_id: string[];
   is_top: boolean;
   is_publish: boolean;
   thumbnail: string;

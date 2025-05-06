@@ -59,6 +59,18 @@ func Wrap[T any](fn func(ctx *gin.Context) T) gin.HandlerFunc {
 	}
 }
 
+func WrapWithUri[R any, T any](fn func(ctx *gin.Context, req R) T) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		var req R
+		if err := ctx.ShouldBindUri(&req); err != nil {
+			ctx.JSON(http.StatusBadRequest, FailWithMsg(RuquestBadRequest, err.Error()))
+			return
+		}
+		// 无论是否成功，都返回响应状态码200
+		ctx.JSON(http.StatusOK, fn(ctx, req))
+	}
+}
+
 func WrapWithBody[R any, T any](fn func(ctx *gin.Context, req R) T) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var req R

@@ -7,10 +7,16 @@ import type {
 } from "@/types/label";
 import type { PageResponse, Response } from "@/types/response";
 
-export const getLabelListAPI: (
+export const queryLabelListAPI: (
   params: LabelPageReq
 ) => Promise<PageResponse<LabelVO>> = params => {
   return request.get("/label/list", { params });
+};
+
+export const queryAllByTypeAPI: (
+  label_type: string
+) => Promise<Response<LabelVO[]>> = label_type => {
+  return request.get("/label/all", { params: { label_type } });
 };
 
 export const getLabelTypeByIdAPI: (

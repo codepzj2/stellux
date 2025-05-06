@@ -99,8 +99,6 @@ func (h *UserHandler) AdminCreateUser(c *gin.Context, createUserRequest CreateUs
 		RoleId:   *createUserRequest.RoleId,
 		Avatar:   createUserRequest.Avatar,
 		Email:    createUserRequest.Email,
-		Sex:      createUserRequest.Sex,
-		Hobby:    createUserRequest.Hobby,
 	}
 	err := h.serv.AdminCreate(c, &user)
 	if err != nil {
@@ -111,14 +109,12 @@ func (h *UserHandler) AdminCreateUser(c *gin.Context, createUserRequest CreateUs
 
 func (h *UserHandler) AdminUpdateUser(c *gin.Context, updateUserRequest UpdateUserRequest) *apiwrap.Response[any] {
 	user := domain.User{
-		ID:       updateUserRequest.ID,
+		ID:       apiwrap.ConvertBsonID(updateUserRequest.ID),
 		Username: updateUserRequest.Username,
 		Nickname: updateUserRequest.Nickname,
 		RoleId:   *updateUserRequest.RoleId,
 		Avatar:   updateUserRequest.Avatar,
 		Email:    updateUserRequest.Email,
-		Sex:      updateUserRequest.Sex,
-		Hobby:    updateUserRequest.Hobby,
 	}
 	err := h.serv.AdminUpdate(c, &user)
 	if err != nil {
@@ -144,7 +140,7 @@ func (h *UserHandler) AdminGetUserList(c *gin.Context, page apiwrap.Page) *apiwr
 	if err != nil {
 		return apiwrap.FailWithMsg(apiwrap.RuquestInternalServerError, err.Error())
 	}
-	return apiwrap.SuccessWithDetail[any](apiwrap.ToPageVO(page.PageNo, page.PageSize, count, h.DomainToVOList(users)), "获取用户列表成功")
+	return apiwrap.SuccessWithDetail[any](apiwrap.ToPageVO(page.PageNo, page.PageSize, count, h.UserDomainToVOList(users)), "获取用户列表成功")
 }
 
 func (h *UserHandler) AdminGetUserInfo(c *gin.Context) *apiwrap.Response[any] {
@@ -153,5 +149,5 @@ func (h *UserHandler) AdminGetUserInfo(c *gin.Context) *apiwrap.Response[any] {
 	if err != nil {
 		return apiwrap.FailWithMsg(apiwrap.RuquestInternalServerError, err.Error())
 	}
-	return apiwrap.SuccessWithDetail[any](h.DomainToVO(user), "获取用户信息成功")
+	return apiwrap.SuccessWithDetail[any](h.UserDomainToVO(user), "获取用户信息成功")
 }
