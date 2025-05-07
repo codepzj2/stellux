@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/chenmingyong0423/go-mongox/v2"
 	"github.com/chenmingyong0423/go-mongox/v2/bsonx"
 	"github.com/chenmingyong0423/go-mongox/v2/builder/aggregation"
 	"github.com/chenmingyong0423/go-mongox/v2/builder/query"
@@ -17,8 +18,9 @@ type IPostRepository interface {
 	Create(ctx context.Context, post *domain.Post) error
 	Update(ctx context.Context, post *domain.Post) error
 	Delete(ctx context.Context, id bson.ObjectID) error
-	Get(ctx context.Context, id bson.ObjectID) (*domain.PostDetail, error)
-	GetList(ctx context.Context, page *apiwrap.Page) ([]*domain.PostDetail, int64, error)
+	GetByID(ctx context.Context, id bson.ObjectID) (*domain.Post, error)
+	GetDetailByID(ctx context.Context, id bson.ObjectID) (*domain.PostDetail, error)
+	GetDetailList(ctx context.Context, page *apiwrap.Page) ([]*domain.PostDetail, int64, error)
 }
 
 var _ IPostRepository = (*PostRepository)(nil)
@@ -36,7 +38,7 @@ func (r *PostRepository) Create(ctx context.Context, post *domain.Post) error {
 }
 
 func (r *PostRepository) Update(ctx context.Context, post *domain.Post) error {
-	return r.dao.Update(ctx, post.ID, r.PostDomainToPostDO(post))
+	return r.dao.Update(ctx, post.ID, r.PostDomainToUpdatePostDO(post))
 }
 
 // Delete 删除文章
@@ -44,17 +46,26 @@ func (r *PostRepository) Delete(ctx context.Context, id bson.ObjectID) error {
 	return r.dao.Delete(ctx, id)
 }
 
-// Get 获取文章
-func (r *PostRepository) Get(ctx context.Context, id bson.ObjectID) (*domain.PostDetail, error) {
-	postCategoryTags, err := r.dao.Get(ctx, id)
+// GetByID 获取文章
+func (r *PostRepository) GetByID(ctx context.Context, id bson.ObjectID) (*domain.Post, error) {
+	post, err := r.dao.GetByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return r.PostDOToPostDomain(post), nil
+}
+
+// GetDetailByID 获取文章
+func (r *PostRepository) GetDetailByID(ctx context.Context, id bson.ObjectID) (*domain.PostDetail, error) {
+	postCategoryTags, err := r.dao.GetDetailByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 	return r.PostCategoryTagsDOToPostDetail(postCategoryTags), nil
 }
 
-// GetList 获取文章列表
-func (r *PostRepository) GetList(ctx context.Context, page *apiwrap.Page) ([]*domain.PostDetail, int64, error) {
+// GetDetailList 获取文章列表
+func (r *PostRepository) GetDetailList(ctx context.Context, page *apiwrap.Page) ([]*domain.PostDetail, int64, error) {
 	cond := query.NewBuilder().Or(query.Regex("title", page.Keyword), query.Regex("content", page.Keyword), query.Regex("description", page.Keyword)).Build()
 	skip := (page.PageNo - 1) * page.PageSize
 	limit := page.PageSize
@@ -71,7 +82,7 @@ func (r *PostRepository) GetList(ctx context.Context, page *apiwrap.Page) ([]*do
 		ForeignField: "_id",
 	}).Skip(skip).Limit(limit).Sort(sortBuilder.Build()).Match(cond).Build()
 
-	posts, count, err := r.dao.GetList(ctx, pagePipeline, cond)
+	posts, count, err := r.dao.GetDetailList(ctx, pagePipeline, cond)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -81,6 +92,39 @@ func (r *PostRepository) GetList(ctx context.Context, page *apiwrap.Page) ([]*do
 // PostDomain2PostDO 将domain.Post转换为dao.Post
 func (r *PostRepository) PostDomainToPostDO(post *domain.Post) *dao.Post {
 	return &dao.Post{
+		Model:       mongox.Model{CreatedAt: post.CreatedAt},
+		Title:       post.Title,
+		Content:     post.Content,
+		Description: post.Description,
+		Author:      post.Author,
+		CategoryID:  post.CategoryID,
+		TagsID:      post.TagsID,
+		IsPublish:   post.IsPublish,
+		IsTop:       post.IsTop,
+		Thumbnail:   post.Thumbnail,
+	}
+}
+
+func (r *PostRepository) PostDomainToUpdatePostDO(post *domain.Post) *dao.UpdatePost {
+	return &dao.UpdatePost{
+		CreatedAt:   post.CreatedAt,
+		Title:       post.Title,
+		Content:     post.Content,
+		Description: post.Description,
+		Author:      post.Author,
+		CategoryID:  post.CategoryID,
+		TagsID:      post.TagsID,
+		IsPublish:   post.IsPublish,
+		IsTop:       post.IsTop,
+		Thumbnail:   post.Thumbnail,
+	}
+}
+
+// PostDOToPostDomain 将dao.Post转换为domain.Post
+func (r *PostRepository) PostDOToPostDomain(post *dao.Post) *domain.Post {
+	return &domain.Post{
+		ID:          post.ID,
+		CreatedAt:   post.CreatedAt,
 		Title:       post.Title,
 		Content:     post.Content,
 		Description: post.Description,

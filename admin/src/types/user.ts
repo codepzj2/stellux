@@ -26,8 +26,6 @@ export interface CreateUserReq {
   role_id: number;
   avatar: string;
   email: string;
-  sex: string;
-  hobby: string;
 }
 
 export interface EditUserReq {
@@ -37,6 +35,4 @@ export interface EditUserReq {
   role_id: number;
   avatar: string;
   email: string;
-  sex: string;
-  hobby: string;
 }

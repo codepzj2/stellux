@@ -3,7 +3,11 @@
     <div class="pb-3">
       <template v-for="item in options" :key="item.name">
         <div
-          class="bg-[#e5e7eb] dark:bg-[#27272a] h-12 px-4 my-1 rounded-md flex items-center justify-between"
+          class="h-12 px-4 my-1 rounded-md flex items-center justify-between"
+          :class="{
+            'bg-[#2e2e2e]': systemStore.themeMode === 'dark',
+            'bg-[#e5e7eb]': systemStore.themeMode === 'light',
+          }"
           style="cursor: pointer"
           :style="{
             background: item.name === active ? systemStore.themeColor : '',
@@ -60,4 +64,6 @@ function handleTo() {
   emit("enter");
 }
 </script>
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+
+</style>

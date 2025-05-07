@@ -10,15 +10,13 @@
       <SideBar :collapsed="sidebarStore.collapse" />
     </a-layout-sider>
 
-    <a-layout class="flex-1 mb-0">
+    <a-layout class="flex-1">
       <a-layout-header class="!h-16 !px-0">
         <Header />
       </a-layout-header>
-      <a-layout class="!py-0 mt-2 mx-2 overflow-y-scroll">
-        <a-layout-content>
-          <Main class="h-full"></Main>
-        </a-layout-content>
-      </a-layout>
+      <a-layout-content class="h-full p-4 overflow-y-auto overflow-x-hidden">
+        <Main />
+      </a-layout-content>
     </a-layout>
   </a-layout>
 </template>
@@ -29,17 +27,15 @@ import Header from "./header/index.vue";
 import Main from "./main/index.vue";
 import { useSidebarStore, useUserStore } from "@/store";
 import { getUserInfoAPI } from "@/api/user";
-import { useMobile } from "@/hooks/useMobile";
+import { useWindowSize } from "@vueuse/core";
 
 // 判断是否为移动端设备
-const isMobile = ref(useMobile());
+const { width } = useWindowSize();
 
 const userStore = useUserStore();
 const { userInfo } = storeToRefs(userStore);
 
 const sidebarStore = useSidebarStore();
-// 加载界面时初始化侧边栏状态
-sidebarStore.setCollapse(isMobile.value);
 
 // 加载界面时初始化用户信息
 const getUserInfo = async () => {
@@ -49,6 +45,10 @@ const getUserInfo = async () => {
 
 onMounted(async () => {
   await getUserInfo();
+});
+
+watch(width, newWidth => {
+  sidebarStore.setCollapse(newWidth < 768);
 });
 </script>
 

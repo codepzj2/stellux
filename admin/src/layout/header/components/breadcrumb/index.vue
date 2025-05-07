@@ -10,8 +10,15 @@ const router = useRouter();
 const route = useRoute();
 
 // 点击菜单
+// 点击菜单
 const clickMenuItem = (menuItem: RouteRecordRaw) => {
   const { isExt, extOpenMode, type } = menuItem?.meta || {};
+
+  // 如果点击的是首页并且没有子路由，跳转到仪表盘
+  if (menuItem.name === "__index") {
+    router.push({ name: "Dashboard" });
+    return;
+  }
 
   if (type === 0 && !menuItem.redirect) return;
 
@@ -27,12 +34,15 @@ const clickMenuItem = (menuItem: RouteRecordRaw) => {
 // 使用 route.matched 构建面包屑
 const menus = computed(() => {
   return [
-    {
-      name: "__index",
-      meta: { title: "首页" },
-      children: [], // 首页不需要子菜单
-    },
-    ...route.matched.filter(r => r.meta && r.meta.title), // 只取有标题的项
+    ...route.matched
+      .filter(r => r.meta?.title && r.meta.hidden !== true)
+      .map(routeItem => {
+        // 对 children 也做 hidden 过滤
+        const children = (routeItem.children || []).filter(
+          c => c.meta?.hidden !== true
+        );
+        return { ...routeItem, children };
+      }),
   ];
 });
 

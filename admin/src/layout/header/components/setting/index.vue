@@ -44,8 +44,8 @@ import { storeToRefs } from "pinia";
 import { Drawer, Descriptions, Tag, Tooltip } from "ant-design-vue";
 import { themeColors, themeStyle } from "./constant";
 import { useSystemStore } from "@/store";
-import LightTheme from "@/assets/icons/light.svg";
-import DarkTheme from "@/assets/icons/dark.svg";
+import LightTheme from "@/assets/svg/light.svg";
+import DarkTheme from "@/assets/svg/dark.svg";
 
 defineOptions({
   name: "ProjectSetting",

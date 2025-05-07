@@ -6,14 +6,14 @@ import {
 
 import Layout from "@/layout/index.vue";
 import Dashboard from "@/views/dashboard/index.vue";
-import CreateContent from "@/views/content/create.vue";
+import PostCreate from "@/views/post/create.vue";
+import PostEdit from "@/views/post/edit.vue";
 import Login from "@/views/auth/login.vue";
 import {
   TagOutlined,
   HomeOutlined,
   UserOutlined,
   AppstoreOutlined,
-  FileTextOutlined,
   ExperimentOutlined,
 } from "@ant-design/icons-vue";
 
@@ -41,12 +41,28 @@ export const routes: RouteRecordRaw[] = [
         children: [
           {
             path: "create",
-            component: CreateContent,
-            name: "CreateContent",
+            component: PostCreate,
+            name: "PostCreate",
             meta: {
               title: "发布文章",
-              icon: () => h(FileTextOutlined),
               keepAlive: true,
+            },
+          },
+          {
+            path: "edit/:id",
+            component: PostEdit,
+            name: "PostEdit",
+            meta: {
+              title: "编辑文章",
+              hidden: true,
+            },
+          },
+          {
+            path: "list",
+            component: () => import("@/views/post/list.vue"),
+            name: "PostList",
+            meta: {
+              title: "文章列表",
             },
           },
         ],

@@ -35,10 +35,10 @@ export const createUserAPI: (
 };
 
 // 编辑用户
-export const editUserAPI: (
+export const updateUserAPI: (
   data: EditUserReq
 ) => Promise<Response<UserInfoVO>> = data => {
-  return request.put("/admin-api/user/edit", data);
+  return request.put("/admin-api/user/update", data);
 };
 
 // 删除用户

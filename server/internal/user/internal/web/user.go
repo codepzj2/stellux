@@ -30,7 +30,7 @@ func (h *UserHandler) RegisterGinRoutes(engine *gin.Engine) {
 	adminGroup := engine.Group("/admin-api/user")
 	{
 		adminGroup.POST("/create", apiwrap.WrapWithBody(h.AdminCreateUser))
-		adminGroup.PUT("/edit", apiwrap.WrapWithBody(h.AdminUpdateUser))
+		adminGroup.PUT("/update", apiwrap.WrapWithBody(h.AdminUpdateUser))
 		adminGroup.DELETE("/delete/:id", apiwrap.Wrap(h.AdminDeleteUser))
 		adminGroup.GET("/list", apiwrap.WrapWithBody(h.AdminGetUserList))
 		adminGroup.GET("/info", apiwrap.Wrap(h.AdminGetUserInfo))

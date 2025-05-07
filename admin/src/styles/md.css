@@ -110,6 +110,10 @@
   }
 }
 
+.dark .bytemd-split .bytemd-preview {
+  @apply !border-l-zinc-700;
+}
+
 .markdown-body {
   & > pre {
     @apply !p-0;

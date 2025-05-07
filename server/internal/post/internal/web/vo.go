@@ -13,6 +13,19 @@ import (
 type PostVO struct {
 	ID          string    `json:"id"`
 	CreatedAt   time.Time `json:"created_at"`
+	Title       string    `json:"title"`
+	Content     string    `json:"content"`
+	Description string    `json:"description"`
+	Author      string    `json:"author"`
+	CategoryID  string    `json:"category_id"`
+	TagsID      []string  `json:"tags_id"`
+	IsTop       bool      `json:"is_top"`
+	Thumbnail   string    `json:"thumbnail"`
+}
+
+type PostDetailVO struct {
+	ID          string    `json:"id"`
+	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 	Title       string    `json:"title"`
 	Content     string    `json:"content"`
@@ -36,6 +49,7 @@ func GetTagNamesFromLabels(labels []label.Domain) []string {
 
 func (h *PostHandler) PostDTOToDomain(postReq PostRequest) *domain.Post {
 	return &domain.Post{
+		CreatedAt:   postReq.CreatedAt,
 		Title:       postReq.Title,
 		Content:     postReq.Content,
 		Description: postReq.Description,
@@ -50,8 +64,26 @@ func (h *PostHandler) PostDTOToDomain(postReq PostRequest) *domain.Post {
 	}
 }
 
-func (h *PostHandler) PostDetailToVO(post *domain.PostDetail) *PostVO {
-	return &PostVO{
+func (h *PostHandler) PostUpdateDTOToDomain(postUpdateReq PostUpdateRequest) *domain.Post {
+	return &domain.Post{
+		ID:          apiwrap.ConvertBsonID(postUpdateReq.ID),
+		CreatedAt:   postUpdateReq.CreatedAt,
+		Title:       postUpdateReq.Title,
+		Content:     postUpdateReq.Content,
+		Description: postUpdateReq.Description,
+		Author:      postUpdateReq.Author,
+		CategoryID:  apiwrap.ConvertBsonID(postUpdateReq.CategoryID),
+		TagsID: lo.Map(postUpdateReq.TagsID, func(id string, _ int) bson.ObjectID {
+			return apiwrap.ConvertBsonID(id)
+		}),
+		IsPublish: postUpdateReq.IsPublish,
+		IsTop:     postUpdateReq.IsTop,
+		Thumbnail: postUpdateReq.Thumbnail,
+	}
+}
+
+func (h *PostHandler) PostDetailToVO(post *domain.PostDetail) *PostDetailVO {
+	return &PostDetailVO{
 		ID:          post.ID.Hex(),
 		CreatedAt:   post.CreatedAt,
 		UpdatedAt:   post.UpdatedAt,
@@ -66,8 +98,25 @@ func (h *PostHandler) PostDetailToVO(post *domain.PostDetail) *PostVO {
 	}
 }
 
-func (h *PostHandler) PostDetailListToVOList(posts []*domain.PostDetail) []*PostVO {
-	return lo.Map(posts, func(post *domain.PostDetail, _ int) *PostVO {
+func (h *PostHandler) PostDetailListToVOList(posts []*domain.PostDetail) []*PostDetailVO {
+	return lo.Map(posts, func(post *domain.PostDetail, _ int) *PostDetailVO {
 		return h.PostDetailToVO(post)
 	})
+}
+
+func (h *PostHandler) PostToVO(post *domain.Post) *PostVO {
+	return &PostVO{
+		ID:          post.ID.Hex(),
+		CreatedAt:   post.CreatedAt,
+		Title:       post.Title,
+		Content:     post.Content,
+		Description: post.Description,
+		Author:      post.Author,
+		CategoryID:  post.CategoryID.Hex(),
+		TagsID: lo.Map(post.TagsID, func(id bson.ObjectID, _ int) string {
+			return id.Hex()
+		}),
+		IsTop:     post.IsTop,
+		Thumbnail: post.Thumbnail,
+	}
 }

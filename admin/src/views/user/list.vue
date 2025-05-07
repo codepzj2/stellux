@@ -39,7 +39,12 @@
       title="新增用户"
       @ok="handleCreateOk"
     >
-      <a-form ref="createFormRef" :model="createForm" :rules="createRules">
+      <a-form
+        ref="createFormRef"
+        :model="createForm"
+        :rules="createRules"
+        layout="vertical"
+      >
         <a-form-item label="用户名" name="username">
           <a-input v-model:value="createForm.username" />
         </a-form-item>
@@ -59,21 +64,17 @@
         <a-form-item label="邮箱" name="email">
           <a-input v-model:value="createForm.email" />
         </a-form-item>
-        <a-form-item label="性别" name="sex">
-          <a-select v-model:value="createForm.sex">
-            <a-select-option value="男">男</a-select-option>
-            <a-select-option value="女">女</a-select-option>
-          </a-select>
-        </a-form-item>
-        <a-form-item label="爱好" name="hobby">
-          <a-input v-model:value="createForm.hobby" />
-        </a-form-item>
       </a-form>
     </a-modal>
 
     <!-- 编辑弹窗 -->
     <a-modal v-model:open="editModalOpen" title="编辑用户" @ok="handleEditOk">
-      <a-form ref="editFormRef" :model="editForm" :rules="editRules">
+      <a-form
+        :model="editForm"
+        :rules="editRules"
+        layout="vertical"
+        ref="editFormRef"
+      >
         <a-form-item label="用户名" name="username">
           <a-input v-model:value="editForm.username" />
         </a-form-item>
@@ -90,15 +91,6 @@
         <a-form-item label="邮箱" name="email">
           <a-input v-model:value="editForm.email" />
         </a-form-item>
-        <a-form-item label="性别" name="sex">
-          <a-select v-model:value="editForm.sex">
-            <a-select-option value="男">男</a-select-option>
-            <a-select-option value="女">女</a-select-option>
-          </a-select>
-        </a-form-item>
-        <a-form-item label="爱好" name="hobby">
-          <a-input v-model:value="editForm.hobby" />
-        </a-form-item>
       </a-form>
     </a-modal>
   </div>
@@ -109,7 +101,7 @@ import { ref, onMounted } from "vue";
 import { message, type FormInstance } from "ant-design-vue";
 import {
   createUserAPI,
-  editUserAPI,
+  updateUserAPI,
   getUserListAPI,
   deleteUserAPI,
 } from "@/api/user";
@@ -126,8 +118,6 @@ const createForm = ref<CreateUserReq>({
   role_id: 0,
   avatar: "",
   email: "",
-  sex: "",
-  hobby: "",
 });
 const createRules = ref({
   username: [{ required: true, message: "请输入用户名" }],
@@ -144,8 +134,6 @@ const editForm = ref<EditUserReq>({
   role_id: 0,
   avatar: "",
   email: "",
-  sex: "",
-  hobby: "",
 });
 const originalEditForm = ref<EditUserReq>({ ...editForm.value });
 const editRules = ref({
@@ -168,20 +156,16 @@ const onHandleEdit = (record: UserInfoVO) => {
 };
 const onHandleDelete = async (record: UserInfoVO) => {
   const res = await deleteUserAPI(record.id);
-  if (res.code === Code.RequestSuccess) {
-    message.success(res.msg);
-    await getUserList();
-  }
+  message.success(res.msg);
+  await getUserList();
 };
 const handleCreateOk = () => {
   createFormRef.value?.validate().then(async () => {
     const res = await createUserAPI(createForm.value);
-    if (res.code === Code.RequestSuccess) {
-      message.success(res.msg);
-      createModalOpen.value = false;
-      clearCreateForm();
-      await getUserList();
-    }
+    message.success(res.msg);
+    createModalOpen.value = false;
+    clearCreateForm();
+    await getUserList();
   });
 };
 
@@ -193,8 +177,6 @@ const clearCreateForm = () => {
     role_id: 0,
     avatar: "",
     email: "",
-    sex: "",
-    hobby: "",
   };
 };
 const clearEditForm = () => {
@@ -205,8 +187,6 @@ const clearEditForm = () => {
     role_id: 0,
     avatar: "",
     email: "",
-    sex: "",
-    hobby: "",
   };
   originalEditForm.value = { ...editForm.value };
 };
@@ -218,8 +198,8 @@ const handleEditOk = () => {
     return;
   }
   editFormRef.value?.validate().then(async () => {
-    const res = await editUserAPI(editForm.value);
-    message.success(res.msg);
+    await updateUserAPI(editForm.value);
+    message.success("修改成功");
     editModalOpen.value = false;
     clearEditForm();
     await getUserList();
@@ -231,11 +211,17 @@ onMounted(() => {
 });
 
 const columns = [
-  { title: "头像", dataIndex: "avatar", key: "avatar" },
-  { title: "用户名", dataIndex: "username", key: "username" },
-  { title: "昵称", dataIndex: "nickname", key: "nickname" },
-  { title: "角色", dataIndex: "role_id", key: "role_id" },
-  { title: "邮箱", dataIndex: "email", key: "email" },
-  { title: "操作", key: "action", width: 300, fixed: "right" },
+  { title: "头像", dataIndex: "avatar", key: "avatar", width: 100 },
+  { title: "用户名", dataIndex: "username", key: "username", width: 100 },
+  { title: "昵称", dataIndex: "nickname", key: "nickname", width: 100 },
+  { title: "角色", dataIndex: "role_id", key: "role_id", width: 100 },
+  {
+    title: "邮箱",
+    dataIndex: "email",
+    key: "email",
+    width: 200,
+    ellipsis: true,
+  },
+  { title: "操作", key: "action", width: 150, fixed: "right" },
 ];
 </script>

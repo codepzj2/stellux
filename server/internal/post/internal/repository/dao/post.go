@@ -2,6 +2,7 @@ package dao
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/chenmingyong0423/go-mongox/v2"
@@ -56,13 +57,26 @@ type PostCategoryTags struct {
 	Thumbnail   string         `bson:"thumbnail"`
 }
 
+type UpdatePost struct {
+	CreatedAt   time.Time       `bson:"created_at,omitempty"`
+	Title       string          `bson:"title,omitempty"`
+	Content     string          `bson:"content,omitempty"`
+	Description string          `bson:"description,omitempty"`
+	Author      string          `bson:"author,omitempty"`
+	CategoryID  bson.ObjectID   `bson:"category_id,omitempty"`
+	TagsID      []bson.ObjectID `bson:"tags_id,omitempty"`
+	IsPublish   bool            `bson:"is_publish,omitempty"`
+	IsTop       bool            `bson:"is_top,omitempty"`
+	Thumbnail   string          `bson:"thumbnail,omitempty"`
+}
+
 type IPostDao interface {
 	Create(ctx context.Context, post *Post) error
-	Update(ctx context.Context, id bson.ObjectID, post *Post) error
+	Update(ctx context.Context, id bson.ObjectID, post *UpdatePost) error
 	Delete(ctx context.Context, id bson.ObjectID) error
-	Get(ctx context.Context, id bson.ObjectID) (*PostCategoryTags, error)
-	GetList(ctx context.Context, pagePipeline mongo.Pipeline, cond bson.D) ([]*PostCategoryTags, int64, error)
-	GetCount(ctx context.Context, cond bson.D) (int64, error)
+	GetByID(ctx context.Context, id bson.ObjectID) (*Post, error)
+	GetDetailByID(ctx context.Context, id bson.ObjectID) (*PostCategoryTags, error)
+	GetDetailList(ctx context.Context, pagePipeline mongo.Pipeline, cond bson.D) ([]*PostCategoryTags, int64, error)
 }
 
 var _ IPostDao = (*PostDao)(nil)
@@ -87,9 +101,20 @@ func (d *PostDao) Create(ctx context.Context, post *Post) error {
 	return nil
 }
 
-func (d *PostDao) Update(ctx context.Context, id bson.ObjectID, post *Post) error {
-	_, err := d.coll.Updater().Filter(query.Id(id)).Updates(update.NewBuilder().Set("title", post.Title).Set("content", post.Content).Set("description", post.Description).Set("author", post.Author).Set("category_id", post.CategoryID).Set("tags_id", post.TagsID).Set("is_published", post.IsPublish).Set("thumbnail", post.Thumbnail).Build()).UpdateOne(ctx)
-	return err
+func (d *PostDao) Update(ctx context.Context, id bson.ObjectID, post *UpdatePost) error {
+	updateResult, err := d.coll.Updater().Filter(query.Id(id)).Updates(update.NewBuilder().SetFields(post).Build()).UpdateOne(ctx)
+	if err != nil {
+		return err
+	}
+	fmt.Println("--------------------------------")
+	fmt.Println(id)
+	fmt.Println(post)
+	fmt.Println(updateResult)
+	fmt.Println("--------------------------------")
+	if updateResult.ModifiedCount == 0 {
+		return errors.New("文章修改失败")
+	}
+	return nil
 }
 
 // Delete 删除文章
@@ -98,8 +123,8 @@ func (d *PostDao) Delete(ctx context.Context, id bson.ObjectID) error {
 	return err
 }
 
-// Get 获取文章
-func (d *PostDao) Get(ctx context.Context, id bson.ObjectID) (*PostCategoryTags, error) {
+// GetDetailByID 获取文章
+func (d *PostDao) GetDetailByID(ctx context.Context, id bson.ObjectID) (*PostCategoryTags, error) {
 	// 设置管道,聚合查询包含详细分类和标签的文章
 	pipeline := aggregation.NewStageBuilder().Match(query.Id(id)).Lookup("label", "category", &aggregation.LookUpOptions{
 		LocalField:   "category_id",
@@ -119,8 +144,13 @@ func (d *PostDao) Get(ctx context.Context, id bson.ObjectID) (*PostCategoryTags,
 	return &postResult[0], err
 }
 
-// GetList 获取文章列表
-func (d *PostDao) GetList(ctx context.Context, pagePipeline mongo.Pipeline, cond bson.D) ([]*PostCategoryTags, int64, error) {
+// GetByID 获取文章
+func (d *PostDao) GetByID(ctx context.Context, id bson.ObjectID) (*Post, error) {
+	return d.coll.Finder().Filter(query.Id(id)).FindOne(ctx)
+}
+
+// GetDetailList 获取文章列表
+func (d *PostDao) GetDetailList(ctx context.Context, pagePipeline mongo.Pipeline, cond bson.D) ([]*PostCategoryTags, int64, error) {
 	var postResult []PostCategoryTags
 	err := d.coll.Aggregator().Pipeline(pagePipeline).AggregateWithParse(ctx, &postResult)
 	if err != nil {
@@ -131,8 +161,4 @@ func (d *PostDao) GetList(ctx context.Context, pagePipeline mongo.Pipeline, cond
 		return nil, 0, err
 	}
 	return utils.ValToPtrList(postResult), count, err
-}
-
-func (d *PostDao) GetCount(ctx context.Context, cond bson.D) (int64, error) {
-	return d.coll.Finder().Filter(cond).Count(ctx)
 }

@@ -1,4 +1,4 @@
-import type { PostReq, PostUpdateStatusReq, PostVO } from "@/types/post";
+import type { PostReq, PostDetailVO, PostVO } from "@/types/post";
 import type { PageReq, PageResponse, Response } from "@/types/response";
 import request from "@/utils/request";
 
@@ -13,7 +13,7 @@ export const createPostAPI: (
 export const updatePostAPI: (
   data: PostReq
 ) => Promise<Response<any>> = data => {
-  return request.put("/admin-api/post/update", data);
+  return request.put(`/admin-api/post/update`, data);
 };
 
 // 根据id获取文章
@@ -21,34 +21,16 @@ export const getPostByIdAPI: (id: string) => Promise<Response<PostVO>> = id => {
   return request.get(`/post/${id}`);
 };
 
-// 分页获取文章列表
-export const QueryPostListAPI: ({
-  page_no,
-  page_size,
-}: PageReq) => Promise<PageResponse<PostVO>> = ({
-  page_no = 1,
-  page_size = 10,
-  keyword,
-  field,
-  order,
-}) => {
-  return request.post("/admin-api/post/list", {
-    page_no,
-    page_size,
-    keyword,
-    field,
-    order,
-  });
+// 分页获取文章详情列表
+export const getPostDetailListAPI: (
+  params: PageReq
+) => Promise<PageResponse<PostDetailVO>> = params => {
+  return request.get("/post/detail/list", { params });
 };
 
-// 更新文章状态
-export const updatePostStatusAPI: (
-  data: PostUpdateStatusReq
-) => Promise<PageResponse<any>> = data => {
-  return request.patch("/admin-api/post/status", data);
-};
-
-// 软删除文章
-export const deletePostSoftAPI: (id: string) => Promise<Response<any>> = id => {
-  return request.patch(`/admin-api/post/delete/${id}`);
+// 根据id获取文章详情
+export const getPostDetailByIdAPI: (
+  id: string
+) => Promise<Response<PostDetailVO>> = id => {
+  return request.get(`/post/detail/${id}`);
 };

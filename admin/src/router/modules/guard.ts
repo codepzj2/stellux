@@ -1,24 +1,11 @@
 // 路由守卫
 import { routes } from "./router";
 import type { Router, RouteRecordRaw } from "vue-router";
-import { useSidebarStore, useTabStore } from "@/store";
+import { useSidebarStore } from "@/store";
 import NProgress from "nprogress";
 
 NProgress.configure({ showSpinner: false });
 const createRouterGuard = (router: Router) => {
-  // 监听标签栏
-  router.beforeEach((to, _from, next) => {
-    if (to.meta.title) {
-      const tabStore = useTabStore();
-      tabStore.addTab({
-        key: to.name as string,
-        title: to.meta.title as string,
-      });
-    }
-    next();
-  });
-
-  // 监听侧边栏
   router.beforeEach((to, _from, next) => {
     NProgress.start();
     const sidebarStore = useSidebarStore();

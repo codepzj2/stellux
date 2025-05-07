@@ -90,8 +90,8 @@ function transformRouteToList(
 ) {
   if (routes && routes.length === 0) return [];
   return routes.reduce((acc, cur) => {
-    /** 允许在菜单内显示并且无子路由 */
-    if (!cur.meta?.hideInMenu && !cur.children) {
+    /** 允许在菜单内显示并且无子路由，且 meta.hidden 为 false 或 undefined */
+    if ((!cur.meta?.hideInMenu && !cur.meta?.hidden) && !cur.children) {
       acc.push(cur);
     }
     if (cur.children && cur.children.length > 0) {

@@ -10,6 +10,7 @@ import (
 // Post 文章
 type Post struct {
 	ID          bson.ObjectID   // 文章ID
+	CreatedAt   time.Time       // 创建时间
 	Title       string          // 标题
 	Content     string          // 内容
 	Description string          // 描述

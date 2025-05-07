@@ -139,11 +139,9 @@ const onHandleCreate = () => {
 const handleCreateOk = async () => {
   await createFormRef.value?.validate();
   const res = await createLabelAPI(createForm.value);
-  if (res.code === Code.RequestSuccess) {
-    message.success(res.msg);
-    createModalOpen.value = false;
-    await getLabelList();
-  }
+  message.success(res.msg);
+  createModalOpen.value = false;
+  await getLabelList();
 };
 
 // 编辑逻辑
@@ -175,21 +173,17 @@ const onSave = async (record: LabelVO) => {
     return;
   }
 
-  const res = await editLabelAPI(edited);
-  if (res.code === Code.RequestSuccess) {
-    message.success("修改成功");
-    delete editableMap[record.id];
-    await getLabelList();
-  }
+  await editLabelAPI(edited);
+  message.success("修改成功");
+  delete editableMap[record.id];
+  await getLabelList();
 };
 
 // 删除
 const onHandleDelete = async (record: LabelVO) => {
-  const res = await deleteLabelAPI(record.id);
-  if (res.code === Code.RequestSuccess) {
-    message.success(res.msg);
-    await getLabelList();
-  }
+  await deleteLabelAPI(record.id);
+  message.success("删除成功");
+  await getLabelList();
 };
 
 onMounted(() => {
