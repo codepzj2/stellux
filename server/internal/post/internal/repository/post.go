@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/chenmingyong0423/go-mongox/v2"
 	"github.com/chenmingyong0423/go-mongox/v2/bsonx"
@@ -11,12 +10,14 @@ import (
 	"github.com/codepzj/stellux/server/internal/pkg/apiwrap"
 	"github.com/codepzj/stellux/server/internal/post/internal/domain"
 	"github.com/codepzj/stellux/server/internal/post/internal/repository/dao"
+	"github.com/samber/lo"
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
 type IPostRepository interface {
 	Create(ctx context.Context, post *domain.Post) error
 	Update(ctx context.Context, post *domain.Post) error
+	SoftDelete(ctx context.Context, id bson.ObjectID) error
 	Delete(ctx context.Context, id bson.ObjectID) error
 	GetByID(ctx context.Context, id bson.ObjectID) (*domain.Post, error)
 	GetDetailByID(ctx context.Context, id bson.ObjectID) (*domain.PostDetail, error)
@@ -39,6 +40,10 @@ func (r *PostRepository) Create(ctx context.Context, post *domain.Post) error {
 
 func (r *PostRepository) Update(ctx context.Context, post *domain.Post) error {
 	return r.dao.Update(ctx, post.ID, r.PostDomainToUpdatePostDO(post))
+}
+
+func (r *PostRepository) SoftDelete(ctx context.Context, id bson.ObjectID) error {
+	return r.dao.SoftDelete(ctx, id)
 }
 
 // Delete 删除文章
@@ -66,14 +71,13 @@ func (r *PostRepository) GetDetailByID(ctx context.Context, id bson.ObjectID) (*
 
 // GetDetailList 获取文章列表
 func (r *PostRepository) GetDetailList(ctx context.Context, page *apiwrap.Page) ([]*domain.PostDetail, int64, error) {
-	cond := query.NewBuilder().Or(query.Regex("title", page.Keyword), query.Regex("content", page.Keyword), query.Regex("description", page.Keyword)).Build()
+	cond := query.NewBuilder().Or(query.Regex("title", page.Keyword), query.Regex("description", page.Keyword)).Build()
 	skip := (page.PageNo - 1) * page.PageSize
 	limit := page.PageSize
 	sortBuilder := bsonx.NewD().Add("created_at", -1)
 	if page.Field != "" {
 		sortBuilder.Add(page.Field, r.OrderConvertToInt(page.Order))
 	}
-	fmt.Println(sortBuilder.Build())
 	pagePipeline := aggregation.NewStageBuilder().Lookup("label", "category", &aggregation.LookUpOptions{
 		LocalField:   "category_id",
 		ForeignField: "_id",
@@ -150,15 +154,15 @@ func (r *PostRepository) PostCategoryTagsDOToPostDetail(postCategoryTags *dao.Po
 		Category:    postCategoryTags.Category,
 		Tags:        postCategoryTags.Tags,
 		Thumbnail:   postCategoryTags.Thumbnail,
+		IsPublish:   postCategoryTags.IsPublish,
+		IsTop:       postCategoryTags.IsTop,
 	}
 }
 
 func (r *PostRepository) PostCategoryTagsDOToPostDetailList(postCategoryTags []*dao.PostCategoryTags) []*domain.PostDetail {
-	postDetailList := make([]*domain.PostDetail, len(postCategoryTags))
-	for i, postCategoryTag := range postCategoryTags {
-		postDetailList[i] = r.PostCategoryTagsDOToPostDetail(postCategoryTag)
-	}
-	return postDetailList
+	return lo.Map(postCategoryTags, func(postCategoryTag *dao.PostCategoryTags, _ int) *domain.PostDetail {
+		return r.PostCategoryTagsDOToPostDetail(postCategoryTag)
+	})
 }
 
 func (r *PostRepository) OrderConvertToInt(order string) int {

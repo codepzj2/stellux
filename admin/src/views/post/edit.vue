@@ -18,6 +18,7 @@ const postId = route.params.id;
 
 const postForm = ref<PostReq>({
   id: "", // 更新携带文章id
+  created_at: "",
   title: "",
   content: "",
   author: "",
@@ -31,10 +32,7 @@ const postForm = ref<PostReq>({
 
 const getPost = async () => {
   const res = await getPostByIdAPI(postId as string);
-  postForm.value = {
-    ...res.data,
-    is_publish: true,
-  };
+  postForm.value = res.data;
 };
 
 onMounted(() => {

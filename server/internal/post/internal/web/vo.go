@@ -19,6 +19,7 @@ type PostVO struct {
 	Author      string    `json:"author"`
 	CategoryID  string    `json:"category_id"`
 	TagsID      []string  `json:"tags_id"`
+	IsPublish   bool      `json:"is_publish"`
 	IsTop       bool      `json:"is_top"`
 	Thumbnail   string    `json:"thumbnail"`
 }
@@ -33,6 +34,7 @@ type PostDetailVO struct {
 	Author      string    `json:"author"`
 	Category    string    `json:"category"`
 	Tags        []string  `json:"tags"`
+	IsPublish   bool      `json:"is_publish"`
 	IsTop       bool      `json:"is_top"`
 	Thumbnail   string    `json:"thumbnail"`
 }
@@ -93,6 +95,7 @@ func (h *PostHandler) PostDetailToVO(post *domain.PostDetail) *PostDetailVO {
 		Author:      post.Author,
 		Category:    GetCategoryNameFromLabel(post.Category),
 		Tags:        GetTagNamesFromLabels(post.Tags),
+		IsPublish:   post.IsPublish,
 		IsTop:       post.IsTop,
 		Thumbnail:   post.Thumbnail,
 	}
@@ -116,6 +119,7 @@ func (h *PostHandler) PostToVO(post *domain.Post) *PostVO {
 		TagsID: lo.Map(post.TagsID, func(id bson.ObjectID, _ int) string {
 			return id.Hex()
 		}),
+		IsPublish: post.IsPublish,
 		IsTop:     post.IsTop,
 		Thumbnail: post.Thumbnail,
 	}

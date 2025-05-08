@@ -34,3 +34,8 @@ span {
     transition-duration: 0s !important;
   }
 }
+
+/* 移除antd的默认边框 */
+.ant-btn-default {
+  @apply !border-none;
+}

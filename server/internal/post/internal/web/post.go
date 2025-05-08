@@ -21,6 +21,8 @@ func (h *PostHandler) RegisterGinRoutes(engine *gin.Engine) {
 	{
 		adminGroup.POST("create", apiwrap.WrapWithBody(h.AdminCreatePost))
 		adminGroup.PUT("update", apiwrap.WrapWithBody(h.AdminUpdatePost))
+		adminGroup.DELETE("soft-delete/:id", apiwrap.WrapWithUri(h.AdminSoftDeletePost))
+		adminGroup.DELETE("delete/:id", apiwrap.WrapWithUri(h.AdminDeletePost))
 	}
 	postGroup := engine.Group("/post")
 	{
@@ -46,6 +48,22 @@ func (h *PostHandler) AdminUpdatePost(c *gin.Context, postUpdateReq PostUpdateRe
 		return apiwrap.FailWithMsg(apiwrap.RuquestInternalServerError, err.Error())
 	}
 	return apiwrap.SuccessWithMsg("更新文章成功")
+}
+
+func (h *PostHandler) AdminSoftDeletePost(c *gin.Context, postIDRequest PostIDRequest) *apiwrap.Response[any] {
+	err := h.serv.AdminSoftDeletePost(c, apiwrap.ConvertBsonID(postIDRequest.ID))
+	if err != nil {
+		return apiwrap.FailWithMsg(apiwrap.RuquestInternalServerError, err.Error())
+	}
+	return apiwrap.SuccessWithMsg("软删除文章成功")
+}
+
+func (h *PostHandler) AdminDeletePost(c *gin.Context, postIDRequest PostIDRequest) *apiwrap.Response[any] {
+	err := h.serv.AdminDeletePost(c, apiwrap.ConvertBsonID(postIDRequest.ID))
+	if err != nil {
+		return apiwrap.FailWithMsg(apiwrap.RuquestInternalServerError, err.Error())
+	}
+	return apiwrap.SuccessWithMsg("删除文章成功")
 }
 
 func (h *PostHandler) GetDetailPostList(c *gin.Context, pageReq apiwrap.Page) *apiwrap.Response[any] {

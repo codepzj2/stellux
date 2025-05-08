@@ -12,6 +12,7 @@ import (
 type IPostService interface {
 	AdminCreatePost(ctx context.Context, post *domain.Post) error
 	AdminUpdatePost(ctx context.Context, post *domain.Post) error
+	AdminSoftDeletePost(ctx context.Context, id bson.ObjectID) error
 	AdminDeletePost(ctx context.Context, id bson.ObjectID) error
 	GetPostById(ctx context.Context, id bson.ObjectID) (*domain.Post, error)
 	GetPostDetailById(ctx context.Context, id bson.ObjectID) (*domain.PostDetail, error)
@@ -36,6 +37,10 @@ func (s *PostService) AdminCreatePost(ctx context.Context, post *domain.Post) er
 
 func (s *PostService) AdminUpdatePost(ctx context.Context, post *domain.Post) error {
 	return s.repo.Update(ctx, post)
+}
+
+func (s *PostService) AdminSoftDeletePost(ctx context.Context, id bson.ObjectID) error {
+	return s.repo.SoftDelete(ctx, id)
 }
 
 func (s *PostService) AdminDeletePost(ctx context.Context, id bson.ObjectID) error {

@@ -34,3 +34,8 @@ export const getPostDetailByIdAPI: (
 ) => Promise<Response<PostDetailVO>> = id => {
   return request.get(`/post/detail/${id}`);
 };
+
+// 软删除文章
+export const softDeletePostAPI: (id: string) => Promise<Response<any>> = id => {
+  return request.delete(`/admin-api/post/soft-delete/${id}`);
+};

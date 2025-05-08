@@ -21,6 +21,7 @@ export interface PostVO {
   author: string;
   category_id: string;
   tags_id: string[];
+  is_publish: boolean;
   is_top: boolean;
   thumbnail: string;
 }
@@ -37,6 +38,7 @@ export interface PostDetailVO {
   tags: string[];
   thumbnail: string;
   is_top: boolean;
+  is_publish: boolean;
 }
 
 export interface PostUpdateStatusReq {

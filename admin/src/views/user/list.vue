@@ -1,8 +1,10 @@
 <template>
   <div>
-    <div class="flex justify-end items-center rounded-md px-4 py-2 my-2">
-      <a-button type="primary" @click="onHandleCreate">新增用户</a-button>
-    </div>
+    <a-page-header title="用户列表" class="!px-0">
+      <template #extra>
+        <a-button type="primary" @click="onHandleCreate">新增用户</a-button>
+      </template>
+    </a-page-header>
     <a-table :columns="columns" :data-source="userList">
       <template #bodyCell="{ column, record }">
         <template v-if="column.key === 'avatar'">
@@ -106,7 +108,7 @@ import {
   deleteUserAPI,
 } from "@/api/user";
 import type { CreateUserReq, EditUserReq, UserInfoVO } from "@/types/user";
-import { Code, roleNames, roleColors } from "@/global";
+import { roleNames, roleColors } from "@/global";
 
 const userList = ref<UserInfoVO[]>([]);
 const createModalOpen = ref(false);

@@ -1,7 +1,7 @@
 /* 滚动条整体宽度 */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 /* 滚动条轨道 */
@@ -12,7 +12,7 @@
 /* 滚动条滑块 */
 ::-webkit-scrollbar-thumb {
   background: #888;
-  border-radius: 50px;
+  border-radius: 100px;
 }
 
 /* 鼠标悬浮滑块时 */

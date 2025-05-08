@@ -65,13 +65,19 @@ export const routes: RouteRecordRaw[] = [
               title: "文章列表",
             },
           },
+          {
+            path: "bin",
+            component: () => import("@/views/post/bin.vue"),
+            name: "PostBin",
+            meta: { title: "回收箱" },
+          },
         ],
       },
       {
         path: "label",
         name: "Label",
         meta: { title: "标签管理", icon: () => h(TagOutlined) },
-        component: () => import("@/views/label/index.vue"),
+        component: () => import("@/views/label/LabelManage.vue"),
       },
 
       {

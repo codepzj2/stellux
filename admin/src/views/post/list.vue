@@ -1,4 +1,21 @@
 <template>
+  <a-page-header title="文章列表" class="!px-0">
+    <template #extra>
+      <a-input-search
+        v-model:value="page.keyword"
+        placeholder="请输入关键字"
+        style="width: 200px"
+        :loading="searchLoading"
+        enter-button
+        @search="onSearch"
+      />
+      <a-button @click="$router.push({ name: 'PostBin' })">回收箱</a-button>
+      <a-button>草稿箱</a-button>
+      <a-button type="primary" @click="$router.push({ name: 'PostCreate' })"
+        >新增文章</a-button
+      >
+    </template>
+  </a-page-header>
   <a-table
     :columns="columns"
     :data-source="postList"
@@ -6,11 +23,14 @@
     :pagination="false"
   >
     <template #bodyCell="{ column, record }">
-      <template v-if="column.key === 'created_at'">
-        {{ formatTime(record.created_at) }}
+      <template v-if="column.key === 'title'">
+        <span class="text-sm flex items-center gap-2">
+          <span class="font-bold">{{ record.title }}</span>
+          <a-tag v-if="record.is_top" color="red">置顶</a-tag>
+        </span>
       </template>
-      <template v-else-if="column.key === 'updated_at'">
-        {{ formatTime(record.updated_at) }}
+      <template v-else-if="column.key === 'description'">
+        <span class="text-sm line-clamp-2">{{ record.description }}</span>
       </template>
       <template v-else-if="column.key === 'thumbnail'">
         <a-image :width="80" :src="record.thumbnail" :fallback="ImgFallback" />
@@ -26,9 +46,6 @@
             {{ tag }}
           </a-tag>
         </span>
-      </template>
-      <template v-else-if="column.key === 'is_top'">
-        <a-switch v-model:checked="record.is_top" />
       </template>
       <template v-else-if="column.key === 'action'">
         <span>
@@ -51,25 +68,37 @@
   </a-table>
 </template>
 <script lang="ts" setup>
-import { getPostDetailListAPI } from "@/api/post";
-import { formatTime } from "@/utils/time";
+import { getPostDetailListAPI, softDeletePostAPI } from "@/api/post";
 import type { PostDetailVO } from "@/types/post";
 import ImgFallback from "@/assets/png/img-fallback.png";
+import type { PageReq } from "@/types/response";
+import { message } from "ant-design-vue";
 
 const postList = ref<PostDetailVO[]>([]);
 const router = useRouter();
+const page = reactive<PageReq>({
+  page_no: 1,
+  page_size: 10,
+  keyword: "",
+});
+
+const searchLoading = ref(false);
 
 const getPostList = async () => {
-  const res = await getPostDetailListAPI({
-    page_no: 1,
-    page_size: 10,
-  });
+  const res = await getPostDetailListAPI(page);
   postList.value = res.data.list;
 };
 
 onMounted(() => {
   getPostList();
 });
+
+const onSearch = async () => {
+  searchLoading.value = true;
+  page.page_no = 1;
+  await getPostList();
+  searchLoading.value = false;
+};
 
 const onHandleEdit = (record: PostDetailVO) => {
   router.push({
@@ -78,8 +107,10 @@ const onHandleEdit = (record: PostDetailVO) => {
   });
 };
 
-const onHandleDelete = (record: PostDetailVO) => {
-  console.log(record);
+const onHandleDelete = async (record: PostDetailVO) => {
+  const res = await softDeletePostAPI(record.id);
+  message.success(res.msg);
+  await getPostList();
 };
 
 const columns = [
@@ -87,14 +118,7 @@ const columns = [
     title: "标题",
     dataIndex: "title",
     key: "title",
-    width: 200,
-    ellipsis: true,
-  },
-  {
-    title: "作者",
-    dataIndex: "author",
-    key: "author",
-    width: 100,
+    width: 150,
   },
   {
     title: "封面",
@@ -107,19 +131,6 @@ const columns = [
     dataIndex: "description",
     key: "description",
     width: 200,
-    ellipsis: true,
-  },
-  {
-    title: "创建时间",
-    dataIndex: "created_at",
-    key: "created_at",
-    width: 150,
-  },
-  {
-    title: "更新时间",
-    dataIndex: "updated_at",
-    key: "updated_at",
-    width: 150,
   },
   {
     title: "分类",
@@ -132,12 +143,6 @@ const columns = [
     key: "tags",
     dataIndex: "tags",
     width: 200,
-  },
-  {
-    title: "是否置顶",
-    dataIndex: "is_top",
-    key: "is_top",
-    width: 100,
   },
   {
     title: "操作",

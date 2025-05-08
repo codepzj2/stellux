@@ -2,7 +2,6 @@ package dao
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/chenmingyong0423/go-mongox/v2"
@@ -59,20 +58,21 @@ type PostCategoryTags struct {
 
 type UpdatePost struct {
 	CreatedAt   time.Time       `bson:"created_at,omitempty"`
-	Title       string          `bson:"title,omitempty"`
-	Content     string          `bson:"content,omitempty"`
-	Description string          `bson:"description,omitempty"`
-	Author      string          `bson:"author,omitempty"`
-	CategoryID  bson.ObjectID   `bson:"category_id,omitempty"`
-	TagsID      []bson.ObjectID `bson:"tags_id,omitempty"`
-	IsPublish   bool            `bson:"is_publish,omitempty"`
-	IsTop       bool            `bson:"is_top,omitempty"`
-	Thumbnail   string          `bson:"thumbnail,omitempty"`
+	Title       string          `bson:"title"`
+	Content     string          `bson:"content"`
+	Description string          `bson:"description"`
+	Author      string          `bson:"author"`
+	CategoryID  bson.ObjectID   `bson:"category_id"`
+	TagsID      []bson.ObjectID `bson:"tags_id"`
+	IsPublish   bool            `bson:"is_publish"`
+	IsTop       bool            `bson:"is_top"`
+	Thumbnail   string          `bson:"thumbnail"`
 }
 
 type IPostDao interface {
 	Create(ctx context.Context, post *Post) error
 	Update(ctx context.Context, id bson.ObjectID, post *UpdatePost) error
+	SoftDelete(ctx context.Context, id bson.ObjectID) error
 	Delete(ctx context.Context, id bson.ObjectID) error
 	GetByID(ctx context.Context, id bson.ObjectID) (*Post, error)
 	GetDetailByID(ctx context.Context, id bson.ObjectID) (*PostCategoryTags, error)
@@ -106,15 +106,16 @@ func (d *PostDao) Update(ctx context.Context, id bson.ObjectID, post *UpdatePost
 	if err != nil {
 		return err
 	}
-	fmt.Println("--------------------------------")
-	fmt.Println(id)
-	fmt.Println(post)
-	fmt.Println(updateResult)
-	fmt.Println("--------------------------------")
 	if updateResult.ModifiedCount == 0 {
 		return errors.New("文章修改失败")
 	}
 	return nil
+}
+
+// SoftDelete 软删除文章
+func (d *PostDao) SoftDelete(ctx context.Context, id bson.ObjectID) error {
+	_, err := d.coll.Updater().Filter(query.Id(id)).Updates(update.NewBuilder().Set("deleted_at", time.Now()).Build()).UpdateOne(ctx)
+	return err
 }
 
 // Delete 删除文章

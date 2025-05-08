@@ -93,7 +93,9 @@
             :rows="6"
           />
         </a-form-item>
-
+        <a-form-item label="发布时间" name="created_at">
+          <a-date-picker show-time v-model:value="createdAt" />
+        </a-form-item>
         <div class="flex items-center gap-2 my-4">
           <span>发布</span>
           <a-switch v-model:checked="postForm.is_publish" />
@@ -121,17 +123,16 @@ import type { PostReq } from "@/types/post";
 import { useWindowSize } from "@vueuse/core";
 import { message, type FormInstance } from "ant-design-vue";
 import { createPostAPI, updatePostAPI } from "@/api/post";
+import dayjs from "dayjs";
 const props = defineProps<{
   mode: "create" | "edit";
   open: boolean;
   postForm: PostReq;
-  isConfirmLeave: boolean;
 }>();
 
 const emit = defineEmits<{
   (e: "update:open", value: boolean): void;
   (e: "update:postForm", value: PostReq): void;
-  (e: "update:isConfirmLeave", value: boolean): void;
 }>();
 
 const router = useRouter();
@@ -142,6 +143,15 @@ const postForm = computed({
   },
   set(value) {
     emit("update:postForm", value);
+  },
+});
+
+const createdAt = computed({
+  get() {
+    return dayjs(postForm.value.created_at);
+  },
+  set(value) {
+    postForm.value.created_at = value.toISOString();
   },
 });
 
@@ -176,9 +186,7 @@ const onHandleCreateOrEdit = () => {
     } else {
       await updatePostAPI(postForm.value);
       message.success("编辑成功");
-      // 编辑成功后，关闭弹窗，并跳转回文章列表
       emit("update:open", false);
-      emit("update:isConfirmLeave", true);
       router.push({ name: "PostList" });
     }
   });

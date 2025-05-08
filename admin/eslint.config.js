@@ -22,6 +22,7 @@ export default [
       "no-undef": "off", // 允许未定义的变量
       "@typescript-eslint/no-unused-vars": "off", // 允许未使用的变量
       "@typescript-eslint/no-empty-object-type": "off", // 允许空对象类型
+      "@typescript-eslint/ban-ts-comment": "off", // 允许 ts-comment
     },
   },
 ];

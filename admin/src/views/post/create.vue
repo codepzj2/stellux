@@ -10,6 +10,7 @@ import PostContentWriter from "./components/PostContentWriter.vue";
 import type { PostReq } from "@/types/post";
 
 const postForm = ref<PostReq>({
+  created_at: new Date().toISOString(),
   title: "",
   content: "",
   description: "",
@@ -20,7 +21,6 @@ const postForm = ref<PostReq>({
   is_top: false,
   thumbnail: "",
 });
-
 </script>
 
 <style lang="scss" scoped></style>

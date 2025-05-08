@@ -1,8 +1,4 @@
-import {
-  useUserStore,
-  useSystemStore,
-  useSidebarStore,
-} from "@/store";
+import { useUserStore, useSystemStore, useSidebarStore } from "@/store";
 
 export const clearStore = () => {
   useSystemStore().ResetSystemStore();

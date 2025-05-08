@@ -2,12 +2,11 @@
 defineOptions({
   name: "index",
 });
-
 </script>
 
 <template>
   <div>
-    <a-button type="primary" @click="">点击</a-button>
+    <a-button type="primary">点击</a-button>
   </div>
 </template>
 
