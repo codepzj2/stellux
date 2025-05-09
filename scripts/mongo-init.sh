@@ -183,7 +183,7 @@ db.post.insertMany([{
     "_id": ObjectId("67c453eda04b00c407b43202"),
     "created_at": new Date(),
     "updated_at": new Date(),
-    "title": "STELLUX 是什么?",
+    "title": "stellux博客?",
     "content": "STELLUX 是一个基于 Go 语言的博客系统，它可以帮助你快速搭建一个博客，并且支持 Markdown 格式\n\n## 什么是 STELLUX?\n\nSTELLUX 是一个基于 Go 语言的博客系统，它可以帮助你快速搭建一个博客，并且支持 Markdown 格式。\n\n## 为什么选择 STELLUX?\n\nSTELLUX 是一个基于 Go 语言的博客系统，它可以帮助你快速搭建一个博客，并且支持 Markdown 格式。\n\n## 如何使用 STELLUX?\n\nSTELLUX 是一个基于 Go 语言的博客系统，它可以帮助你快速搭建一个博客，并且支持 Markdown 格式。",
     "description": "STELLUX 是一个基于 Go 语言的博客系统，它可以帮助你快速搭建一个博客，并且支持 Markdown 格式。",
     "category_id": ObjectId("67c453eda04b00c407b43197"),

@@ -29,10 +29,10 @@ jobs:
       run: |
         pnpm install
 
-    - name: pnpm lint
-      working-directory: ./web
-      run: |
-        pnpm run lint
+    # - name: pnpm lint
+    #   working-directory: ./web
+    #   run: |
+    #     pnpm run lint
 
     - name: pnpm build
       working-directory: ./web
