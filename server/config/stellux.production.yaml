@@ -1,5 +1,5 @@
 mongodb:
-  HOST: "localhost"
+  HOST: "mongodb"
   PORT: 27017
   MONGO_INITDB_ROOT_USERNAME: "admin"
   MONGO_INITDB_ROOT_PASSWORD: "123456"

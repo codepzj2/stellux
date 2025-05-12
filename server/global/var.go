@@ -15,7 +15,8 @@ var (
 
 // 命令行参数
 var (
-	Mode = flag.String("mode", "development", "运行模式,eg: development/production")
+	Mode    = flag.String("mode", "development", "运行模式,eg: development/production")
+	Config  = flag.String("config", "config/stellux.development.yaml", "配置文件路径,eg: config/stellux.development.yaml")
 )
 
 // 常量
