@@ -1,9 +1,9 @@
-import { Page, PageVO } from "@/types/page";
-import { PostVO } from "@/types/post";
+import { PageVO } from "@/types/page";
+import { PostVO, PostPageReq } from "@/types/post";
 import request from "@/utils/request";
 
 // 获取首页文章列表
-export const getPostDetailListAPI = (page: Page) => {
+export const getPostDetailListAPI = (page: PostPageReq) => {
   return request.get<PageVO<PostVO>>("/post/detail/list", page);
 };
 

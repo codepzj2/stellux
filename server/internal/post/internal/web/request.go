@@ -32,3 +32,12 @@ type PostUpdateRequest struct {
 type PostIDRequest struct {
 	ID string `uri:"id" binding:"required"`
 }
+
+type PostPublishStatusRequest struct {
+	ID        string `json:"id" binding:"required"`
+	IsPublish *bool  `json:"is_publish" binding:"required"`
+}
+
+type PostIDListRequest struct {
+	IDList []string `json:"id_list" binding:"required"`
+}

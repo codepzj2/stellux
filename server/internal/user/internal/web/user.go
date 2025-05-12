@@ -110,9 +110,7 @@ func (h *UserHandler) AdminCreateUser(c *gin.Context, createUserRequest CreateUs
 func (h *UserHandler) AdminUpdateUser(c *gin.Context, updateUserRequest UpdateUserRequest) *apiwrap.Response[any] {
 	user := domain.User{
 		ID:       apiwrap.ConvertBsonID(updateUserRequest.ID),
-		Username: updateUserRequest.Username,
 		Nickname: updateUserRequest.Nickname,
-		RoleId:   *updateUserRequest.RoleId,
 		Avatar:   updateUserRequest.Avatar,
 		Email:    updateUserRequest.Email,
 	}

@@ -32,7 +32,7 @@ type PostDetail struct {
 	Author      string         // 作者
 	Category    label.Domain   // 分类
 	Tags        []label.Domain // 标签
-	IsPublish   bool           // 是否发布	
+	IsPublish   bool           // 是否发布
 	IsTop       bool           // 是否置顶
 	Thumbnail   string         // 缩略图
 }

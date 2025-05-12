@@ -4,11 +4,11 @@ import { message } from "ant-design-vue";
 import { Code } from "@/global";
 import { clearStore } from "./clear";
 import router from "@/router";
-const baseURL = import.meta.env.VITE_API_URL;
+import { API_BASE_URL } from "@/constant";
 
 const request = axios.create({
-  baseURL,
-  timeout: 5000,
+  baseURL: API_BASE_URL,
+  timeout: 10000,
 });
 
 // 请求拦截器

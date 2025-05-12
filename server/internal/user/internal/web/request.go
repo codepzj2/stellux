@@ -16,9 +16,7 @@ type CreateUserRequest struct {
 
 type UpdateUserRequest struct {
 	ID       string `json:"id" binding:"required"`
-	Username string `json:"username" binding:"required"`
-	Nickname string `json:"nickname"`
-	RoleId   *int   `json:"role_id" binding:"required"`
-	Avatar   string `json:"avatar"`
-	Email    string `json:"email"`
+	Nickname string `json:"nickname" binding:"required"`
+	Avatar   string `json:"avatar" binding:"required"`
+	Email    string `json:"email" binding:"required"`
 }

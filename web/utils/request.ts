@@ -21,7 +21,7 @@ class Request {
         "Content-Type": "application/json",
       },
       body: data ? JSON.stringify(data) : undefined, // body携带参数
-      next: { revalidate: 0 },
+      next: { revalidate: 300 },
     };
 
     try {

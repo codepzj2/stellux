@@ -1,6 +1,6 @@
 <template>
   <Tooltip title="设置" placement="bottom" :mouse-enter-delay="0.5">
-    <SettingOutlined
+    <HighlightOutlined
       class="cursor-pointer rounded-md p-1"
       @click="showDrawer"
     />
@@ -12,7 +12,7 @@
           <div
             class="style-checbox-item"
             :class="{ active: themeMode === theme.value }"
-            @click="systemStore.setThemeMode(theme.value)"
+            @click="systemStore.setThemeMode(theme.value as 'light' | 'dark')"
           >
             <img :src="theme.value === 'light' ? LightTheme : DarkTheme" />
           </div>
@@ -39,7 +39,7 @@
 </template>
 
 <script lang="ts" setup>
-import { SettingOutlined } from "@ant-design/icons-vue";
+import { HighlightOutlined } from "@ant-design/icons-vue";
 import { storeToRefs } from "pinia";
 import { Drawer, Descriptions, Tag, Tooltip } from "ant-design-vue";
 import { themeColors, themeStyle } from "./constant";

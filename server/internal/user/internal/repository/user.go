@@ -43,9 +43,7 @@ func (r *UserRepository) GetByUsername(ctx context.Context, username string) (*d
 
 func (r *UserRepository) Update(ctx context.Context, user *domain.User) error {
 	return r.dao.Update(ctx, user.ID, &dao.User{
-		Username: user.Username,
 		Nickname: user.Nickname,
-		RoleId:   user.RoleId,
 		Avatar:   user.Avatar,
 		Email:    user.Email,
 	})

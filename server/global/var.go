@@ -23,5 +23,5 @@ var (
 	AccessTokenNotFound  = gin.H{"code": apiwrap.RequestAccessTokenNotFound, "msg": "未携带access_token"}
 	AccessTokenExpired   = gin.H{"code": apiwrap.RequestAccessTokenExpired, "msg": "access_token已过期"}
 	LoadPermissionFailed = gin.H{"code": apiwrap.RequestLoadPermissionFailed, "msg": "权限加载失败"}
-	PermissionDenied     = gin.H{"code": apiwrap.RequestPermissionDenied, "msg": "禁止访问"}
+	PermissionDenied     = gin.H{"code": apiwrap.RequestPermissionDenied, "msg": "权限不足,禁止访问"}
 )

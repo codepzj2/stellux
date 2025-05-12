@@ -70,10 +70,40 @@
         <a-row :gutter="16">
           <a-col :span="12">
             <a-form-item label="封面" name="thumbnail">
-              <a-input
-                v-model:value="postForm.thumbnail"
-                placeholder="请输入封面地址"
-              />
+              <div
+                v-if="postForm.thumbnail"
+                class="w-[200px] h-[112px] flex justify-center relative group"
+              >
+                <!-- 封面图 -->
+                <a-image
+                  :src="postForm.thumbnail"
+                  class="rounded-md cursor-pointer object-cover"
+                  :preview="false"
+                  @click="getThumbnailList"
+                />
+
+                <!-- 删除按钮，仅在 hover 时显示 -->
+                <div
+                  class="absolute top-1 right-1 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                >
+                  <a-button
+                    type="primary"
+                    shape="circle"
+                    danger
+                    size="small"
+                    @click.stop="postForm.thumbnail = ''"
+                  >
+                    <CloseOutlined />
+                  </a-button>
+                </div>
+              </div>
+              <div
+                v-else
+                class="w-[200px] h-[112px] flex items-center justify-center border-2 border-dashed border-gray-300 rounded-md cursor-pointer text-gray-400 transition-colors"
+                @click="getThumbnailList"
+              >
+                <span class="text-sm">点击上传封面</span>
+              </div>
             </a-form-item>
           </a-col>
         </a-row>
@@ -93,9 +123,11 @@
             :rows="6"
           />
         </a-form-item>
+
         <a-form-item label="发布时间" name="created_at">
           <a-date-picker show-time v-model:value="createdAt" />
         </a-form-item>
+
         <div class="flex items-center gap-2 my-4">
           <span>发布</span>
           <a-switch v-model:checked="postForm.is_publish" />
@@ -104,6 +136,7 @@
           <a-switch v-model:checked="postForm.is_top" />
         </div>
       </a-form>
+
       <template #extra>
         <a-space>
           <a-button type="primary" @click="onHandleCreateOrEdit">
@@ -113,6 +146,30 @@
         </a-space>
       </template>
     </a-drawer>
+
+    <a-modal
+      width="100%"
+      wrap-class-name="full-modal"
+      :open="thumbnailModalOpen"
+      @update:open="thumbnailModalOpen = $event"
+      title="选择封面"
+      @ok="thumbnailModalOpen = false"
+    >
+      <PhotoWall
+        mode="picture-card"
+        type="select"
+        :list="page.list"
+        @selected-photos="handleSelectPicture"
+      />
+      <div class="flex justify-end my-4">
+        <a-pagination
+          v-model:current="page.page_no"
+          :total="page.total_count"
+          show-less-items
+          @change="getThumbnailList"
+        />
+      </div>
+    </a-modal>
   </div>
 </template>
 
@@ -124,6 +181,13 @@ import { useWindowSize } from "@vueuse/core";
 import { message, type FormInstance } from "ant-design-vue";
 import { createPostAPI, updatePostAPI } from "@/api/post";
 import dayjs from "dayjs";
+import PhotoWall from "@/components/PhotoWall/index.vue";
+import { queryFileList } from "@/api/file";
+import type { FileVO } from "@/types/file";
+import type { PageData } from "@/types/dto";
+import { CloseOutlined } from "@ant-design/icons-vue";
+import { useRouter } from "vue-router";
+
 const props = defineProps<{
   mode: "create" | "edit";
   open: boolean;
@@ -155,6 +219,29 @@ const createdAt = computed({
   },
 });
 
+const thumbnailModalOpen = ref(false);
+const page = reactive<PageData<FileVO>>({
+  page_no: 1,
+  page_size: 10,
+  total_count: 0,
+  total_page: 0,
+  list: [],
+});
+
+const getThumbnailList = async () => {
+  const res = await queryFileList({
+    page_no: page.page_no,
+    page_size: page.page_size,
+  });
+  page.list = res.data.list;
+  page.total_count = res.data.total_count;
+  thumbnailModalOpen.value = true;
+};
+
+const handleSelectPicture = (pictures: string[]) => {
+  postForm.value.thumbnail = pictures[0];
+};
+
 const rules = {
   title: [{ required: true, message: "请输入标题" }],
   content: [{ required: true, message: "请输入内容" }],
@@ -181,14 +268,12 @@ const onHandleCreateOrEdit = () => {
     if (props.mode === "create") {
       await createPostAPI(postForm.value);
       message.success("发布成功");
-      emit("update:open", false);
-      router.push({ name: "PostList" });
     } else {
       await updatePostAPI(postForm.value);
       message.success("编辑成功");
-      emit("update:open", false);
-      router.push({ name: "PostList" });
     }
+    emit("update:open", false);
+    router.push({ name: "PostList" });
   });
 };
 
@@ -197,3 +282,27 @@ onMounted(() => {
   getTags();
 });
 </script>
+
+<style lang="scss">
+.full-modal {
+  .ant-modal {
+    max-width: 100%;
+    top: 0;
+    padding-bottom: 0;
+    margin: 0;
+  }
+  .ant-modal-content {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh);
+  }
+  .ant-modal-body {
+    flex: 1;
+    overflow-y: auto;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+</style>

@@ -1,3 +1,5 @@
+import { Page } from "./page";
+
 export interface PostVO {
   id: string;
   created_at: string;
@@ -19,7 +21,13 @@ export interface IPostCard {
   description: string;
   created_at: string;
   author: string;
-  thumbnail?: string;
-  category?: string;
-  tags?: string[];
+  thumbnail: string;
+  category: string;
+  tags: string[];
+  is_publish: boolean;
+  is_top: boolean;
+}
+
+export interface PostPageReq extends Page {
+  post_type: string;
 }

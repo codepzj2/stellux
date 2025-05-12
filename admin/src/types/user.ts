@@ -5,8 +5,6 @@ export interface UserInfoVO {
   role_id: number;
   avatar: string;
   email: string;
-  sex: string;
-  hobby: string;
 }
 
 export interface LoginReq {
@@ -28,11 +26,9 @@ export interface CreateUserReq {
   email: string;
 }
 
-export interface EditUserReq {
+export interface UpdateUserReq {
   id: string;
-  username: string;
   nickname: string;
-  role_id: number;
   avatar: string;
   email: string;
 }

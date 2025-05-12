@@ -1,10 +1,23 @@
 <template>
-  <div>
+  <div :style="{ overflow }">
     <router-view v-slot="{ Component }">
       <template v-if="Component">
-        <keep-alive :include="cacheNames">
-          <component :is="Component" />
-        </keep-alive>
+        <Suspense>
+          <Transition
+            name="fade-slide"
+            mode="out-in"
+            appear
+            @before-leave="overflow = 'hidden'"
+            @after-leave="overflow = 'auto'"
+          >
+            <keep-alive :include="cacheNames">
+              <component :is="Component" />
+            </keep-alive>
+          </Transition>
+          <template #fallback>
+            <a-skeleton />
+          </template>
+        </Suspense>
       </template>
     </router-view>
   </div>
@@ -12,5 +25,22 @@
 
 <script lang="ts" setup>
 import { cacheNames } from "@/router";
+
+const overflow = ref("auto");
 </script>
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.fade-slide-leave-active,
+.fade-slide-enter-active {
+  transition: all 0.3s;
+}
+
+.fade-slide-enter-from {
+  transform: translateX(-30px);
+  opacity: 0;
+}
+
+.fade-slide-leave-to {
+  transform: translateX(30px);
+  opacity: 0;
+}
+</style>

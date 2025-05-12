@@ -5,7 +5,7 @@ import type {
   LabelPageReq,
   LabelVO,
 } from "@/types/label";
-import type { PageResponse, Response } from "@/types/response";
+import type { PageResponse, Response } from "@/types/dto";
 
 export const queryLabelListAPI: (
   params: LabelPageReq

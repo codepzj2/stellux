@@ -1,8 +1,5 @@
-export interface IFile {
+export interface FileVO {
   id: string;
-  uid: string;
-  name: string;
-  created_at: string;
-  type: string;
+  file_name: string;
   url: string;
 }

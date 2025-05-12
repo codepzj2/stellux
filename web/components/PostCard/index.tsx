@@ -7,8 +7,7 @@ import { cn } from "@/lib/utils";
 import { Bookmark, Tag, Calendar } from "lucide-react";
 import dayjs from "dayjs";
 import { Image } from "@heroui/image";
-import FallbackPng from "@/assets/png/img-fallback.png";
-
+import { TopIcon } from "@/components/SvgIcon";
 export function PostCard({
   post,
   className,
@@ -37,6 +36,9 @@ export function PostCard({
             >
               {post.title}
             </span>
+            {post.is_top && (
+              <TopIcon className="text-red-500" size={24} />
+            )}
           </CardHeader>
 
           <CardBody className="p-0 mb-4">
@@ -83,7 +85,6 @@ export function PostCard({
             <Image
               src={post.thumbnail}
               alt={post.title}
-              fallbackSrc={FallbackPng.src}
               width={128}
               height={96}
               shadow="none"

@@ -3,6 +3,7 @@ package apiwrap
 import (
 	"log/slog"
 
+	"github.com/samber/lo"
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
@@ -13,4 +14,10 @@ func ConvertBsonID(id string) bson.ObjectID {
 		return bson.ObjectID{}
 	}
 	return objID
+}
+
+func ConvertBsonIDList(idList []string) []bson.ObjectID {
+	return lo.Map(idList, func(id string, _ int) bson.ObjectID {
+		return ConvertBsonID(id)
+	})
 }

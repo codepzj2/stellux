@@ -4,7 +4,7 @@ export const useSystemStore = defineStore(
   "system",
   () => {
     const themeColor = ref("#1677FF");
-    const themeMode = ref("light");
+    const themeMode = ref<"light" | "dark">("light");
 
     const appTheme = computed(() => {
       return {
@@ -21,7 +21,7 @@ export const useSystemStore = defineStore(
     });
 
     // 设置暗黑模式
-    const setThemeMode = (value: string) => {
+    const setThemeMode = (value: "light" | "dark") => {
       themeMode.value = value;
     };
 

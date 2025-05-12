@@ -72,8 +72,13 @@ type UpdatePost struct {
 type IPostDao interface {
 	Create(ctx context.Context, post *Post) error
 	Update(ctx context.Context, id bson.ObjectID, post *UpdatePost) error
+	UpdatePostPublishStatus(ctx context.Context, id bson.ObjectID, isPublish bool) error
 	SoftDelete(ctx context.Context, id bson.ObjectID) error
+	SoftDeleteBatch(ctx context.Context, ids []bson.ObjectID) error
 	Delete(ctx context.Context, id bson.ObjectID) error
+	DeleteBatch(ctx context.Context, ids []bson.ObjectID) error
+	Restore(ctx context.Context, id bson.ObjectID) error
+	RestoreBatch(ctx context.Context, ids []bson.ObjectID) error
 	GetByID(ctx context.Context, id bson.ObjectID) (*Post, error)
 	GetDetailByID(ctx context.Context, id bson.ObjectID) (*PostCategoryTags, error)
 	GetDetailList(ctx context.Context, pagePipeline mongo.Pipeline, cond bson.D) ([]*PostCategoryTags, int64, error)
@@ -95,7 +100,7 @@ func (d *PostDao) Create(ctx context.Context, post *Post) error {
 	if err != nil {
 		return err
 	}
-	if insertResult.InsertedID != nil {
+	if insertResult.InsertedID == nil {
 		return errors.Wrap(err, "插入文章失败")
 	}
 	return nil
@@ -112,15 +117,33 @@ func (d *PostDao) Update(ctx context.Context, id bson.ObjectID, post *UpdatePost
 	return nil
 }
 
+// UpdatePostPublishStatus 更新文章发布状态
+func (d *PostDao) UpdatePostPublishStatus(ctx context.Context, id bson.ObjectID, isPublish bool) error {
+	_, err := d.coll.Updater().Filter(query.Id(id)).Updates(update.NewBuilder().Set("is_publish", isPublish).Build()).UpdateOne(ctx)
+	return err
+}
+
 // SoftDelete 软删除文章
 func (d *PostDao) SoftDelete(ctx context.Context, id bson.ObjectID) error {
-	_, err := d.coll.Updater().Filter(query.Id(id)).Updates(update.NewBuilder().Set("deleted_at", time.Now()).Build()).UpdateOne(ctx)
+	_, err := d.coll.Updater().Filter(query.Id(id)).Updates(update.NewBuilder().Set("deleted_at", time.Now()).Set("is_publish", false).Set("is_top", false).Build()).UpdateOne(ctx)
 	return err
 }
 
 // Delete 删除文章
 func (d *PostDao) Delete(ctx context.Context, id bson.ObjectID) error {
 	_, err := d.coll.Deleter().Filter(query.Id(id)).DeleteOne(ctx)
+	return err
+}
+
+// DeleteBatch 批量删除文章
+func (d *PostDao) DeleteBatch(ctx context.Context, ids []bson.ObjectID) error {
+	_, err := d.coll.Deleter().Filter(query.In("_id", ids...)).DeleteMany(ctx)
+	return err
+}
+
+// Restore 恢复文章
+func (d *PostDao) Restore(ctx context.Context, id bson.ObjectID) error {
+	_, err := d.coll.Updater().Filter(query.Id(id)).Updates(update.NewBuilder().Set("deleted_at", nil).Build()).UpdateOne(ctx)
 	return err
 }
 
@@ -162,4 +185,16 @@ func (d *PostDao) GetDetailList(ctx context.Context, pagePipeline mongo.Pipeline
 		return nil, 0, err
 	}
 	return utils.ValToPtrList(postResult), count, err
+}
+
+// SoftDeleteBatch 批量软删除文章
+func (d *PostDao) SoftDeleteBatch(ctx context.Context, ids []bson.ObjectID) error {
+	_, err := d.coll.Updater().Filter(query.In("_id", ids...)).Updates(update.NewBuilder().Set("deleted_at", time.Now()).Set("is_publish", false).Set("is_top", false).Build()).UpdateMany(ctx)
+	return err
+}
+
+// RestoreBatch 批量恢复文章
+func (d *PostDao) RestoreBatch(ctx context.Context, ids []bson.ObjectID) error {
+	_, err := d.coll.Updater().Filter(query.In("_id", ids...)).Updates(update.NewBuilder().Set("deleted_at", nil).Build()).UpdateMany(ctx)
+	return err
 }

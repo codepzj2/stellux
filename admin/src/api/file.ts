@@ -1,69 +1,14 @@
 import request from "@/utils/request";
-import type { PageResponse, Response } from "@/types/response";
+import type { PageResponse, Response } from "@/types/dto";
 import type { UploadFile } from "ant-design-vue/lib/upload/interface";
-import type { IFile } from "@/types/file";
-
-const ALLOWED_IMAGE_TYPES = [
-  "image/jpeg",
-  "image/png",
-  "image/gif",
-  "image/bmp",
-  "image/webp",
-] as const;
+import type { FileVO } from "@/types/file";
+import { ALLOWED_IMAGE_TYPES } from "@/constant";
 
 const isValidImageType = (type: string): boolean => {
   return ALLOWED_IMAGE_TYPES.includes(type as any);
 };
 
-const cropTo16By9 = (file: File): Promise<Blob> => {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.onload = () => {
-      const aspectRatio = 16 / 9;
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
-
-      let targetWidth = img.width;
-      let targetHeight = img.height;
-
-      if (targetWidth / targetHeight > aspectRatio) {
-        targetWidth = targetHeight * aspectRatio;
-      } else {
-        targetHeight = targetWidth / aspectRatio;
-      }
-
-      canvas.width = targetWidth;
-      canvas.height = targetHeight;
-
-      if (ctx) {
-        ctx.clearRect(0, 0, targetWidth, targetHeight); // 清除画布，保持透明背景
-
-        const scale = Math.min(
-          targetWidth / img.width,
-          targetHeight / img.height
-        );
-        const drawWidth = img.width * scale;
-        const drawHeight = img.height * scale;
-        const offsetX = (targetWidth - drawWidth) / 2;
-        const offsetY = (targetHeight - drawHeight) / 2;
-
-        ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
-      }
-
-      canvas.toBlob(
-        blob =>
-          blob ? resolve(blob) : reject(new Error("Canvas 转换 Blob 失败")),
-        "image/png", // 使用 PNG 以支持透明背景
-        1
-      );
-    };
-
-    img.onerror = () => reject(new Error("图片加载失败"));
-    img.src = URL.createObjectURL(file);
-  });
-};
-
-export const uploadPicturesLocal = async ({
+export const uploadFilesAPI = async ({
   files,
 }: {
   files: UploadFile[];
@@ -77,34 +22,29 @@ export const uploadPicturesLocal = async ({
           `不支持的文件类型: ${file.type || "未知类型"}。仅支持: ${ALLOWED_IMAGE_TYPES.join(", ")}`
         );
       }
-
-      const croppedBlob = await cropTo16By9(file as unknown as File);
-      formData.append("uids", file.uid);
-      formData.append("file_names", file.name);
-      formData.append("files", croppedBlob, file.name);
+      formData.append("files", file as unknown as File);
     } catch (error) {
       console.error("文件处理失败:", file.name, error);
       throw error;
     }
   }
-
-  return request.post("/picture/local/upload", formData);
+  return request.post("/admin-api/file/upload", formData);
 };
 
-export const getFilesByPage = ({
+export const queryFileList = ({
   page_no,
-  size,
+  page_size,
 }: {
   page_no?: number;
-  size?: number;
-}): Promise<PageResponse<IFile>> => {
-  return request.get("/picture/list", { params: { page_no, size } });
+  page_size?: number;
+}): Promise<PageResponse<FileVO>> => {
+  return request.get("/file/list", { params: { page_no, page_size } });
 };
 
-export const deletePhotoByUid = ({
-  uid,
+export const deleteFilesByIdListAPI = ({
+  id_list,
 }: {
-  uid: string;
+  id_list: string[];
 }): Promise<Response<any>> => {
-  return request.delete("/picture/local/delete", { params: { uid } });
+  return request.delete("/admin-api/file/delete", { data: { id_list } });
 };

@@ -1,3 +1,5 @@
+import type { PageReq } from "./dto";
+
 export interface PostReq {
   id?: string;
   created_at?: string;
@@ -41,12 +43,6 @@ export interface PostDetailVO {
   is_publish: boolean;
 }
 
-export interface PostUpdateStatusReq {
-  id: string;
-  is_publish: boolean;
-}
-
-export interface PostLabel {
-  label: string;
-  value: string;
+export interface PostPageReq extends PageReq {
+  post_type: "publish" | "draft" | "bin";
 }

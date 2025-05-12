@@ -6,7 +6,12 @@
       </template>
     </a-page-header>
 
-    <a-table :columns="columns" :data-source="labelList" rowKey="id">
+    <a-table
+      :columns="columns"
+      :data-source="labelList"
+      :loading="loading"
+      rowKey="id"
+    >
       <template #bodyCell="{ column, record }">
         <template v-if="column.key === 'name'">
           <div>
@@ -86,14 +91,16 @@ const props = defineProps<{ activeKey: "category" | "tag" }>();
 
 const labelList = ref<LabelVO[]>([]);
 const editableMap = reactive<Record<string, LabelVO>>({});
-
+const loading = ref(false);
 const getLabelList = async () => {
+  loading.value = true;
   const res = await queryLabelListAPI({
     page_no: 1,
     page_size: 10,
     label_type: props.activeKey,
   });
   labelList.value = res.data.list;
+  loading.value = false;
 };
 
 watch(() => props.activeKey, getLabelList, { immediate: true });
@@ -181,7 +188,7 @@ const onHandleDelete = async (record: LabelVO) => {
 
 // 表格列
 const columns = [
-  { title: "名称", dataIndex: "name", key: "name" },
+  { title: "名称", key: "name" },
   { title: "操作", key: "action", width: 150, fixed: "right" },
 ];
 </script>

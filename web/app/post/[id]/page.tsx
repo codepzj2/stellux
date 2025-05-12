@@ -3,12 +3,13 @@ import Md from "@/components/Md";
 import { Toc } from "@/components/Toc";
 import { getTableOfContents } from "@/lib/toc";
 import { ScrollShadow } from "@heroui/scroll-shadow";
+import { Metadata } from "next";
+import { title } from "process";
 
 export default async function PostPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const post = await getPostDetailAPI(id);
   const toc = await getTableOfContents(post.data.content);
-
   return (
     <div className="relative max-w-7xl mx-auto px-4">
       <div className="flex flex-col justify-end lg:flex-row gap-12">
@@ -29,3 +30,8 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
     </div>
   );
 }
+
+export const metadata: Metadata = {
+  title: "文章详情",
+  description: "文章详情",
+};

@@ -1,11 +1,11 @@
 import type {
   CreateUserReq,
-  EditUserReq,
+  UpdateUserReq,
   LoginReq,
   LoginVO,
   UserInfoVO,
 } from "@/types/user";
-import type { Response, PageReq, PageResponse } from "@/types/response";
+import type { Response, PageReq, PageResponse } from "@/types/dto";
 import request from "@/utils/request";
 
 // 用户登录
@@ -34,9 +34,9 @@ export const createUserAPI: (
   return request.post("/admin-api/user/create", data);
 };
 
-// 编辑用户
+// 更新用户
 export const updateUserAPI: (
-  data: EditUserReq
+  data: UpdateUserReq
 ) => Promise<Response<UserInfoVO>> = data => {
   return request.put("/admin-api/user/update", data);
 };

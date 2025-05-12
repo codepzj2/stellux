@@ -57,12 +57,10 @@ func (h *PostHandler) PostDTOToDomain(postReq PostRequest) *domain.Post {
 		Description: postReq.Description,
 		Author:      postReq.Author,
 		CategoryID:  apiwrap.ConvertBsonID(postReq.CategoryID),
-		TagsID: lo.Map(postReq.TagsID, func(id string, _ int) bson.ObjectID {
-			return apiwrap.ConvertBsonID(id)
-		}),
-		IsPublish: postReq.IsPublish,
-		IsTop:     postReq.IsTop,
-		Thumbnail: postReq.Thumbnail,
+		TagsID:      apiwrap.ConvertBsonIDList(postReq.TagsID),
+		IsPublish:   postReq.IsPublish,
+		IsTop:       postReq.IsTop,
+		Thumbnail:   postReq.Thumbnail,
 	}
 }
 
@@ -75,12 +73,10 @@ func (h *PostHandler) PostUpdateDTOToDomain(postUpdateReq PostUpdateRequest) *do
 		Description: postUpdateReq.Description,
 		Author:      postUpdateReq.Author,
 		CategoryID:  apiwrap.ConvertBsonID(postUpdateReq.CategoryID),
-		TagsID: lo.Map(postUpdateReq.TagsID, func(id string, _ int) bson.ObjectID {
-			return apiwrap.ConvertBsonID(id)
-		}),
-		IsPublish: postUpdateReq.IsPublish,
-		IsTop:     postUpdateReq.IsTop,
-		Thumbnail: postUpdateReq.Thumbnail,
+		TagsID:      apiwrap.ConvertBsonIDList(postUpdateReq.TagsID),
+		IsPublish:   postUpdateReq.IsPublish,
+		IsTop:       postUpdateReq.IsTop,
+		Thumbnail:   postUpdateReq.Thumbnail,
 	}
 }
 

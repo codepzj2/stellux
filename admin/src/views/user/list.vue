@@ -5,15 +5,24 @@
         <a-button type="primary" @click="onHandleCreate">新增用户</a-button>
       </template>
     </a-page-header>
-    <a-table :columns="columns" :data-source="userList">
+    <a-table :columns="columns" :data-source="userList" :loading="loading">
       <template #bodyCell="{ column, record }">
         <template v-if="column.key === 'avatar'">
           <a-avatar :src="record.avatar" />
+        </template>
+        <template v-else-if="column.key === 'username'">
+          <span>{{ record.username }}</span>
+        </template>
+        <template v-else-if="column.key === 'nickname'">
+          <span>{{ record.nickname }}</span>
         </template>
         <template v-else-if="column.key === 'role_id'">
           <a-tag :color="roleColors[record.role_id as keyof typeof roleColors]">
             {{ roleNames[record.role_id as keyof typeof roleNames] }}
           </a-tag>
+        </template>
+        <template v-else-if="column.key === 'email'">
+          <span>{{ record.email }}</span>
         </template>
         <template v-else-if="column.key === 'action'">
           <span>
@@ -77,16 +86,6 @@
         layout="vertical"
         ref="editFormRef"
       >
-        <a-form-item label="用户名" name="username">
-          <a-input v-model:value="editForm.username" />
-        </a-form-item>
-        <a-form-item label="角色" name="role_id">
-          <a-select v-model:value="editForm.role_id">
-            <a-select-option :value="0">管理员</a-select-option>
-            <a-select-option :value="1">普通用户</a-select-option>
-            <a-select-option :value="2">游客</a-select-option>
-          </a-select>
-        </a-form-item>
         <a-form-item label="昵称" name="nickname">
           <a-input v-model:value="editForm.nickname" />
         </a-form-item>
@@ -107,10 +106,11 @@ import {
   getUserListAPI,
   deleteUserAPI,
 } from "@/api/user";
-import type { CreateUserReq, EditUserReq, UserInfoVO } from "@/types/user";
+import type { CreateUserReq, UpdateUserReq, UserInfoVO } from "@/types/user";
 import { roleNames, roleColors } from "@/global";
 
 const userList = ref<UserInfoVO[]>([]);
+const loading = ref(false);
 const createModalOpen = ref(false);
 const createFormRef = ref<FormInstance>();
 const createForm = ref<CreateUserReq>({
@@ -129,23 +129,24 @@ const createRules = ref({
 
 const editModalOpen = ref(false);
 const editFormRef = ref<FormInstance>();
-const editForm = ref<EditUserReq>({
+const editForm = ref<UpdateUserReq>({
   id: "",
-  username: "",
   nickname: "",
-  role_id: 0,
   avatar: "",
   email: "",
 });
-const originalEditForm = ref<EditUserReq>({ ...editForm.value });
+const originalEditForm = ref<UpdateUserReq>({ ...editForm.value });
 const editRules = ref({
-  username: [{ required: true, message: "请输入用户名" }],
-  role_id: [{ required: true, message: "请选择角色" }],
+  nickname: [{ required: true, message: "请输入昵称" }],
+  email: [{ required: true, message: "请输入邮箱" }],
+  avatar: [{ required: true, message: "请上传头像" }],
 });
 
 const getUserList = async () => {
+  loading.value = true;
   const res = await getUserListAPI({ page_no: 1, page_size: 10 });
   userList.value = res.data.list;
+  loading.value = false;
 };
 
 const onHandleCreate = () => {
@@ -184,9 +185,7 @@ const clearCreateForm = () => {
 const clearEditForm = () => {
   editForm.value = {
     id: "",
-    username: "",
     nickname: "",
-    role_id: 0,
     avatar: "",
     email: "",
   };
@@ -211,15 +210,13 @@ const handleEditOk = () => {
 onMounted(() => {
   getUserList();
 });
-
 const columns = [
-  { title: "头像", dataIndex: "avatar", key: "avatar", width: 100 },
-  { title: "用户名", dataIndex: "username", key: "username", width: 100 },
-  { title: "昵称", dataIndex: "nickname", key: "nickname", width: 100 },
-  { title: "角色", dataIndex: "role_id", key: "role_id", width: 100 },
+  { title: "头像", key: "avatar", width: 100 },
+  { title: "用户名", key: "username", width: 100 },
+  { title: "昵称", key: "nickname", width: 100 },
+  { title: "角色", key: "role_id", width: 100 },
   {
     title: "邮箱",
-    dataIndex: "email",
     key: "email",
     width: 200,
     ellipsis: true,

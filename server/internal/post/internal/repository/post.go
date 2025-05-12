@@ -17,11 +17,16 @@ import (
 type IPostRepository interface {
 	Create(ctx context.Context, post *domain.Post) error
 	Update(ctx context.Context, post *domain.Post) error
+	UpdatePublishStatus(ctx context.Context, id bson.ObjectID, isPublish bool) error
 	SoftDelete(ctx context.Context, id bson.ObjectID) error
+	SoftDeleteBatch(ctx context.Context, ids []bson.ObjectID) error
 	Delete(ctx context.Context, id bson.ObjectID) error
+	DeleteBatch(ctx context.Context, ids []bson.ObjectID) error
+	Restore(ctx context.Context, id bson.ObjectID) error
+	RestoreBatch(ctx context.Context, ids []bson.ObjectID) error
 	GetByID(ctx context.Context, id bson.ObjectID) (*domain.Post, error)
 	GetDetailByID(ctx context.Context, id bson.ObjectID) (*domain.PostDetail, error)
-	GetDetailList(ctx context.Context, page *apiwrap.Page) ([]*domain.PostDetail, int64, error)
+	GetDetailList(ctx context.Context, page *apiwrap.Page, postType string) ([]*domain.PostDetail, int64, error)
 }
 
 var _ IPostRepository = (*PostRepository)(nil)
@@ -42,13 +47,38 @@ func (r *PostRepository) Update(ctx context.Context, post *domain.Post) error {
 	return r.dao.Update(ctx, post.ID, r.PostDomainToUpdatePostDO(post))
 }
 
+// UpdatePostPublishStatus 更新文章发布状态
+func (r *PostRepository) UpdatePublishStatus(ctx context.Context, id bson.ObjectID, isPublish bool) error {
+	return r.dao.UpdatePostPublishStatus(ctx, id, isPublish)
+}
+
 func (r *PostRepository) SoftDelete(ctx context.Context, id bson.ObjectID) error {
 	return r.dao.SoftDelete(ctx, id)
+}
+
+// SoftDeleteBatch 批量软删除文章
+func (r *PostRepository) SoftDeleteBatch(ctx context.Context, ids []bson.ObjectID) error {
+	return r.dao.SoftDeleteBatch(ctx, ids)
 }
 
 // Delete 删除文章
 func (r *PostRepository) Delete(ctx context.Context, id bson.ObjectID) error {
 	return r.dao.Delete(ctx, id)
+}
+
+// DeleteBatch 批量删除文章
+func (r *PostRepository) DeleteBatch(ctx context.Context, ids []bson.ObjectID) error {
+	return r.dao.DeleteBatch(ctx, ids)
+}
+
+// Restore 恢复文章
+func (r *PostRepository) Restore(ctx context.Context, id bson.ObjectID) error {
+	return r.dao.Restore(ctx, id)
+}
+
+// RestoreBatch 批量恢复文章
+func (r *PostRepository) RestoreBatch(ctx context.Context, ids []bson.ObjectID) error {
+	return r.dao.RestoreBatch(ctx, ids)
 }
 
 // GetByID 获取文章
@@ -70,11 +100,19 @@ func (r *PostRepository) GetDetailByID(ctx context.Context, id bson.ObjectID) (*
 }
 
 // GetDetailList 获取文章列表
-func (r *PostRepository) GetDetailList(ctx context.Context, page *apiwrap.Page) ([]*domain.PostDetail, int64, error) {
-	cond := query.NewBuilder().Or(query.Regex("title", page.Keyword), query.Regex("description", page.Keyword)).Build()
+func (r *PostRepository) GetDetailList(ctx context.Context, page *apiwrap.Page, postType string) ([]*domain.PostDetail, int64, error) {
+	var cond bson.D
+	switch postType {
+	case "publish":
+		cond = query.NewBuilder().Or(query.Regex("title", page.Keyword), query.Regex("description", page.Keyword)).And(query.Eq("deleted_at", nil), query.Eq("is_publish", true)).Build()
+	case "draft":
+		cond = query.NewBuilder().Or(query.Regex("title", page.Keyword), query.Regex("description", page.Keyword)).And(query.Eq("deleted_at", nil), query.Eq("is_publish", false)).Build()
+	case "bin":
+		cond = query.NewBuilder().Or(query.Regex("title", page.Keyword), query.Regex("description", page.Keyword)).And(query.Ne("deleted_at", nil)).Build()
+	}
 	skip := (page.PageNo - 1) * page.PageSize
 	limit := page.PageSize
-	sortBuilder := bsonx.NewD().Add("created_at", -1)
+	sortBuilder := bsonx.NewD().Add("is_top", -1).Add("created_at", -1)
 	if page.Field != "" {
 		sortBuilder.Add(page.Field, r.OrderConvertToInt(page.Order))
 	}

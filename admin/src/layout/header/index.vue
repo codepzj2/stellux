@@ -20,6 +20,7 @@
     <div class="flex items-center gap-2 md:gap-4">
       <Search />
       <FullScreen />
+      <Setting />
       <Dropdown placement="bottomRight">
         <Avatar
           class="cursor-pointer"
@@ -31,7 +32,16 @@
         <template #overlay>
           <Menu>
             <Menu.Item>
-              <div @click.prevent="Logout">
+              <div
+                @click.prevent="$router.push({ name: 'UserEdit' })"
+                class="flex items-center gap-2"
+              >
+                <EditOutlined />
+                编辑资料
+              </div>
+            </Menu.Item>
+            <Menu.Item>
+              <div @click.prevent="Logout" class="flex items-center gap-2">
                 <PoweroffOutlined />
                 退出登录
               </div>
@@ -39,7 +49,6 @@
           </Menu>
         </template>
       </Dropdown>
-      <Setting />
     </div>
   </div>
 </template>
@@ -52,6 +61,7 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   PoweroffOutlined,
+  EditOutlined,
 } from "@ant-design/icons-vue";
 import { clearStore } from "@/utils/clear";
 import { useRouter } from "vue-router";

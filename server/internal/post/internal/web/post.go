@@ -1,6 +1,8 @@
 package web
 
 import (
+	"fmt"
+
 	"github.com/codepzj/stellux/server/internal/pkg/apiwrap"
 	"github.com/codepzj/stellux/server/internal/post/internal/service"
 	"github.com/gin-gonic/gin"
@@ -19,14 +21,21 @@ type PostHandler struct {
 func (h *PostHandler) RegisterGinRoutes(engine *gin.Engine) {
 	adminGroup := engine.Group("/admin-api/post")
 	{
+		adminGroup.GET("draft/list", apiwrap.WrapWithBody(h.AdminGetDraftDetailPostList))
+		adminGroup.GET("bin/list", apiwrap.WrapWithBody(h.AdminGetBinDetailPostList))
 		adminGroup.POST("create", apiwrap.WrapWithBody(h.AdminCreatePost))
 		adminGroup.PUT("update", apiwrap.WrapWithBody(h.AdminUpdatePost))
+		adminGroup.PUT("update/publish-status", apiwrap.WrapWithBody(h.AdminUpdatePostPublishStatus))
+		adminGroup.PUT("restore/:id", apiwrap.WrapWithUri(h.AdminRestorePost))
+		adminGroup.PUT("restore/batch", apiwrap.WrapWithBody(h.AdminRestorePostBatch))
 		adminGroup.DELETE("soft-delete/:id", apiwrap.WrapWithUri(h.AdminSoftDeletePost))
+		adminGroup.DELETE("soft-delete/batch", apiwrap.WrapWithBody(h.AdminSoftDeletePostBatch))
 		adminGroup.DELETE("delete/:id", apiwrap.WrapWithUri(h.AdminDeletePost))
+		adminGroup.DELETE("delete/batch", apiwrap.WrapWithBody(h.AdminDeletePostBatch))
 	}
 	postGroup := engine.Group("/post")
 	{
-		postGroup.GET("/detail/list", apiwrap.WrapWithBody(h.GetDetailPostList))
+		postGroup.GET("/detail/list", apiwrap.WrapWithBody(h.GetPublishDetailPostList))
 		postGroup.GET("/detail/:id", apiwrap.WrapWithUri(h.GetDetailPostById))
 		postGroup.GET("/:id", apiwrap.WrapWithUri(h.GetPostById))
 	}
@@ -50,12 +59,45 @@ func (h *PostHandler) AdminUpdatePost(c *gin.Context, postUpdateReq PostUpdateRe
 	return apiwrap.SuccessWithMsg("更新文章成功")
 }
 
+func (h *PostHandler) AdminUpdatePostPublishStatus(c *gin.Context, postPublishStatusRequest PostPublishStatusRequest) *apiwrap.Response[any] {
+	err := h.serv.AdminUpdatePostPublishStatus(c, apiwrap.ConvertBsonID(postPublishStatusRequest.ID), *postPublishStatusRequest.IsPublish)
+	if err != nil {
+		return apiwrap.FailWithMsg(apiwrap.RuquestInternalServerError, err.Error())
+	}
+	return apiwrap.SuccessWithMsg("更新文章发布状态成功")
+}
+
+func (h *PostHandler) AdminRestorePost(c *gin.Context, postIDRequest PostIDRequest) *apiwrap.Response[any] {
+	err := h.serv.AdminRestorePost(c, apiwrap.ConvertBsonID(postIDRequest.ID))
+	if err != nil {
+		return apiwrap.FailWithMsg(apiwrap.RuquestInternalServerError, err.Error())
+	}
+	return apiwrap.SuccessWithMsg("恢复文章成功")
+}
+
+func (h *PostHandler) AdminRestorePostBatch(c *gin.Context, postIDListRequest PostIDListRequest) *apiwrap.Response[any] {
+	fmt.Println("postIDListRequest", postIDListRequest)
+	err := h.serv.AdminRestorePostBatch(c, apiwrap.ConvertBsonIDList(postIDListRequest.IDList))
+	if err != nil {
+		return apiwrap.FailWithMsg(apiwrap.RuquestInternalServerError, err.Error())
+	}
+	return apiwrap.SuccessWithMsg("批量恢复文章成功")
+}
+
 func (h *PostHandler) AdminSoftDeletePost(c *gin.Context, postIDRequest PostIDRequest) *apiwrap.Response[any] {
 	err := h.serv.AdminSoftDeletePost(c, apiwrap.ConvertBsonID(postIDRequest.ID))
 	if err != nil {
 		return apiwrap.FailWithMsg(apiwrap.RuquestInternalServerError, err.Error())
 	}
 	return apiwrap.SuccessWithMsg("软删除文章成功")
+}
+
+func (h *PostHandler) AdminSoftDeletePostBatch(c *gin.Context, postIDListRequest PostIDListRequest) *apiwrap.Response[any] {
+	err := h.serv.AdminSoftDeletePostBatch(c, apiwrap.ConvertBsonIDList(postIDListRequest.IDList))
+	if err != nil {
+		return apiwrap.FailWithMsg(apiwrap.RuquestInternalServerError, err.Error())
+	}
+	return apiwrap.SuccessWithMsg("批量软删除文章成功")
 }
 
 func (h *PostHandler) AdminDeletePost(c *gin.Context, postIDRequest PostIDRequest) *apiwrap.Response[any] {
@@ -66,15 +108,45 @@ func (h *PostHandler) AdminDeletePost(c *gin.Context, postIDRequest PostIDReques
 	return apiwrap.SuccessWithMsg("删除文章成功")
 }
 
-func (h *PostHandler) GetDetailPostList(c *gin.Context, pageReq apiwrap.Page) *apiwrap.Response[any] {
-	postDetailList, total, err := h.serv.GetPostDetailList(c, &pageReq)
+func (h *PostHandler) AdminDeletePostBatch(c *gin.Context, postIDListRequest PostIDListRequest) *apiwrap.Response[any] {
+	err := h.serv.AdminDeletePostBatch(c, apiwrap.ConvertBsonIDList(postIDListRequest.IDList))
+	if err != nil {
+		return apiwrap.FailWithMsg(apiwrap.RuquestInternalServerError, err.Error())
+	}
+	return apiwrap.SuccessWithMsg("批量删除文章成功")
+}
+
+func (h *PostHandler) GetPublishDetailPostList(c *gin.Context, pageReq apiwrap.Page) *apiwrap.Response[any] {
+	postDetailList, total, err := h.serv.GetPostDetailList(c, &pageReq, "publish")
 	if err != nil {
 		return apiwrap.FailWithMsg(apiwrap.RuquestInternalServerError, err.Error())
 	}
 	postVos := h.PostDetailListToVOList(postDetailList)
 
 	pageVo := apiwrap.ToPageVO(pageReq.PageNo, pageReq.PageSize, total, postVos)
-	return apiwrap.SuccessWithDetail[any](pageVo, "获取文章列表成功")
+	return apiwrap.SuccessWithDetail[any](pageVo, "获取发布文章详情列表成功")
+}
+
+func (h *PostHandler) AdminGetDraftDetailPostList(c *gin.Context, pageReq apiwrap.Page) *apiwrap.Response[any] {
+	postDetailList, total, err := h.serv.GetPostDetailList(c, &pageReq, "draft")
+	if err != nil {
+		return apiwrap.FailWithMsg(apiwrap.RuquestInternalServerError, err.Error())
+	}
+	postVos := h.PostDetailListToVOList(postDetailList)
+
+	pageVo := apiwrap.ToPageVO(pageReq.PageNo, pageReq.PageSize, total, postVos)
+	return apiwrap.SuccessWithDetail[any](pageVo, "获取草稿箱文章详情列表成功")
+}
+
+func (h *PostHandler) AdminGetBinDetailPostList(c *gin.Context, pageReq apiwrap.Page) *apiwrap.Response[any] {
+	postDetailList, total, err := h.serv.GetPostDetailList(c, &pageReq, "bin")
+	if err != nil {
+		return apiwrap.FailWithMsg(apiwrap.RuquestInternalServerError, err.Error())
+	}
+	postVos := h.PostDetailListToVOList(postDetailList)
+
+	pageVo := apiwrap.ToPageVO(pageReq.PageNo, pageReq.PageSize, total, postVos)
+	return apiwrap.SuccessWithDetail[any](pageVo, "获取回收站文章详情列表成功")
 }
 
 func (h *PostHandler) GetDetailPostById(c *gin.Context, postIDRequest PostIDRequest) *apiwrap.Response[any] {

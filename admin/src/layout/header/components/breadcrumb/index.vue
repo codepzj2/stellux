@@ -10,11 +10,9 @@ const router = useRouter();
 const route = useRoute();
 
 // 点击菜单
-// 点击菜单
 const clickMenuItem = (menuItem: RouteRecordRaw) => {
   const { isExt, extOpenMode, type } = menuItem?.meta || {};
 
-  // 如果点击的是首页并且没有子路由，跳转到仪表盘
   if (menuItem.name === "__index") {
     router.push({ name: "Dashboard" });
     return;
@@ -31,59 +29,66 @@ const clickMenuItem = (menuItem: RouteRecordRaw) => {
   }
 };
 
-// 使用 route.matched 构建面包屑
+// 构建面包屑数据
 const menus = computed(() => {
-  return [
-    ...route.matched
-      .filter(r => r.meta?.title && r.meta.hidden !== true)
-      .map(routeItem => {
-        // 对 children 也做 hidden 过滤
-        const children = (routeItem.children || []).filter(
-          c => c.meta?.hidden !== true
-        );
-        return { ...routeItem, children };
-      }),
-  ];
+  const matched = route.matched.filter(
+    r => r.meta?.title && r.meta?.hideInBreadcrumb !== true
+  );
+
+  const lastRoute = route.matched[route.matched.length - 1];
+
+  // 如果当前路由设置了 hideInBreadcrumb 但我们想显示标题
+  if (
+    lastRoute &&
+    lastRoute.meta?.title &&
+    lastRoute.meta?.hideInBreadcrumb === true &&
+    !matched.some(m => m.name === lastRoute.name)
+  ) {
+    matched.push(lastRoute);
+  }
+
+  return matched.map(routeItem => {
+    const children = (routeItem.children || []).filter(
+      c => c.meta?.hideInBreadcrumb !== true
+    );
+    return { ...routeItem, children };
+  });
 });
 
-// 获取选中子菜单项
+// 获取下拉菜单选中项
 const getSelectKeys = (routeIndex: number) => {
   return [menus.value[routeIndex + 1]?.name] as string[];
 };
 </script>
 
 <template>
-  <div>
-    <a-breadcrumb>
-      <template v-for="(routeItem, routeIndex) in menus" :key="routeItem?.name">
-        <a-breadcrumb-item>
-          <span class="cursor-pointer">
-            {{ routeItem?.meta?.title }}
-          </span>
-          <!-- 下拉菜单（如果有子路由） -->
-          <template v-if="routeItem?.children?.length" #overlay>
-            <a-menu :selected-keys="getSelectKeys(routeIndex)">
-              <template
-                v-for="childItem in routeItem?.children"
+  <a-breadcrumb>
+    <template v-for="(routeItem, routeIndex) in menus" :key="routeItem?.name">
+      <a-breadcrumb-item>
+        <span class="cursor-pointer" @click="clickMenuItem(routeItem)">
+          {{ routeItem?.meta?.title }}
+        </span>
+        <!-- 有子项才显示下拉菜单 -->
+        <template v-if="routeItem?.children?.length" #overlay>
+          <a-menu :selected-keys="getSelectKeys(routeIndex)">
+            <template
+              v-for="childItem in routeItem?.children"
+              :key="childItem.name"
+            >
+              <a-menu-item
+                v-if="
+                  !childItem.meta?.hideInSidebar &&
+                  !childItem.meta?.hideInBreadcrumb
+                "
                 :key="childItem.name"
+                @click="clickMenuItem(childItem)"
               >
-                <a-menu-item
-                  v-if="
-                    !childItem.meta?.hideInMenu &&
-                    !childItem.meta?.hideInBreadcrumb
-                  "
-                  :key="childItem.name"
-                  @click="clickMenuItem(childItem)"
-                >
-                  {{ childItem.meta?.title }}
-                </a-menu-item>
-              </template>
-            </a-menu>
-          </template>
-        </a-breadcrumb-item>
-      </template>
-    </a-breadcrumb>
-  </div>
+                {{ childItem.meta?.title }}
+              </a-menu-item>
+            </template>
+          </a-menu>
+        </template>
+      </a-breadcrumb-item>
+    </template>
+  </a-breadcrumb>
 </template>
-
-<style scoped lang="less"></style>

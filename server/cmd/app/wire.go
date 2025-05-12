@@ -7,6 +7,7 @@ import (
 	"github.com/codepzj/stellux/server/internal/ioc"
 	"github.com/codepzj/stellux/server/internal/user"
 
+	"github.com/codepzj/stellux/server/internal/file"
 	"github.com/codepzj/stellux/server/internal/label"
 	"github.com/codepzj/stellux/server/internal/post"
 	"github.com/google/wire"
@@ -26,6 +27,9 @@ func InitApp() *HttpServer {
 
 		label.InitLabelModule,
 		wire.FieldsOf(new(*label.Module), "Hdl"),
+
+		file.InitFileModule,
+		wire.FieldsOf(new(*file.Module), "Hdl"),
 
 		NewHttpServer,
 	)

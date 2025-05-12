@@ -15,6 +15,7 @@ import {
   UserOutlined,
   AppstoreOutlined,
   ExperimentOutlined,
+  FileOutlined,
 } from "@ant-design/icons-vue";
 
 export const routes: RouteRecordRaw[] = [
@@ -32,7 +33,36 @@ export const routes: RouteRecordRaw[] = [
         path: "/user",
         name: "UserManagement",
         meta: { title: "用户管理", icon: () => h(UserOutlined) },
-        component: () => import("@/views/user/list.vue"),
+        children: [
+          {
+            path: "list",
+            component: () => import("@/views/user/list.vue"),
+            name: "UserList",
+            meta: { title: "用户列表" },
+          },
+          {
+            path: "edit",
+            name: "UserEdit",
+            meta: { title: "编辑用户" },
+            component: () => import("@/views/user/edit/index.vue"),
+            redirect: { name: "UserEditBasic" },
+            children: [
+              {
+                path: "basic",
+                component: () => import("@/views/user/edit/pages/basic.vue"),
+                name: "UserEditBasic",
+                meta: { title: "基本信息", hideInSideBar: true },
+              },
+              {
+                path: "reset-password",
+                component: () =>
+                  import("@/views/user/edit/pages/ResetPassword.vue"),
+                name: "UserEditResetPassword",
+                meta: { title: "重置密码", hideInSideBar: true },
+              },
+            ],
+          },
+        ],
       },
       {
         path: "/content",
@@ -54,7 +84,8 @@ export const routes: RouteRecordRaw[] = [
             name: "PostEdit",
             meta: {
               title: "编辑文章",
-              hidden: true,
+              hideInBreadcrumb: true,
+              hideInSideBar: true,
             },
           },
           {
@@ -66,10 +97,19 @@ export const routes: RouteRecordRaw[] = [
             },
           },
           {
+            path: "draft",
+            component: () => import("@/views/post/draft.vue"),
+            name: "PostDraft",
+            meta: {
+              title: "草稿箱",
+              hideInSideBar: true,
+            },
+          },
+          {
             path: "bin",
             component: () => import("@/views/post/bin.vue"),
             name: "PostBin",
-            meta: { title: "回收箱" },
+            meta: { title: "回收箱", hideInSideBar: true },
           },
         ],
       },
@@ -79,7 +119,15 @@ export const routes: RouteRecordRaw[] = [
         meta: { title: "标签管理", icon: () => h(TagOutlined) },
         component: () => import("@/views/label/LabelManage.vue"),
       },
-
+      {
+        path: "file",
+        name: "File",
+        meta: {
+          title: "文件管理",
+          icon: () => h(FileOutlined),
+        },
+        component: () => import("@/views/file/index.vue"),
+      },
       {
         path: "/test",
         component: () => import("@/views/test/index.vue"),

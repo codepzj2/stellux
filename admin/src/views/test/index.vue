@@ -1,13 +1,52 @@
-<script setup lang="ts">
-defineOptions({
-  name: "index",
-});
-</script>
-
 <template>
   <div>
-    <a-button type="primary">点击</a-button>
+    <a-button type="primary" @click="showModal">Open Modal</a-button>
+    <a-modal
+      v-model:open="open"
+      title="Basic Modal"
+      width="100%"
+      wrap-class-name="full-modal"
+      @ok="handleOk"
+    >
+      <p>Some contents...</p>
+      <p>Some contents...</p>
+      <p>Some contents...</p>
+    </a-modal>
   </div>
 </template>
+<script lang="ts" setup>
+import { ref } from "vue";
+const open = ref<boolean>(false);
 
-<style lang="scss" scoped></style>
+const showModal = () => {
+  open.value = true;
+};
+
+const handleOk = (e: MouseEvent) => {
+  console.log(e);
+  open.value = false;
+};
+</script>
+<style lang="scss">
+.full-modal {
+  .ant-modal {
+    max-width: 100%;
+    top: 0;
+    padding-bottom: 0;
+    margin: 0;
+  }
+  .ant-modal-content {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh);
+  }
+  .ant-modal-body {
+    flex: 1;
+    overflow-y: auto;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+</style>

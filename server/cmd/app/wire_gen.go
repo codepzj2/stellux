@@ -7,6 +7,7 @@
 package app
 
 import (
+	"github.com/codepzj/stellux/server/internal/file"
 	"github.com/codepzj/stellux/server/internal/ioc"
 	"github.com/codepzj/stellux/server/internal/label"
 	"github.com/codepzj/stellux/server/internal/post"
@@ -23,8 +24,10 @@ func InitApp() *HttpServer {
 	postHandler := postModule.Hdl
 	labelModule := label.InitLabelModule(database)
 	labelHandler := labelModule.Hdl
+	fileModule := file.InitFileModule(database)
+	fileHandler := fileModule.Hdl
 	v := ioc.InitMiddleWare()
-	engine := ioc.NewGin(userHandler, postHandler, labelHandler, v)
+	engine := ioc.NewGin(userHandler, postHandler, labelHandler, fileHandler, v)
 	httpServer := NewHttpServer(engine)
 	return httpServer
 }

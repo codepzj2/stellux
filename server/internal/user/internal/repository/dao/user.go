@@ -22,9 +22,7 @@ type User struct {
 }
 
 type UserUpdate struct {
-	Username string `bson:"username,"`
-	Nickname string `bson:"nickname,"`
-	RoleId   int    `bson:"role_id,"`
+	Nickname string `bson:"nickname,omitempty"`
 	Avatar   string `bson:"avatar,omitempty"`
 	Email    string `bson:"email,omitempty"`
 }
@@ -103,9 +101,7 @@ func (d *UserDao) GetByID(ctx context.Context, id bson.ObjectID) (*User, error) 
 
 func (d *UserDao) UserToUpdate(user *User) *UserUpdate {
 	return &UserUpdate{
-		Username: user.Username,
 		Nickname: user.Nickname,
-		RoleId:   user.RoleId,
 		Avatar:   user.Avatar,
 		Email:    user.Email,
 	}

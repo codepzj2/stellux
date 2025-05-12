@@ -1,41 +1,60 @@
 <template>
   <div class="flex flex-col h-full">
-    <!-- logo -->
     <div
-      :class="`flex items-center ${props.collapsed ? 'justify-center' : 'justify-start'}`"
+      :class="[
+        'flex items-center',
+        sidebarStore.collapse ? 'justify-center' : 'justify-start',
+      ]"
     >
       <img
-        class="transition-all duration-300 ease-in-out"
-        :src="`/logo${props.collapsed ? '-sm' : ''}-${systemStore.themeMode === 'dark' ? 'dark' : 'light'}.png`"
+        :src="logoSrc"
+        :key="logoSrc"
         alt="logo"
-        :class="`my-[15px] ${props.collapsed ? 'mx-auto' : 'ml-4'} ${props.collapsed ? 'size-8' : 'w-32'}`"
+        @load="onLoad"
+        :class="[
+          'transition-opacity duration-700 ease-in-out my-[15px]',
+          sidebarStore.collapse ? 'mx-auto size-8' : 'ml-4 w-32',
+          logoLoaded ? 'opacity-100' : 'opacity-0',
+        ]"
       />
     </div>
-
-    <!-- 菜单 -->
     <a-menu
-      v-model:selectedKeys="sidebarStore.selectedKeys"
       mode="inline"
-      :open-keys="sidebarStore.openKeys"
+      :selectedKeys="selectedKeys"
+      :openKeys="openKeys"
       :items="menuItems"
-      @openChange="onOpenChange"
       @select="onSelect"
+      @openChange="onOpenChange"
     />
   </div>
 </template>
 
-<script lang="ts" setup>
-import { computed } from "vue";
-import { useRouter } from "vue-router";
+<script setup lang="ts">
+import { computed, ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import { routes } from "@/router";
-import { useSidebarStore, useSystemStore } from "@/store";
 import type { VNodeChild } from "vue";
 import type { ItemType } from "ant-design-vue";
+import { useSidebarStore, useSystemStore } from "@/store";
 
 const sidebarStore = useSidebarStore();
 const systemStore = useSystemStore();
+const router = useRouter();
+const route = useRoute();
+const selectedKeys = ref<string[]>([]);
+const openKeys = ref<string[]>([]);
 
-const props = defineProps<{ collapsed: boolean }>();
+const logoLoaded = ref(false);
+const logoSrc = computed(
+  () =>
+    `/logo${sidebarStore.collapse ? "-sm" : ""}-${systemStore.themeMode === "dark" ? "dark" : "light"}.png`
+);
+const onLoad = () => {
+  logoLoaded.value = true;
+};
+watch(logoSrc, () => {
+  logoLoaded.value = false;
+});
 
 type MenuItemType = {
   key: string;
@@ -52,67 +71,90 @@ function getItem(
   children?: MenuItemType[],
   type?: "group"
 ): MenuItemType {
-  return {
-    key,
-    icon,
-    children,
-    label,
-    type,
-  };
+  return { key, icon, children, label, type };
 }
 
+const mainRoute = routes.find(r => r.path === "/");
+
 const menuItems = computed(() => {
-  const mainRoute = routes.find((r): r is typeof r => r.path === "/");
-  if (!mainRoute || !mainRoute.children) return [];
-
-  const generateMenuItems = (
-    route: (typeof mainRoute.children)[number]
-  ): MenuItemType | null => {
-    if (!route.name || !route.meta?.title || route.meta.hidden === true) {
+  if (!mainRoute?.children) return [];
+  const generateMenuItems = (route: any): MenuItemType | null => {
+    if (!route.name || !route.meta?.title || route.meta.hideInSideBar === true)
       return null;
-    }
-
-    const childrenRoutes = route.children?.filter(
-      (child): child is typeof child =>
-        !!child.name && !!child.meta?.title && child.meta.hidden !== true
-    );
-
-    const itemChildren = childrenRoutes
-      ?.map(child => generateMenuItems(child))
-      .filter((item): item is MenuItemType => item !== null);
-
+    const children = route.children
+      ?.map(generateMenuItems)
+      .filter((i: any): i is MenuItemType => i !== null);
     return getItem(
-      route.meta.title as string,
+      route.meta.title,
       route.name.toString(),
-      route.meta.icon as (() => VNodeChild) | undefined,
-      itemChildren?.length ? itemChildren : undefined
+      route.meta.icon,
+      children?.length ? children : undefined
     );
   };
-
   return mainRoute.children
-    .map(route => generateMenuItems(route))
-    .filter((item): item is MenuItemType => item !== null);
+    .map(generateMenuItems)
+    .filter((i): i is MenuItemType => i !== null);
 });
 
 const rootSubmenuKeys = computed(() =>
-  menuItems.value.filter(item => !!item.children).map(item => item.key)
+  menuItems.value.filter(item => item.children?.length).map(item => item.key)
 );
 
-const router = useRouter();
-
 const onSelect = ({ key }: { key: string }) => {
-  sidebarStore.setSelectedKeys([key]);
+  selectedKeys.value = [key];
   router.push({ name: key });
 };
 
-const onOpenChange = (openKeys: string[]) => {
-  const latestOpenKey = openKeys.find(
-    key => sidebarStore.openKeys.indexOf(key) === -1
-  );
-  if (latestOpenKey && !rootSubmenuKeys.value.includes(latestOpenKey)) {
-    sidebarStore.setOpenKeys(openKeys);
+const onOpenChange = (keys: string[]) => {
+  const latest = keys.find(key => !openKeys.value.includes(key));
+  if (latest && rootSubmenuKeys.value.includes(latest)) {
+    openKeys.value = [latest];
   } else {
-    sidebarStore.setOpenKeys(latestOpenKey ? [latestOpenKey] : []);
+    openKeys.value = keys;
   }
 };
+
+const findRouteNameForHighlight = (
+  name: string | symbol | undefined,
+  routeList: any[],
+  parentName?: string
+): string | undefined => {
+  for (const route of routeList) {
+    if (route.name === name) {
+      return route.meta?.hideInSideBar ? parentName : route.name?.toString();
+    }
+    if (route.children) {
+      const found = findRouteNameForHighlight(
+        name,
+        route.children,
+        route.meta?.hideInSideBar ? parentName : route.name?.toString()
+      );
+      if (found) return found;
+    }
+  }
+  return undefined;
+};
+
+watch(
+  () => route.name,
+  () => {
+    const highlightName = findRouteNameForHighlight(route.name, routes);
+    selectedKeys.value = highlightName ? [highlightName] : [];
+    const segments = route.path.split("/").filter(Boolean);
+    let currentPath = "";
+    const keys: string[] = [];
+    const baseRoute = routes.find(r => r.path === "/");
+    segments.forEach(seg => {
+      currentPath += `/${seg}`;
+      const parent = baseRoute?.children?.find(
+        r => r.path === currentPath && r.name && r.meta?.hideInSideBar !== true
+      );
+      if (parent?.name) keys.push(parent.name.toString());
+    });
+    if (keys.length && keys[keys.length - 1] === route.name?.toString())
+      keys.pop();
+    openKeys.value = keys;
+  },
+  { immediate: true }
+);
 </script>

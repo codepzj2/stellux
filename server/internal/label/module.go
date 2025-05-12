@@ -9,7 +9,7 @@ import (
 type (
 	Handler = web.LabelHandler
 	Service = service.ILabelService
-	Domain = domain.Label
+	Domain  = domain.Label
 	Module  struct {
 		Svc Service
 		Hdl *Handler
