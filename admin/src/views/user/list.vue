@@ -36,8 +36,11 @@
               ok-text="确定"
               cancel-text="取消"
               @confirm="onHandleDelete(record)"
+              disabled
             >
-              <a-button type="link" size="small" danger>删除</a-button>
+              <a-button type="link" size="small" danger disabled>
+                删除</a-button
+              >
             </a-popconfirm>
           </span>
         </template>

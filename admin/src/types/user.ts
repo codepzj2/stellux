@@ -32,3 +32,9 @@ export interface UpdateUserReq {
   avatar: string;
   email: string;
 }
+
+export interface UpdatePasswordReq {
+  id: string;
+  old_password: string;
+  new_password: string;
+}

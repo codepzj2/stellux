@@ -31,6 +31,7 @@ func (h *UserHandler) RegisterGinRoutes(engine *gin.Engine) {
 	{
 		adminGroup.POST("/create", apiwrap.WrapWithBody(h.AdminCreateUser))
 		adminGroup.PUT("/update", apiwrap.WrapWithBody(h.AdminUpdateUser))
+		adminGroup.PUT("/update-password", apiwrap.WrapWithBody(h.AdminUpdatePassword))
 		adminGroup.DELETE("/delete/:id", apiwrap.Wrap(h.AdminDeleteUser))
 		adminGroup.GET("/list", apiwrap.WrapWithBody(h.AdminGetUserList))
 		adminGroup.GET("/info", apiwrap.Wrap(h.AdminGetUserInfo))
@@ -119,6 +120,14 @@ func (h *UserHandler) AdminUpdateUser(c *gin.Context, updateUserRequest UpdateUs
 		return apiwrap.FailWithMsg(apiwrap.RuquestInternalServerError, err.Error())
 	}
 	return apiwrap.SuccessWithMsg("更新用户成功")
+}
+
+func (h *UserHandler) AdminUpdatePassword(c *gin.Context, updatePasswordRequest UpdatePasswordRequest) *apiwrap.Response[any] {
+	err := h.serv.AdminUpdatePassword(c, updatePasswordRequest.ID, updatePasswordRequest.OldPassword, updatePasswordRequest.NewPassword)
+	if err != nil {
+		return apiwrap.FailWithMsg(apiwrap.RuquestInternalServerError, err.Error())
+	}
+	return apiwrap.SuccessWithMsg("更新密码成功")
 }
 
 func (h *UserHandler) AdminDeleteUser(c *gin.Context) *apiwrap.Response[any] {

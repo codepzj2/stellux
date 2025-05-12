@@ -31,6 +31,7 @@ type IUserDao interface {
 	Create(ctx context.Context, user *User) error
 	GetByUsername(ctx context.Context, username string) (*User, error)
 	Update(ctx context.Context, id bson.ObjectID, user *User) error
+	UpdatePassword(ctx context.Context, id bson.ObjectID, password string) error
 	Delete(ctx context.Context, id bson.ObjectID) error
 	FindByCondition(ctx context.Context, findOptions *options.FindOptionsBuilder) ([]*User, int64, error)
 	GetByID(ctx context.Context, id bson.ObjectID) (*User, error)
@@ -68,6 +69,17 @@ func (d *UserDao) Update(ctx context.Context, id bson.ObjectID, user *User) erro
 	}
 	if res.ModifiedCount == 0 {
 		return errors.New("更新用户失败")
+	}
+	return nil
+}
+
+func (d *UserDao) UpdatePassword(ctx context.Context, id bson.ObjectID, password string) error {
+	res, err := d.coll.Updater().Filter(query.Id(id)).Updates(update.Set("password", password)).UpdateOne(ctx)
+	if err != nil {
+		return err
+	}
+	if res.ModifiedCount == 0 {
+		return errors.New("更新密码失败")
 	}
 	return nil
 }

@@ -13,6 +13,7 @@ import (
 type IUserService interface {
 	CheckUserExist(ctx context.Context, user *domain.User) (bool, string)
 	AdminCreate(ctx context.Context, user *domain.User) error
+	AdminUpdatePassword(ctx context.Context, id string, oldPassword string, newPassword string) error
 	AdminUpdate(ctx context.Context, user *domain.User) error
 	AdminDelete(ctx context.Context, id string) error
 	GetUserList(ctx context.Context, page *domain.Page) ([]*domain.User, int64, error)
@@ -57,6 +58,22 @@ func (s *UserService) AdminCreate(ctx context.Context, user *domain.User) error 
 		return err
 	}
 	return s.repo.Create(ctx, user)
+}
+
+// 管理员更新用户密码
+func (s *UserService) AdminUpdatePassword(ctx context.Context, id string, oldPassword string, newPassword string) error {
+	u, err := s.repo.GetByID(ctx, id)
+	if err != nil {
+		return err
+	}
+	if !utils.CompareHashAndPassword(u.Password, oldPassword) {
+		return errors.New("旧密码错误")
+	}
+	newPassword, err = utils.GenerateHashPassword(newPassword)
+	if err != nil {
+		return err
+	}
+	return s.repo.UpdatePassword(ctx, id, newPassword)
 }
 
 // 管理员更新用户

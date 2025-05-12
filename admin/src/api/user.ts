@@ -4,6 +4,7 @@ import type {
   LoginReq,
   LoginVO,
   UserInfoVO,
+  UpdatePasswordReq,
 } from "@/types/user";
 import type { Response, PageReq, PageResponse } from "@/types/dto";
 import request from "@/utils/request";
@@ -18,6 +19,13 @@ export const userLoginAPI: (
 // 通过access_token找到用户
 export const getUserInfoAPI: () => Promise<Response<UserInfoVO>> = () => {
   return request.get("/admin-api/user/info");
+};
+
+// 更新用户密码
+export const updateUserPasswordAPI: (
+  data: UpdatePasswordReq
+) => Promise<Response<UserInfoVO>> = data => {
+  return request.put("/admin-api/user/update-password", data);
 };
 
 // 获取用户列表

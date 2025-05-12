@@ -48,7 +48,9 @@
       </a-form-item>
 
       <a-form-item :wrapper-col="{ offset: 4, span: 14 }">
-        <a-button type="primary" @click="handleSubmit">提交</a-button>
+        <div class="flex justify-end">
+          <a-button type="primary" @click="handleSubmit">提交</a-button>
+        </div>
       </a-form-item>
     </a-form>
     <a-modal

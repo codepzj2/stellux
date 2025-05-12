@@ -14,6 +14,7 @@ type IUserRepository interface {
 	Create(ctx context.Context, user *domain.User) error
 	GetByUsername(ctx context.Context, username string) (*domain.User, error)
 	Update(ctx context.Context, user *domain.User) error
+	UpdatePassword(ctx context.Context, id string, password string) error
 	Delete(ctx context.Context, id string) error
 	FindByPage(ctx context.Context, page *domain.Page) ([]*domain.User, int64, error)
 	GetByID(ctx context.Context, id string) (*domain.User, error)
@@ -48,6 +49,15 @@ func (r *UserRepository) Update(ctx context.Context, user *domain.User) error {
 		Email:    user.Email,
 	})
 }
+
+func (r *UserRepository) UpdatePassword(ctx context.Context, id string, password string) error {
+	bid, err := bson.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
+	return r.dao.UpdatePassword(ctx, bid, password)
+}
+
 func (r *UserRepository) Delete(ctx context.Context, id string) error {
 	bid, err := bson.ObjectIDFromHex(id)
 	if err != nil {
