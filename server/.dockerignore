@@ -6,3 +6,4 @@ static
 .vscode
 .idea
 .env
+config/stellux.production.yaml

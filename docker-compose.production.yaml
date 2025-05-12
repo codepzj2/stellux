@@ -7,6 +7,7 @@ services:
     volumes:
       - ./data/production/mongo:/data/db
       - ./scripts/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh
+      - ./server/config/stellux.production.yaml:/app/config/stellux.production.yaml # 挂载配置文件
     env_file:
       - ./server/config/stellux.production.yaml
     command: --auth --bind_ip_all

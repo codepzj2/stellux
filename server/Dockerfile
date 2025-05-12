@@ -34,9 +34,6 @@ ENV APP_ENV=production
 # 复制编译好的二进制文件
 COPY --from=builder /app/main .
 
-# 复制配置文件
-COPY --from=builder /app/config ./config
-
 # 运行所需的依赖
 RUN apk --no-cache add ca-certificates
 
@@ -44,4 +41,4 @@ RUN apk --no-cache add ca-certificates
 EXPOSE 9001
 
 # 运行应用
-CMD ["./main"]
+CMD ["./main", "--mode", "production"]
