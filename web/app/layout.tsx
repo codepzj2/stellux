@@ -52,7 +52,7 @@ export default function RootLayout({
                 isExternal
                 className="flex items-center gap-1 text-current"
                 href="https://github.com/codepzj/stellux"
-                title="Stellux homepage"
+                title="基于开源项目stellux构建"
               >
                 <span className="text-default-600">Powered by</span>
                 <p className="text-primary">Stellux</p>

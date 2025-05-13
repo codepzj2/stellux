@@ -4,9 +4,13 @@ import { Toc } from "@/components/Toc";
 import { getTableOfContents } from "@/lib/toc";
 import { ScrollShadow } from "@heroui/scroll-shadow";
 import { Metadata } from "next";
-import { title } from "process";
+import { headers } from "next/headers";
 
-export default async function PostPage({ params }: { params: Promise<{ id: string }> }) {
+type Props = {
+  params: Promise<{ id: string }>
+}
+
+export default async function PostPage({ params }: Props) {
   const { id } = await params;
   const post = await getPostDetailAPI(id);
   const toc = await getTableOfContents(post.data.content);
@@ -31,7 +35,39 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
   );
 }
 
-export const metadata: Metadata = {
-  title: "文章详情",
-  description: "文章详情",
-};
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { id } = await params;
+  const post = await getPostDetailAPI(id);
+  const data = post.data;
+
+  const title = data.title || "默认标题";
+  const description = data.description || "默认描述";
+  const image = data.thumbnail || "/default-thumbnail.jpg";
+  const keywords = [data.category, ...(data.tags || [])].filter(Boolean);
+
+  const headerList = await headers();
+  const host = headerList.get("host") || "localhost:3000";
+  const protocol = host.startsWith("localhost") ? "http" : "https";
+  const url = `${protocol}://${host}/post/${id}`;
+
+  return {
+    title,
+    description,
+    keywords,
+    openGraph: {
+      title,
+      description,
+      url,
+      type: "article",
+      images: [{ url: image }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [image],
+    },
+    authors: [{ name: data.author }],
+    metadataBase: new URL(`${protocol}://${host}`),
+  };
+}

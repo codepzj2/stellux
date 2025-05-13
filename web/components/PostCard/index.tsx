@@ -85,8 +85,8 @@ export function PostCard({
             <Image
               src={post.thumbnail}
               alt={post.title}
-              width={128}
-              height={96}
+              width={180}
+              height={120}
               shadow="none"
               loading="lazy"
               isZoomed

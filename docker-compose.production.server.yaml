@@ -24,3 +24,4 @@ services:
     restart: always
     volumes:
       - ./server/config:/app/config # 挂载配置文件
+      - ./server/static:/app/static # 挂载静态文件
