@@ -1,10 +1,8 @@
 # 构建阶段
-FROM node:23-slim AS builder
+FROM node:23-alpine AS builder
 
 # 设置全局环境
 ENV NODE_ENV=production
-# 设置nodejs最大内存为512M
-ENV NODE_OPTIONS="--max-old-space-size=512" 
 
 WORKDIR /app
 

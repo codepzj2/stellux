@@ -1,11 +1,9 @@
 # 基础镜像
-FROM node:23-slim AS base
+FROM node:23-alpine AS base
 
 # 设置全局环境
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
-# 设置nodejs最大内存为512M
-ENV NODE_OPTIONS="--max-old-space-size=512" 
 
 # 依赖层
 FROM base AS deps
