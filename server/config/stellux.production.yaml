@@ -1,5 +1,5 @@
 mongodb:
-  HOST: "mongodb"
+  HOST: "mongodb" # 生产环境请修改为ip地址
   PORT: 27017
   MONGO_INITDB_ROOT_USERNAME: "admin"
   MONGO_INITDB_ROOT_PASSWORD: "123456"

@@ -1,11 +1,15 @@
-web:
-	docker-compose -f docker-compose.production.yaml build --no-cache web
+build-server:
+	docker-compose -f docker-compose.production.server.yaml build
 
-server:
-	docker-compose -f docker-compose.production.yaml build --no-cache server 
+build-web:
+	docker-compose -f docker-compose.production.web.yaml build
 
-admin:
-	docker-compose -f docker-compose.production.yaml build --no-cache admin
+build-all:
+	docker-compose -f docker-compose.production.server.yaml build
+	docker-compose -f docker-compose.production.web.yaml build
 
-all:
-	docker-compose -f docker-compose.production.yaml build --no-cache
+build-all-no-cache:
+	docker-compose -f docker-compose.production.server.yaml build --no-cache
+	docker-compose -f docker-compose.production.web.yaml build --no-cache
+
+
