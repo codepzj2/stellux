@@ -44,6 +44,7 @@ data/
 # 生产环境配置文件
 admin/.env.production
 web/.env.production
+server/config/stellux.production.yaml
 
 # 日志文件
 *.log*
