@@ -1,6 +1,6 @@
 <template>
   <div>
-    <PostContentWriter mode="create" :post-form="postForm" />
+    <PostContentWriter mode="create" v-model:post-form="postForm" />
   </div>
 </template>
 

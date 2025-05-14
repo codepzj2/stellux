@@ -1,5 +1,5 @@
 <template>
-  <div :style="{ overflow }">
+  <div class="overflow-hidden">
     <router-view v-slot="{ Component }">
       <template v-if="Component">
         <Suspense>
@@ -7,8 +7,6 @@
             name="fade-slide"
             mode="out-in"
             appear
-            @before-leave="overflow = 'hidden'"
-            @after-leave="overflow = 'auto'"
           >
             <keep-alive :include="cacheNames">
               <component :is="Component" />
@@ -26,7 +24,6 @@
 <script lang="ts" setup>
 import { cacheNames } from "@/router";
 
-const overflow = ref("auto");
 </script>
 <style lang="scss" scoped>
 .fade-slide-leave-active,

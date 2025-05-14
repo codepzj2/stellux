@@ -47,6 +47,7 @@ import breaks from "@bytemd/plugin-breaks";
 
 import PostFormDrawer from "./PostFormDrawer.vue";
 import type { PostReq } from "@/types/post";
+import { useVModel } from "@vueuse/core";
 
 const mdPlugins = ref([
   gfm(),
@@ -65,7 +66,11 @@ const props = defineProps<{
   postForm: PostReq;
 }>();
 
-const postForm = computed(() => props.postForm);
+const emit = defineEmits<{
+  (e: "update:postForm", value: PostReq): void;
+}>();
+
+const postForm = useVModel(props, "postForm", emit);
 </script>
 
 <style lang="scss" scoped></style>

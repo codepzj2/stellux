@@ -32,7 +32,9 @@ export default function Md({ content, className }: { content: string, className?
           h6: ({ children }) => (
             <h6 className="!border-none">{children}</h6>
           ),
-
+          p: ({ children }) => (
+            <p className="leading-7">{children}</p>
+          ),
           a: ({ children, href }) => (
             <Link
               href={href}
@@ -44,6 +46,9 @@ export default function Md({ content, className }: { content: string, className?
             >
               {children}
             </Link>
+          ),
+          ul: ({ children }) => (
+            <ul className="list-disc !ml-0 !pl-4">{children}</ul>
           ),
           pre: ({ children }) => (
             <pre className="rounded-md dark:bg-[#141414] !p-0">{children}</pre>

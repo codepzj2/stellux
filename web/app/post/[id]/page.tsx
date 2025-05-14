@@ -25,7 +25,7 @@ export default async function PostPage({ params }: Props) {
         {/* 目录 */}
         <div className="hidden lg:block lg:w-1/5">
           <div className="sticky top-32">
-            <ScrollShadow className="w-full max-h-[600px]" size={20} hideScrollBar  >
+            <ScrollShadow className="w-full max-h-[400px] overflow-y-auto" size={10} >
               <Toc toc={toc} />
             </ScrollShadow>
           </div>

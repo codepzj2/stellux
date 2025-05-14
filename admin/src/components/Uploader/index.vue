@@ -1,6 +1,6 @@
 <template>
-  <div class="w-full flex flex-row justify-end">
-    <a-button @click="showModal"> 上传附件 </a-button>
+  <div>
+    <a-button type="primary" @click="showModal"> 上传附件 </a-button>
   </div>
   <a-modal
     v-model:open="open"

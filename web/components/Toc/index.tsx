@@ -27,6 +27,19 @@ export function Toc({ toc, className }: TocProps) {
 
   const activeId = useActiveItem(itemIds);
 
+  // 👉 新增：目录区域自动滚动
+  useEffect(() => {
+    if (!activeId) return;
+
+    const tocItem = document.querySelector(`[data-toc-id="${activeId}"]`);
+    if (tocItem) {
+      tocItem.scrollIntoView({
+        block: "nearest", // 或 'center' 效果更居中
+        behavior: "smooth", // 可根据需求设置
+      });
+    }
+  }, [activeId]);
+
   if (!toc?.length) {
     return null;
   }
@@ -92,6 +105,7 @@ function Tree({ tree, level = 1, activeItem }: TreeProps) {
           <li key={index} className="relative">
             <a
               href={item.url}
+              data-toc-id={itemId} // ✅ 用于 scrollIntoView 定位
               className={cn(
                 "block transition-colors duration-200 px-2 py-1",
                 "hover:text-primary",
