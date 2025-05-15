@@ -120,3 +120,9 @@ func (h *PostHandler) PostToVO(post *domain.Post) *PostVO {
 		Thumbnail: post.Thumbnail,
 	}
 }
+
+func (h *PostHandler) PostListToVOList(posts []*domain.Post) []*PostVO {
+	return lo.Map(posts, func(post *domain.Post, _ int) *PostVO {
+		return h.PostToVO(post)
+	})
+}

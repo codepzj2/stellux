@@ -80,6 +80,7 @@ type IPostDao interface {
 	Restore(ctx context.Context, id bson.ObjectID) error
 	RestoreBatch(ctx context.Context, ids []bson.ObjectID) error
 	GetByID(ctx context.Context, id bson.ObjectID) (*Post, error)
+	GetByKeyWord(ctx context.Context, keyWord string) ([]*Post, error)
 	GetDetailByID(ctx context.Context, id bson.ObjectID) (*PostCategoryTags, error)
 	GetDetailList(ctx context.Context, pagePipeline mongo.Pipeline, cond bson.D) ([]*PostCategoryTags, int64, error)
 }
@@ -171,6 +172,12 @@ func (d *PostDao) GetDetailByID(ctx context.Context, id bson.ObjectID) (*PostCat
 // GetByID 获取文章
 func (d *PostDao) GetByID(ctx context.Context, id bson.ObjectID) (*Post, error) {
 	return d.coll.Finder().Filter(query.Id(id)).FindOne(ctx)
+}
+
+// GetByKeyWord 获取文章
+func (d *PostDao) GetByKeyWord(ctx context.Context, keyWord string) ([]*Post, error) {
+	cond := query.NewBuilder().Or(query.Regex("title", keyWord), query.Regex("description", keyWord)).And(query.Eq("deleted_at", nil), query.Eq("is_publish", true)).Build()
+	return d.coll.Finder().Filter(cond).Find(ctx)
 }
 
 // GetDetailList 获取文章列表

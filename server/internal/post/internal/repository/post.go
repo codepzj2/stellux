@@ -25,6 +25,7 @@ type IPostRepository interface {
 	Restore(ctx context.Context, id bson.ObjectID) error
 	RestoreBatch(ctx context.Context, ids []bson.ObjectID) error
 	GetByID(ctx context.Context, id bson.ObjectID) (*domain.Post, error)
+	GetByKeyWord(ctx context.Context, keyWord string) ([]*domain.Post, error)
 	GetDetailByID(ctx context.Context, id bson.ObjectID) (*domain.PostDetail, error)
 	GetDetailList(ctx context.Context, page *apiwrap.Page, postType string) ([]*domain.PostDetail, int64, error)
 }
@@ -97,6 +98,17 @@ func (r *PostRepository) GetDetailByID(ctx context.Context, id bson.ObjectID) (*
 		return nil, err
 	}
 	return r.PostCategoryTagsDOToPostDetail(postCategoryTags), nil
+}
+
+// GetByKeyWord 获取文章
+func (r *PostRepository) GetByKeyWord(ctx context.Context, keyWord string) ([]*domain.Post, error) {
+	posts, err := r.dao.GetByKeyWord(ctx, keyWord)
+	if err != nil {
+		return nil, err
+	}
+	return lo.Map(posts, func(post *dao.Post, _ int) *domain.Post {
+		return r.PostDOToPostDomain(post)
+	}), nil
 }
 
 // GetDetailList 获取文章列表

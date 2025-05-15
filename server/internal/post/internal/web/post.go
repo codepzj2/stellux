@@ -38,6 +38,7 @@ func (h *PostHandler) RegisterGinRoutes(engine *gin.Engine) {
 		postGroup.GET("/detail/list", apiwrap.WrapWithBody(h.GetPublishDetailPostList))
 		postGroup.GET("/detail/:id", apiwrap.WrapWithUri(h.GetDetailPostById))
 		postGroup.GET("/:id", apiwrap.WrapWithUri(h.GetPostById))
+		postGroup.GET("/search", apiwrap.Wrap(h.GetPostByKeyWord))
 	}
 }
 
@@ -163,4 +164,13 @@ func (h *PostHandler) GetPostById(c *gin.Context, postIDRequest PostIDRequest) *
 		return apiwrap.FailWithMsg(apiwrap.RuquestInternalServerError, err.Error())
 	}
 	return apiwrap.SuccessWithDetail[any](h.PostToVO(post), "获取文章成功")
+}
+
+func (h *PostHandler) GetPostByKeyWord(c *gin.Context) *apiwrap.Response[any] {
+	keyword := c.Query("keyword")
+	postList, err := h.serv.GetPostByKeyWord(c, keyword)
+	if err != nil {
+		return apiwrap.FailWithMsg(apiwrap.RuquestInternalServerError, err.Error())
+	}
+	return apiwrap.SuccessWithDetail[any](h.PostListToVOList(postList), "获取文章成功")
 }

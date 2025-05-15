@@ -14,6 +14,19 @@ export interface PostVO {
   is_publish: boolean;
 }
 
+export interface PostSearchVO {
+  id: string;
+  title: string;
+  description: string;
+  created_at: string;
+  author: string;
+  thumbnail: string;
+  category_id: string;
+  tags_id: string[];
+  is_publish: boolean;
+  is_top: boolean;
+}
+
 export interface IPostCard {
   id: string;
   title: string;

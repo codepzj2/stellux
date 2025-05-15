@@ -1,5 +1,5 @@
 import { PageVO } from "@/types/page";
-import { PostVO, PostPageReq } from "@/types/post";
+import { PostVO, PostPageReq, PostSearchVO } from "@/types/post";
 import request from "@/utils/request";
 
 // 获取首页文章列表
@@ -10,4 +10,9 @@ export const getPostDetailListAPI = (page: PostPageReq) => {
 // 获取文章详情
 export const getPostDetailAPI = (id: string) => {
   return request.get<PostVO>(`/post/detail/${id}`);
+};
+
+// 搜索框获取文章列表
+export const getPostByKeyWordAPI = (keyword: string) => {
+  return request.get<PostSearchVO[]>(`/post/search?keyword=${keyword}`);
 };

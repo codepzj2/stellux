@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Navbar,
   NavbarContent,
@@ -6,43 +8,164 @@ import {
 } from "@heroui/navbar";
 import { Link } from "@heroui/link";
 import NextLink from "next/link";
+import { Input } from "@heroui/input";
+import { Modal, ModalContent } from "@heroui/modal";
 
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/ThemeSwitcher";
-import {
-  GithubIcon,
-} from "@/components/SvgIcon";
+import { GithubIcon, SearchLinearIcon } from "@/components/SvgIcon";
 import { Logo } from "@/components/Logo";
+
+import { useState, useEffect } from "react";
+import { PostSearchVO } from "@/types/post";
+import { getPostByKeyWordAPI } from "@/api/post";
+
 export default () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [keyword, setKeyword] = useState("");
+  const [postList, setPostList] = useState<PostSearchVO[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // 搜索文章（防抖）
+  useEffect(() => {
+    const delayDebounce = setTimeout(async () => {
+      if (!keyword.trim()) {
+        setPostList([]);
+        setIsLoading(false);
+        return;
+      }
+      setIsLoading(true);
+      try {
+        const res = await getPostByKeyWordAPI(keyword);
+        setPostList(res.data || []);
+      } finally {
+        setIsLoading(false);
+      }
+    }, 300);
+
+    return () => clearTimeout(delayDebounce);
+  }, [keyword]);
+
+  const handleClose = (open: boolean) => {
+    setIsOpen(open);
+    if (!open) {
+      setKeyword("");
+      setPostList([]);
+      setIsLoading(false);
+    }
+  };
+
+  const handleItemClick = () => {
+    handleClose(false); // 关闭弹窗
+  };
+
+  // 高亮关键词，兼容标题和描述
+  const highlightKeyword = (text: string, keyword: string) => {
+    if (!keyword) return text;
+    const parts = text.split(new RegExp(`(${keyword})`, "gi"));
+    return parts.map((part, index) =>
+      part.toLowerCase() === keyword.toLowerCase() ? (
+        <mark key={index} className="bg-yellow-300 text-black px-1 rounded">
+          {part}
+        </mark>
+      ) : (
+        <span key={index}>{part}</span>
+      )
+    );
+  };
 
   return (
-    <Navbar maxWidth="2xl" shouldHideOnScroll>
-      <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
-        <NavbarBrand as="li" className="gap-3 max-w-fit">
-          <NextLink className="flex justify-start items-center gap-1" href="/">
-            <Logo />
-          </NextLink>
-        </NavbarBrand>
-      </NavbarContent>
+    <>
+      {/* 顶部导航栏 */}
+      <Navbar maxWidth="2xl" shouldHideOnScroll>
+        <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
+          <NavbarBrand as="li" className="gap-3 max-w-fit">
+            <NextLink className="flex justify-start items-center gap-1" href="/">
+              <Logo />
+            </NextLink>
+          </NavbarBrand>
+        </NavbarContent>
+        <NavbarContent className="flex basis-1/5 sm:basis-full" justify="end">
+          <NavbarItem className="flex gap-2">
+            <div onClick={() => setIsOpen(true)} className="cursor-pointer w-[10rem]">
+              <Input
+                readOnly
+                placeholder="搜索"
+                size="sm"
+                startContent={<SearchLinearIcon size={18} />}
+                classNames={{
+                  base: "h-10",
+                  inputWrapper: "h-full font-normal text-default-500 bg-default-400/20 dark:bg-default-500/20",
+                  input: "text-small",
+                }}
+              />
+            </div>
+            <Link isExternal aria-label="Github" href={siteConfig.links.github}>
+              <GithubIcon className="text-default-500" />
+            </Link>
+            <ThemeSwitch />
+          </NavbarItem>
+        </NavbarContent>
+      </Navbar>
 
-      <NavbarContent
-        className="hidden sm:flex basis-1/5 sm:basis-full"
-        justify="end"
-      >
-        <NavbarItem className="hidden sm:flex gap-2">
-          <Link isExternal aria-label="Github" href={siteConfig.links.github}>
-            <GithubIcon className="text-default-500" />
-          </Link>
-          <ThemeSwitch />
-        </NavbarItem>
-      </NavbarContent>
+      {/* 搜索弹窗 */}
+      <Modal isOpen={isOpen} onOpenChange={handleClose} placement="top" size="xl">
+        <ModalContent>
+          <div className="px-6 py-8 space-y-6 bg-background rounded-xl shadow-xl">
+            {/* 搜索框 */}
+            <Input
+              placeholder="输入关键词搜索..."
+              startContent={<SearchLinearIcon size={18} />}
+              size="lg"
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
+              classNames={{
+                base: "rounded-xl shadow-sm",
+                inputWrapper: "bg-default-100 dark:bg-default-500/20",
+                input: "text-base",
+              }}
+            />
 
-      <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
-        <Link isExternal aria-label="Github" href={siteConfig.links.github}>
-          <GithubIcon className="text-default-500" />
-        </Link>
-        <ThemeSwitch />
-      </NavbarContent>
-    </Navbar>
+            {/* 搜索结果 */}
+            <div className="max-h-[300px] overflow-y-auto flex flex-col gap-3">
+              {isLoading ? (
+                <div className="text-default-500 text-sm text-center py-4 animate-pulse">
+                  正在加载...
+                </div>
+              ) : postList.length > 0 ? (
+                postList.map((post) => (
+                  <NextLink key={post.id} href={`/post/${post.id}`} onClick={handleItemClick}>
+                    <div
+                      className="
+                        p-3 rounded-xl bg-default-100/70 dark:bg-default-500/10 
+                        hover:bg-default-200 
+                        dark:hover:bg-white/10 
+                        transition-colors cursor-pointer shadow-sm 
+                        border border-transparent hover:border-default-300 dark:hover:border-zinc-800
+                      "
+                    >
+                      <div className="text-base font-medium text-foreground line-clamp-2">
+                        {highlightKeyword(post.title, keyword)}
+                      </div>
+                      {post.description && (
+                        <div className="text-sm text-default-500 line-clamp-2 mt-1">
+                          {highlightKeyword(post.description, keyword)}
+                        </div>
+                      )}
+                    </div>
+                  </NextLink>
+                ))
+              ) : (
+                keyword && (
+                  <div className="text-default-500 text-sm text-center py-4">
+                    暂无匹配结果 🕵️‍♀️
+                  </div>
+                )
+              )}
+            </div>
+          </div>
+        </ModalContent>
+      </Modal>
+    </>
   );
 };

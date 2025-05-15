@@ -8,6 +8,7 @@ import { Bookmark, Tag, Calendar } from "lucide-react";
 import dayjs from "dayjs";
 import { Image } from "@heroui/image";
 import { TopIcon } from "@/components/SvgIcon";
+
 export function PostCard({
   post,
   className,
@@ -21,29 +22,32 @@ export function PostCard({
   return (
     <Card
       key={post.id}
-      className={cn("p-6 shadow transition-all hover:shadow-md", className)}
+      className={cn(
+        "p-6 shadow transition-all hover:shadow-md overflow-hidden max-w-full",
+        className
+      )}
       onPress={() => router.push(`/post/${post.id}`)}
       isHoverable
       isPressable
     >
-      <div className="flex flex-wrap md:flex-nowrap">
+      <div className="flex flex-wrap md:flex-nowrap gap-4">
         {/* Left side: Title, Description, Footer */}
-        <div className="flex-1">
-          <CardHeader className="p-0 mb-4">
+        <div className="flex-1 min-w-0">
+          <CardHeader className="p-0 mb-4 flex items-center gap-2">
             <span
-              className="text-lg font-bold tracking-tight truncate px-2"
+              className="text-base md:text-lg font-bold truncate px-2 max-w-full"
               title={post.title}
             >
               {post.title}
             </span>
             {post.is_top && (
-              <TopIcon className="text-red-500" size={24} />
+              <TopIcon className="text-red-500 flex-shrink-0" size={24} />
             )}
           </CardHeader>
 
           <CardBody className="p-0 mb-4">
             <p
-              className="text-sm text-muted-foreground leading-relaxed line-clamp-2 px-2"
+              className="text-sm text-muted-foreground leading-relaxed px-2 max-w-full line-clamp-2 overflow-hidden text-ellipsis"
               title={post.description}
             >
               {post.description}
@@ -53,7 +57,7 @@ export function PostCard({
           <CardFooter className="hidden md:flex flex-wrap gap-2 p-0 text-sm text-muted-foreground">
             {post.category && (
               <span
-                className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-muted/60 hover:bg-muted transition"
+                className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-muted/60 hover:bg-muted transition truncate"
                 title={`分类：${post.category}`}
               >
                 <Bookmark size={14} />
@@ -62,7 +66,7 @@ export function PostCard({
             )}
             {tags && (
               <span
-                className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-muted/60 hover:bg-muted transition"
+                className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-muted/60 hover:bg-muted transition truncate"
                 title={`标签：${tags}`}
               >
                 <Tag size={14} />
@@ -80,7 +84,7 @@ export function PostCard({
         </div>
 
         {/* Right side: Image */}
-        <div className="hidden md:flex justify-center items-center md:w-48 h-auto">
+        <div className="hidden md:flex justify-center items-center w-48 h-auto flex-shrink-0">
           {post.thumbnail && (
             <Image
               src={post.thumbnail}
@@ -90,6 +94,7 @@ export function PostCard({
               shadow="none"
               loading="lazy"
               isZoomed
+              className="object-cover"
             />
           )}
         </div>

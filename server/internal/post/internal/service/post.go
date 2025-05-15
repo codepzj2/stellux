@@ -21,6 +21,7 @@ type IPostService interface {
 	AdminRestorePost(ctx context.Context, id bson.ObjectID) error
 	AdminRestorePostBatch(ctx context.Context, ids []bson.ObjectID) error
 	GetPostById(ctx context.Context, id bson.ObjectID) (*domain.Post, error)
+	GetPostByKeyWord(ctx context.Context, keyWord string) ([]*domain.Post, error)
 	GetPostDetailById(ctx context.Context, id bson.ObjectID) (*domain.PostDetail, error)
 	GetPostDetailList(ctx context.Context, page *apiwrap.Page, postType string) ([]*domain.PostDetail, int64, error)
 }
@@ -75,6 +76,10 @@ func (s *PostService) AdminRestorePostBatch(ctx context.Context, ids []bson.Obje
 
 func (s *PostService) GetPostById(ctx context.Context, id bson.ObjectID) (*domain.Post, error) {
 	return s.repo.GetByID(ctx, id)
+}
+
+func (s *PostService) GetPostByKeyWord(ctx context.Context, keyWord string) ([]*domain.Post, error) {
+	return s.repo.GetByKeyWord(ctx, keyWord)
 }
 
 func (s *PostService) GetPostDetailById(ctx context.Context, id bson.ObjectID) (*domain.PostDetail, error) {
