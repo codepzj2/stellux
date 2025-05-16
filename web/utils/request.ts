@@ -34,7 +34,8 @@ class Request {
   }
 
   public get<D>(url: string, params?: object): Promise<Response<D>> {
-    return this.request<unknown, D>(`${url}?${qs.stringify(params)}`, "GET");
+    const queryString = params ? `?${qs.stringify(params)}` : "";
+    return this.request<unknown, D>(`${url}${queryString}`, "GET");
   }
 
   public async post<T, D>(url: string, data: T): Promise<Response<D>> {

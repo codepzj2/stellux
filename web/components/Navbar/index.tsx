@@ -56,10 +56,10 @@ export default () => {
   };
 
   const handleItemClick = () => {
-    handleClose(false); // 关闭弹窗
+    handleClose(false);
   };
 
-  // 高亮关键词，兼容标题和描述
+  // 高亮关键词
   const highlightKeyword = (text: string, keyword: string) => {
     if (!keyword) return text;
     const parts = text.split(new RegExp(`(${keyword})`, "gi"));
@@ -80,14 +80,22 @@ export default () => {
       <Navbar maxWidth="2xl" shouldHideOnScroll>
         <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
           <NavbarBrand as="li" className="gap-3 max-w-fit">
-            <NextLink className="flex justify-start items-center gap-1" href="/">
+            <NextLink
+              className="flex justify-start items-center gap-1"
+              href="/"
+            >
               <Logo />
             </NextLink>
           </NavbarBrand>
         </NavbarContent>
+
         <NavbarContent className="flex basis-1/5 sm:basis-full" justify="end">
-          <NavbarItem className="flex gap-2">
-            <div onClick={() => setIsOpen(true)} className="cursor-pointer w-[10rem]">
+          <NavbarItem className="flex gap-2 items-center">
+            {/* 大屏显示搜索框 */}
+            <div
+              onClick={() => setIsOpen(true)}
+              className="cursor-pointer w-[10rem] hidden sm:block"
+            >
               <Input
                 readOnly
                 placeholder="搜索"
@@ -95,12 +103,26 @@ export default () => {
                 startContent={<SearchLinearIcon size={18} />}
                 classNames={{
                   base: "h-10",
-                  inputWrapper: "h-full font-normal text-default-500 bg-default-400/20 dark:bg-default-500/20",
+                  inputWrapper:
+                    "h-full font-normal text-default-500 bg-default-400/20 dark:bg-default-500/20",
                   input: "text-small",
                 }}
               />
             </div>
-            <Link isExternal aria-label="Github" href={siteConfig.links.github}>
+
+            {/* 小屏显示图标 */}
+            <div
+              onClick={() => setIsOpen(true)}
+              className="sm:hidden cursor-pointer p-2 rounded-md hover:bg-default-300 dark:hover:bg-default-500/30"
+            >
+              <SearchLinearIcon size={20} className="text-default-500" />
+            </div>
+
+            <Link
+              isExternal
+              aria-label="Github"
+              href={siteConfig.links.github}
+            >
               <GithubIcon className="text-default-500" />
             </Link>
             <ThemeSwitch />
@@ -111,7 +133,7 @@ export default () => {
       {/* 搜索弹窗 */}
       <Modal isOpen={isOpen} onOpenChange={handleClose} placement="top" size="xl">
         <ModalContent>
-          <div className="px-6 py-8 space-y-6 bg-background rounded-xl shadow-xl">
+          <div className="px-4 pt-8 pb-4 space-y-6 bg-background rounded-xl shadow-xl">
             {/* 搜索框 */}
             <Input
               placeholder="输入关键词搜索..."
@@ -127,20 +149,23 @@ export default () => {
             />
 
             {/* 搜索结果 */}
-            <div className="max-h-[300px] overflow-y-auto flex flex-col gap-3">
+            <div className="max-h-[300px] overflow-y-auto flex flex-col">
               {isLoading ? (
                 <div className="text-default-500 text-sm text-center py-4 animate-pulse">
                   正在加载...
                 </div>
               ) : postList.length > 0 ? (
                 postList.map((post) => (
-                  <NextLink key={post.id} href={`/post/${post.id}`} onClick={handleItemClick}>
+                  <NextLink
+                    key={post.id}
+                    href={`/post/${post.id}`}
+                    onClick={handleItemClick}
+                  >
                     <div
                       className="
-                        p-3 rounded-xl bg-default-100/70 dark:bg-default-500/10 
-                        hover:bg-default-200 
-                        dark:hover:bg-white/10 
-                        transition-colors cursor-pointer shadow-sm 
+                        p-3 rounded-xl bg-default-100/70 dark:bg-default-500/10
+                        hover:bg-default-200 dark:hover:bg-white/10
+                        transition-colors cursor-pointer shadow-sm
                         border border-transparent hover:border-default-300 dark:hover:border-zinc-800
                       "
                     >

@@ -116,11 +116,11 @@ func (r *PostRepository) GetDetailList(ctx context.Context, page *apiwrap.Page, 
 	var cond bson.D
 	switch postType {
 	case "publish":
-		cond = query.NewBuilder().Or(query.Regex("title", page.Keyword), query.Regex("description", page.Keyword)).And(query.Eq("deleted_at", nil), query.Eq("is_publish", true)).Build()
+		cond = query.NewBuilder().Or(query.RegexOptions("title", page.Keyword, "i"), query.RegexOptions("description", page.Keyword, "i")).And(query.Eq("deleted_at", nil), query.Eq("is_publish", true)).Build()
 	case "draft":
-		cond = query.NewBuilder().Or(query.Regex("title", page.Keyword), query.Regex("description", page.Keyword)).And(query.Eq("deleted_at", nil), query.Eq("is_publish", false)).Build()
+		cond = query.NewBuilder().Or(query.RegexOptions("title", page.Keyword, "i"), query.RegexOptions("description", page.Keyword, "i")).And(query.Eq("deleted_at", nil), query.Eq("is_publish", false)).Build()
 	case "bin":
-		cond = query.NewBuilder().Or(query.Regex("title", page.Keyword), query.Regex("description", page.Keyword)).And(query.Ne("deleted_at", nil)).Build()
+		cond = query.NewBuilder().Or(query.RegexOptions("title", page.Keyword, "i"), query.RegexOptions("description", page.Keyword, "i")).And(query.Ne("deleted_at", nil)).Build()
 	}
 	skip := (page.PageNo - 1) * page.PageSize
 	limit := page.PageSize
@@ -128,13 +128,13 @@ func (r *PostRepository) GetDetailList(ctx context.Context, page *apiwrap.Page, 
 	if page.Field != "" {
 		sortBuilder.Add(page.Field, r.OrderConvertToInt(page.Order))
 	}
-	pagePipeline := aggregation.NewStageBuilder().Lookup("label", "category", &aggregation.LookUpOptions{
+	pagePipeline := aggregation.NewStageBuilder().Match(cond).Lookup("label", "category", &aggregation.LookUpOptions{
 		LocalField:   "category_id",
 		ForeignField: "_id",
 	}).Unwind("$category", nil).Lookup("label", "tags", &aggregation.LookUpOptions{
 		LocalField:   "tags_id",
 		ForeignField: "_id",
-	}).Skip(skip).Limit(limit).Sort(sortBuilder.Build()).Match(cond).Build()
+	}).Skip(skip).Limit(limit).Sort(sortBuilder.Build()).Build()
 
 	posts, count, err := r.dao.GetDetailList(ctx, pagePipeline, cond)
 	if err != nil {

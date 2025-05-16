@@ -176,7 +176,7 @@ func (d *PostDao) GetByID(ctx context.Context, id bson.ObjectID) (*Post, error) 
 
 // GetByKeyWord 获取文章
 func (d *PostDao) GetByKeyWord(ctx context.Context, keyWord string) ([]*Post, error) {
-	cond := query.NewBuilder().Or(query.Regex("title", keyWord), query.Regex("description", keyWord)).And(query.Eq("deleted_at", nil), query.Eq("is_publish", true)).Build()
+	cond := query.NewBuilder().Or(query.RegexOptions("title", keyWord, "i"), query.RegexOptions("description", keyWord, "i")).And(query.Eq("deleted_at", nil), query.Eq("is_publish", true)).Build()
 	return d.coll.Finder().Filter(cond).Find(ctx)
 }
 

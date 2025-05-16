@@ -8,8 +8,8 @@ type PostRequest struct {
 	Content     string    `json:"content" binding:"required"`
 	Description string    `json:"description"`
 	Author      string    `json:"author" binding:"required"`
-	CategoryID  string    `json:"category_id"`
-	TagsID      []string  `json:"tags_id"`
+	CategoryID  string    `json:"category_id" binding:"required"`
+	TagsID      []string  `json:"tags_id" binding:"required"`
 	IsPublish   bool      `json:"is_publish"`
 	IsTop       bool      `json:"is_top"`
 	Thumbnail   string    `json:"thumbnail"`
@@ -22,8 +22,8 @@ type PostUpdateRequest struct {
 	Content     string    `json:"content"`
 	Description string    `json:"description"`
 	Author      string    `json:"author"`
-	CategoryID  string    `json:"category_id"`
-	TagsID      []string  `json:"tags_id"`
+	CategoryID  string    `json:"category_id" binding:"required"`
+	TagsID      []string  `json:"tags_id" binding:"required"`
 	IsPublish   bool      `json:"is_publish"`
 	IsTop       bool      `json:"is_top"`
 	Thumbnail   string    `json:"thumbnail"`

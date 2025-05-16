@@ -7,7 +7,6 @@
       :footer-style="{ textAlign: 'right' }"
       @close="open = false"
     >
-      <a-button type="primary" @click="clearForm">清空</a-button>
       <a-form
         ref="postFormRef"
         :model="postForm"
@@ -242,7 +241,11 @@ const rules = {
   title: [{ required: true, message: "请输入标题" }],
   content: [{ required: true, message: "请输入内容" }],
   author: [{ required: true, message: "请输入作者" }],
-  tags_id: [{ validator: tagsIDValidator }],
+  category_id: [{ required: true, message: "请选择分类" }],
+  tags_id: [
+    { required: true, message: "请选择标签" },
+    { validator: tagsIDValidator },
+  ],
 };
 
 // 分类 / 标签
@@ -295,7 +298,7 @@ const submitForm = () => {
       message.success("编辑成功");
     }
     // 清空表单
-    clearForm()
+    clearForm();
     open.value = false;
     router.push({ name: "PostList" });
   });
