@@ -114,6 +114,20 @@ export const routes: RouteRecordRaw[] = [
         ],
       },
       {
+        path: "document",
+        name: "Document",
+        meta: { title: "文档管理", icon: () => h(FileOutlined) },
+        component: () => import("@/views/document/index.vue"),
+        children: [
+          {
+            path: ":id",
+            component: () => import("@/views/document/pages/content.vue"),
+            name: "DocumentContent",
+            meta: { title: "文档内容", hideInSideBar: true },
+          },
+        ],
+      },
+      {
         path: "label",
         name: "Label",
         meta: { title: "标签管理", icon: () => h(TagOutlined) },
