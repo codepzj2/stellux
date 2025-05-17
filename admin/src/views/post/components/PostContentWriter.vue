@@ -15,14 +15,7 @@
       </div>
     </div>
 
-    <div class="md-editor markdown-body">
-      <Editor
-        :value="postForm.content"
-        :locale="zhHans"
-        :plugins="mdPlugins"
-        @change="postForm.content = $event"
-      />
-    </div>
+    <MdWriter v-model:content="postForm.content" />
 
     <PostFormDrawer
       :mode="props.mode"
@@ -33,31 +26,11 @@
 </template>
 
 <script lang="ts" setup>
-// @ts-ignore
-import { Editor } from "@bytemd/vue-next";
-import zhHans from "bytemd/locales/zh_Hans.json";
-
-import gfm from "@bytemd/plugin-gfm";
-import gemoji from "@bytemd/plugin-gemoji";
-import highlight from "@bytemd/plugin-highlight";
-import frontmatter from "@bytemd/plugin-frontmatter";
-import mediumZoom from "@bytemd/plugin-medium-zoom";
-import mermaid from "@bytemd/plugin-mermaid";
-import breaks from "@bytemd/plugin-breaks";
+import MdWriter from "@/components/MdWriter/index.vue";
 
 import PostFormDrawer from "./PostFormDrawer.vue";
 import type { PostReq } from "@/types/post";
 import { useVModel } from "@vueuse/core";
-
-const mdPlugins = ref([
-  gfm(),
-  gemoji(),
-  highlight(),
-  frontmatter(),
-  mediumZoom(),
-  breaks(),
-  mermaid(),
-]);
 
 const open = ref(false);
 

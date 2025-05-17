@@ -15,7 +15,8 @@ import {
   UserOutlined,
   AppstoreOutlined,
   ExperimentOutlined,
-  FileOutlined,
+  CloudUploadOutlined,
+  BookOutlined,
 } from "@ant-design/icons-vue";
 
 export const routes: RouteRecordRaw[] = [
@@ -65,9 +66,9 @@ export const routes: RouteRecordRaw[] = [
         ],
       },
       {
-        path: "/content",
-        name: "Content",
-        meta: { title: "内容管理", icon: () => h(AppstoreOutlined) },
+        path: "/post",
+        name: "Post",
+        meta: { title: "文章管理", icon: () => h(AppstoreOutlined) },
         children: [
           {
             path: "create",
@@ -114,31 +115,53 @@ export const routes: RouteRecordRaw[] = [
         ],
       },
       {
-        path: "document",
-        name: "Document",
-        meta: { title: "文档管理", icon: () => h(FileOutlined) },
+        path: "/document",
+        name: "DocumentIndex",
+        meta: { title: "文档管理", icon: () => h(BookOutlined) },
         component: () => import("@/views/document/index.vue"),
+        redirect: { name: "DocumentOverview" },
         children: [
           {
-            path: ":id",
-            component: () => import("@/views/document/pages/content.vue"),
+            path: "/document/overview",
+            name: "DocumentOverview",
+            meta: {
+              title: "文档概览",
+            },
+            component: () => import("@/views/document/overview.vue"),
+          },
+          {
+            path: "/document/content",
             name: "DocumentContent",
             meta: { title: "文档内容", hideInSideBar: true },
+            component: () => import("@/views/document/content.vue"),
+            children: [
+              {
+                path: ":id",
+                component: () => import("@/views/document/pages/detail.vue"),
+                name: "DocumentContentIndex",
+                meta: {
+                  title: "文档详情",
+                  hideInSideBar: true,
+                  hideInBreadcrumb: true,
+                },
+              },
+            ],
           },
         ],
       },
+
       {
         path: "label",
         name: "Label",
         meta: { title: "标签管理", icon: () => h(TagOutlined) },
-        component: () => import("@/views/label/LabelManage.vue"),
+        component: () => import("@/views/label/index.vue"),
       },
       {
         path: "file",
         name: "File",
         meta: {
-          title: "文件管理",
-          icon: () => h(FileOutlined),
+          title: "附件管理",
+          icon: () => h(CloudUploadOutlined),
         },
         component: () => import("@/views/file/index.vue"),
       },

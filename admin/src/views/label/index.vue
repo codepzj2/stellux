@@ -1,9 +1,13 @@
 <template>
-  <div>
+  <div class="h-full">
+    <!-- 分类/标签切换 -->
+
+    <!-- 表格与操作区域 -->
     <a-page-header class="!px-0">
-      <template #extra>
+      <div class="flex justify-between">
+        <a-segmented v-model:value="activeKey" :options="data" />
         <a-button type="primary" @click="onHandleCreate">新增</a-button>
-      </template>
+      </div>
     </a-page-header>
 
     <a-table
@@ -78,6 +82,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref, reactive, watch } from "vue";
 import { message, type FormInstance } from "ant-design-vue";
 import {
   createLabelAPI,
@@ -87,29 +92,37 @@ import {
 } from "@/api/label";
 import type { CreateLabelReq, LabelVO } from "@/types/label";
 
-const props = defineProps<{ activeKey: "category" | "tag" }>();
+// 当前激活 tab（分类 or 标签）
+const activeKey = ref<"category" | "tag">("category");
+const data = reactive([
+  { label: "文章分类", value: "category" },
+  { label: "文章标签", value: "tag" },
+]);
 
+// 数据列表和加载状态
 const labelList = ref<LabelVO[]>([]);
-const editableMap = reactive<Record<string, LabelVO>>({});
 const loading = ref(false);
+const editableMap = reactive<Record<string, LabelVO>>({});
+
 const getLabelList = async () => {
   loading.value = true;
   const res = await queryLabelListAPI({
     page_no: 1,
     page_size: 10,
-    label_type: props.activeKey,
+    label_type: activeKey.value,
   });
   labelList.value = res.data.list;
   loading.value = false;
 };
 
-watch(() => props.activeKey, getLabelList, { immediate: true });
+// 监听 activeKey 切换刷新数据
+watch(activeKey, getLabelList, { immediate: true });
 
-// 新增相关
+// 新增逻辑
 const createModalOpen = ref(false);
 const createFormRef = ref<FormInstance>();
 const createForm = ref<CreateLabelReq>({
-  label_type: props.activeKey,
+  label_type: activeKey.value,
   name: "",
 });
 const createRules = {
@@ -117,9 +130,9 @@ const createRules = {
     { required: true, message: "请输入名称" },
     {
       validator: (_rule: any, value: string, callback: any) => {
-        if (props.activeKey === "category" && value.length > 4) {
+        if (activeKey.value === "category" && value.length > 4) {
           callback(new Error("分类名称不能超过4个字符"));
-        } else if (props.activeKey === "tag" && value.length > 10) {
+        } else if (activeKey.value === "tag" && value.length > 10) {
           callback(new Error("标签名称不能超过10个字符"));
         } else {
           callback();
@@ -131,7 +144,7 @@ const createRules = {
 
 const onHandleCreate = () => {
   createForm.value = {
-    label_type: props.activeKey,
+    label_type: activeKey.value,
     name: "",
   };
   createModalOpen.value = true;
@@ -180,13 +193,14 @@ const onSave = async (record: LabelVO) => {
   await getLabelList();
 };
 
+// 删除逻辑
 const onHandleDelete = async (record: LabelVO) => {
   await deleteLabelAPI(record.id);
   message.success("删除成功");
   await getLabelList();
 };
 
-// 表格列
+// 表格列定义
 const columns = [
   { title: "名称", key: "name" },
   { title: "操作", key: "action", width: 150, fixed: "right" },

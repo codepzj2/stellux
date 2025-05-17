@@ -1,8 +1,9 @@
 <template>
   <Tooltip title="搜索" placement="bottom" :mouse-enter-delay="0.5">
     <slot
-      ><SearchOutlined
+      ><SvgIcon name="search"
         class="cursor-pointer rounded-md p-1"
+        :size="28"
         @click="visible = true"
     /></slot>
     <a-modal
@@ -19,7 +20,7 @@
         @change="handleSearch"
       >
         <template #prefix>
-          <SearchOutlined class="text-15px text-[#c2c2c2]" />
+          <SvgIcon name="search" :size="16" />
         </template>
       </a-input>
       <div class="mt-20px">
@@ -41,7 +42,7 @@
 <script lang="ts" setup>
 import { ref, shallowRef, computed, watch, nextTick } from "vue";
 import { useDebounceFn, onKeyStroke } from "@vueuse/core";
-import { SearchOutlined } from "@ant-design/icons-vue";
+import SvgIcon from "@/components/SvgIcon/index.vue";
 import { Empty, Tooltip } from "ant-design-vue";
 import SearchResult from "./components/SearchResult.vue";
 import SearchFooter from "./components/SearchFooter.vue";

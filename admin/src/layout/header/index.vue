@@ -17,10 +17,10 @@
         <Breadcrumb />
       </div>
     </div>
-    <div class="flex items-center gap-2 md:gap-4">
-      <Search />
-      <FullScreen />
-      <Setting />
+    <div class="flex items-center gap-2">
+      <Search class="hidden md:block" />
+      <FullScreen class="hidden md:block" />
+      <Setting class="hidden md:block" />
       <Dropdown placement="bottomRight">
         <Avatar
           class="cursor-pointer"

@@ -1,45 +1,49 @@
 <template>
-  <Tooltip title="设置" placement="bottom" :mouse-enter-delay="0.5">
-    <HighlightOutlined
-      class="cursor-pointer rounded-md p-1"
-      @click="showDrawer"
-    />
-  </Tooltip>
-  <Drawer v-model:open="visible" placement="right" :closable="false">
-    <Descriptions title="主题风格" :column="5">
-      <Descriptions.Item v-for="theme in themeStyle" :key="theme.value">
-        <Tooltip :title="theme.label">
-          <div
-            class="style-checbox-item"
-            :class="{ active: themeMode === theme.value }"
-            @click="systemStore.setThemeMode(theme.value as 'light' | 'dark')"
-          >
-            <img :src="theme.value === 'light' ? LightTheme : DarkTheme" />
-          </div>
-        </Tooltip>
-      </Descriptions.Item>
-    </Descriptions>
-    <Descriptions title="主题颜色" :column="9">
-      <Descriptions.Item v-for="item in themeColors" :key="item.key">
-        <div class="style-checbox-item">
-          <Tooltip :title="item.title">
-            <Tag
-              :color="item.value"
-              @click="systemStore.setThemeColor(item.value)"
+  <div>
+    <Tooltip title="设置" placement="bottom" :mouse-enter-delay="0.5">
+      <SvgIcon
+        name="setting"
+        :size="28"
+        class="cursor-pointer rounded-md p-1"
+        @click="showDrawer"
+      />
+    </Tooltip>
+    <Drawer v-model:open="visible" placement="right" :closable="false">
+      <Descriptions title="主题风格" :column="5">
+        <Descriptions.Item v-for="theme in themeStyle" :key="theme.value">
+          <Tooltip :title="theme.label">
+            <div
+              class="style-checbox-item"
+              :class="{ active: themeMode === theme.value }"
+              @click="systemStore.setThemeMode(theme.value as 'light' | 'dark')"
             >
-              <span :style="{ visibility: getThemeColorVisible(item.value) }">
-                ✔
-              </span>
-            </Tag>
+              <img :src="theme.value === 'light' ? LightTheme : DarkTheme" />
+            </div>
           </Tooltip>
-        </div>
-      </Descriptions.Item>
-    </Descriptions>
-  </Drawer>
+        </Descriptions.Item>
+      </Descriptions>
+      <Descriptions title="主题颜色" :column="9">
+        <Descriptions.Item v-for="item in themeColors" :key="item.key">
+          <div class="style-checbox-item">
+            <Tooltip :title="item.title">
+              <Tag
+                :color="item.value"
+                @click="systemStore.setThemeColor(item.value)"
+              >
+                <span :style="{ visibility: getThemeColorVisible(item.value) }">
+                  ✔
+                </span>
+              </Tag>
+            </Tooltip>
+          </div>
+        </Descriptions.Item>
+      </Descriptions>
+    </Drawer>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import { HighlightOutlined } from "@ant-design/icons-vue";
+import SvgIcon from "@/components/SvgIcon/index.vue";
 import { storeToRefs } from "pinia";
 import { Drawer, Descriptions, Tag, Tooltip } from "ant-design-vue";
 import { themeColors, themeStyle } from "./constant";
