@@ -10,6 +10,7 @@
         placeholder="请输入内容..."
       />
     </div>
+    <PhotoSelect v-model:open="photoSelectOpen" @selected-picture="selectedPicture" />
   </div>
 </template>
 
@@ -25,14 +26,21 @@ import frontmatter from "@bytemd/plugin-frontmatter";
 import mediumZoom from "@bytemd/plugin-medium-zoom";
 import mermaid from "@bytemd/plugin-mermaid";
 import breaks from "@bytemd/plugin-breaks";
+import photoSelect from "./plugins/photoSelect";
 import { useVModel } from "@vueuse/core";
+import PhotoSelect from "@/components/PhotoSelect/index.vue";
 
-const props = withDefaults(defineProps<{
-  content: string;
-  mode?: "split" | "tab" | "auto";
-}>(), {
-  mode: "auto",
-});
+const photoSelectOpen = ref(false);
+
+const props = withDefaults(
+  defineProps<{
+    content: string;
+    mode?: "split" | "tab" | "auto";
+  }>(),
+  {
+    mode: "auto",
+  }
+);
 
 const emit = defineEmits<{
   (e: "update:content", value: string): void;
@@ -40,16 +48,44 @@ const emit = defineEmits<{
 }>();
 
 const content = useVModel(props, "content", emit);
+const selectedPicture = (picture: string) => {
+  content.value = content.value + `![图片](${picture})`;
+};
 
 const mdPlugins = ref([
-  gfm(),
+  gfm({
+    locale: {
+      strike: "删除线",
+      strikeText: "删除线",
+      task: "任务",
+      taskText: "任务",
+      table: "表格",
+      tableHeading: "表格标题",
+    },
+  }),
   gemoji(),
   highlight(),
   frontmatter(),
   mediumZoom(),
   breaks(),
-  mermaid(),
+  mermaid({
+    locale: {
+      mermaid: "图表",
+      flowchart: "流程图",
+      sequence: "时序图",
+      class: "类图",
+      state: "状态图",
+      er: "实体关系图",
+      uj: "用户旅程图",
+      gantt: "甘特图",
+      pie: "饼图",
+      mindmap: "思维导图",
+      timeline: "时间线",
+    },
+  }),
+  photoSelect(photoSelectOpen),
 ]);
+
 
 </script>
 

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="flex justify-between items-center my-4">
+    <div class="flex justify-between items-center my-4 gap-2">
       <div class="w-[300px] md:w-[50%]">
         <a-input
           v-model:value="postForm.title"
@@ -10,9 +10,9 @@
           :maxlength="50"
         />
       </div>
-      <div class="flex gap-2">
-        <a-button type="primary" @click="open = true"> 发布文章 </a-button>
-      </div>
+      <a-button type="primary" @click="open = true">
+        发布文章
+      </a-button>
     </div>
 
     <MdWriter v-model:content="postForm.content" />

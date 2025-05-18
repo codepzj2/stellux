@@ -73,6 +73,7 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     SplitPanel: typeof import('./src/components/SplitPanel/index.vue')['default']
     SvgIcon: typeof import('./src/components/SvgIcon/index.vue')['default']
+    Upload: typeof import('./src/components/MdWriter/plugins/upload.vue')['default']
     Uploader: typeof import('./src/components/Uploader/index.vue')['default']
   }
 }
