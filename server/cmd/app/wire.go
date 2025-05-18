@@ -4,6 +4,7 @@
 package app
 
 import (
+	"github.com/codepzj/stellux/server/internal/document"
 	"github.com/codepzj/stellux/server/internal/ioc"
 	"github.com/codepzj/stellux/server/internal/user"
 
@@ -30,6 +31,9 @@ func InitApp() *HttpServer {
 
 		file.InitFileModule,
 		wire.FieldsOf(new(*file.Module), "Hdl"),
+
+		document.InitDocumentModule,
+		wire.FieldsOf(new(*document.Module), "Hdl"),
 
 		NewHttpServer,
 	)

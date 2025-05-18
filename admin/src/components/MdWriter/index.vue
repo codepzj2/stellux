@@ -6,6 +6,8 @@
         :locale="zhHans"
         :plugins="mdPlugins"
         @change="content = $event"
+        :mode="props.mode"
+        placeholder="请输入内容..."
       />
     </div>
   </div>
@@ -25,12 +27,16 @@ import mermaid from "@bytemd/plugin-mermaid";
 import breaks from "@bytemd/plugin-breaks";
 import { useVModel } from "@vueuse/core";
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   content: string;
-}>();
+  mode?: "split" | "tab" | "auto";
+}>(), {
+  mode: "auto",
+});
 
 const emit = defineEmits<{
   (e: "update:content", value: string): void;
+  (e: "update:mode", value: "split" | "tab" | "auto"): void;
 }>();
 
 const content = useVModel(props, "content", emit);

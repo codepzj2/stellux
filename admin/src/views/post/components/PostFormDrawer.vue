@@ -80,7 +80,7 @@
                     :src="postForm.thumbnail"
                     class="rounded-md cursor-pointer object-cover"
                     :preview="false"
-                    @click="openThumbnailModal"
+                    @click="thumbnailModalOpen = true"
                   />
                   <div
                     class="absolute top-1 right-1 z-10 opacity-0 group-hover:opacity-100 transition-opacity"
@@ -99,11 +99,10 @@
                 <div
                   v-else
                   class="w-[200px] h-[112px] flex items-center justify-center border-2 border-dashed border-gray-300 rounded-md cursor-pointer text-gray-400"
-                  @click="openThumbnailModal"
+                  @click="thumbnailModalOpen = true"
                 >
-                  <span class="text-sm">选择封面</span>
+                  <span class="text-sm">选择图片</span>
                 </div>
-                <Uploader />
               </div>
             </a-form-item>
           </a-col>
@@ -159,49 +158,27 @@
     </a-drawer>
 
     <!-- 封面选择弹窗 -->
-    <a-modal
-      width="100%"
-      wrap-class-name="full-modal"
-      :open="thumbnailModalOpen"
-      @update:open="thumbnailModalOpen = $event"
-      title="选择封面"
-      @ok="thumbnailModalOpen = false"
-    >
-      <PhotoWall
-        mode="picture-card"
-        type="select"
-        :list="page.list"
-        @selected-photos="handleSelectPicture"
-      />
-      <div class="flex justify-end my-4">
-        <a-pagination
-          v-model:current="page.page_no"
-          :total="page.total_count"
-          show-less-items
-          @change="fetchThumbnails"
-        />
-      </div>
-    </a-modal>
+    <PhotoSelect
+      v-model:open="thumbnailModalOpen"
+      @selected-picture="handleSelectPicture"
+    />
   </div>
 </template>
 
 <script lang="ts" setup>
-import { useVModel, useWindowSize } from "@vueuse/core";
 import { useRouter } from "vue-router";
 import { message, type FormInstance } from "ant-design-vue";
+
+import { useVModel, useWindowSize } from "@vueuse/core";
 import dayjs from "dayjs";
 
+import PhotoSelect from "@/components/PhotoSelect/index.vue";
 import { CloseOutlined } from "@ant-design/icons-vue";
-import PhotoWall from "@/components/PhotoWall/index.vue";
 import { queryAllByTypeAPI } from "@/api/label";
-import { queryFileList } from "@/api/file";
 import { createPostAPI, updatePostAPI } from "@/api/post";
-import Uploader from "@/components/Uploader/index.vue";
 
 import type { PostReq } from "@/types/post";
 import type { LabelVO } from "@/types/label";
-import type { FileVO } from "@/types/file";
-import type { PageData } from "@/types/dto";
 
 // Props & Emits
 const props = defineProps<{
@@ -306,30 +283,9 @@ const submitForm = () => {
 
 // 封面选择
 const thumbnailModalOpen = ref(false);
-const page = reactive<PageData<FileVO>>({
-  page_no: 1,
-  page_size: 10,
-  total_count: 0,
-  total_page: 0,
-  list: [],
-});
 
-const openThumbnailModal = () => {
-  fetchThumbnails();
-  thumbnailModalOpen.value = true;
-};
-
-const fetchThumbnails = async () => {
-  const res = await queryFileList({
-    page_no: page.page_no,
-    page_size: page.page_size,
-  });
-  page.list = res.data.list;
-  page.total_count = res.data.total_count;
-};
-
-const handleSelectPicture = (pictures: string[]) => {
-  postForm.value.thumbnail = pictures[0];
+const handleSelectPicture = (picture: string) => {
+  postForm.value.thumbnail = picture;
 };
 
 // 屏幕尺寸

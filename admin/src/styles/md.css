@@ -13,9 +13,13 @@
   @apply !bg-zinc-800 !border-zinc-800 rounded-t-lg;
 }
 
+.bytemd-editor .CodeMirror pre.CodeMirror-line {
+  @apply !text-sm !px-8;
+}
+
 /* 空两格 */
 .CodeMirror-cursor {
-  @apply !pl-4 !border-l-1 !border-blue-500;
+  @apply !pl-8 !pr-8 !border-l-1 !border-blue-500;
 }
 
 .dark .CodeMirror {
@@ -127,4 +131,8 @@
   @apply !bg-zinc-900 !text-white;
   @import "github-markdown-css/github-markdown-dark.css";
   @import "highlight.js/styles/atom-one-dark.css";
+}
+
+.bytemd-editor .CodeMirror pre.CodeMirror-line, .bytemd-editor .CodeMirror pre.CodeMirror-line-like {
+  @apply !px-8;
 }

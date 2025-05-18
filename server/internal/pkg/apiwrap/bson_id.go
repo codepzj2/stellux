@@ -7,6 +7,12 @@ import (
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
+type BsonID string
+
+func (bid BsonID) IsZero() bool {
+	return bid == "" || bid == "000000000000000000000000"
+}
+
 func ConvertBsonID(id string) bson.ObjectID {
 	objID, err := bson.ObjectIDFromHex(id)
 	if err != nil {

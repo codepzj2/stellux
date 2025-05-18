@@ -1,6 +1,7 @@
 package ioc
 
 import (
+	"github.com/codepzj/stellux/server/internal/document"
 	"github.com/codepzj/stellux/server/internal/file"
 	"github.com/codepzj/stellux/server/internal/label"
 	"github.com/codepzj/stellux/server/internal/post"
@@ -10,7 +11,7 @@ import (
 )
 
 // NewGin 初始化gin服务器
-func NewGin(userHdl *user.Handler, postHdl *post.Handler, labelHdl *label.Handler, fileHdl *file.Handler, middleware []gin.HandlerFunc) *gin.Engine {
+func NewGin(userHdl *user.Handler, postHdl *post.Handler, labelHdl *label.Handler, fileHdl *file.Handler, documentHdl *document.Handler, middleware []gin.HandlerFunc) *gin.Engine {
 	router := gin.New()
 
 	// 中间件
@@ -27,6 +28,7 @@ func NewGin(userHdl *user.Handler, postHdl *post.Handler, labelHdl *label.Handle
 		postHdl.RegisterGinRoutes(router)
 		labelHdl.RegisterGinRoutes(router)
 		fileHdl.RegisterGinRoutes(router)
+		documentHdl.RegisterGinRoutes(router)
 	}
 
 	return router

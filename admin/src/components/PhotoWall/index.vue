@@ -1,6 +1,6 @@
 <template>
   <div>
-    <!-- 操作按钮 -->
+    <!-- 操作按钮 仅在显示模式下显示 -->
     <div class="w-full flex justify-between items-center my-4">
       <div
         class="flex gap-2 min-h-[40px]"

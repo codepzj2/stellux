@@ -65,6 +65,8 @@ declare module 'vue' {
     DynamicTable: typeof import('./src/components/DynamicTable/index.vue')['default']
     MdWriter: typeof import('./src/components/MdWriter/index.vue')['default']
     PageHeader: typeof import('./src/components/PageHeader.vue')['default']
+    PhotoDrawer: typeof import('./src/components/PhotoDrawer/index.vue')['default']
+    PhotoSelect: typeof import('./src/components/PhotoSelect/index.vue')['default']
     PhotoWall: typeof import('./src/components/PhotoWall/index.vue')['default']
     PostContentWriter: typeof import('./src/components/MdWriter/PostContentWriter.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
