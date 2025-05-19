@@ -110,12 +110,12 @@ const previewImage = ref("");
 const previewTitle = ref("");
 
 // 构建图片列表
-const photosWall = computed(() =>
-  props.list.map(item => ({
+const photosWall = computed(() => {
+  return props.list.map(item => ({
     name: item.file_name,
     url: API_BASE_URL + item.url,
-  }))
-);
+  }));
+});
 
 // 图片加载完成
 const onImageLoad = (url: string) => {

@@ -10,7 +10,24 @@
               :tree-data="treeData"
               @rightClick="handleRightClick"
               @select="onHandleSelect"
-            />
+            >
+              <template #title="{ title }">
+                <a-dropdown :trigger="['contextmenu']">
+                  <div
+                  >
+                    {{ title }}
+                  </div>
+                  <template #overlay>
+                    <a-menu>
+                      <a-menu-item key="1">新增目录</a-menu-item>
+                      <a-menu-item key="2">新增文档</a-menu-item>
+                      <a-menu-item key="3">编辑文档</a-menu-item>
+                      <a-menu-item key="4">删除文档</a-menu-item>
+                    </a-menu>
+                  </template>
+                </a-dropdown>
+              </template>
+            </a-tree>
           </template>
           <template #right-content>
             <router-view v-slot="{ Component }">

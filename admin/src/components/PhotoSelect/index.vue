@@ -7,7 +7,7 @@
       :open="thumbnailModalOpen"
       @update:open="fetchThumbnails"
       title="选择图片"
-      @ok="thumbnailModalOpen = false"
+      @ok="confirmSelectedPicture"
       @cancel="thumbnailModalOpen = false"
     >
       <div class="flex justify-end my-4">
@@ -83,12 +83,18 @@ const page = reactive<PageData<FileVO>>({
   list: [],
 });
 
+const selectedPicture = ref("");
 /**
  * 用户选择图片时触发，只返回第一个图片 URL 给父组件
  * @param pictures - 用户选择的图片 URL 数组
  */
 const handleSelectPicture = (pictures: string[]) => {
-  emit("selected-picture", pictures[0]);
+  selectedPicture.value = pictures[0];
+};
+
+const confirmSelectedPicture = () => {
+  emit("selected-picture", selectedPicture.value);
+  thumbnailModalOpen.value = false;
 };
 
 /**

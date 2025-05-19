@@ -153,7 +153,6 @@ watch(
     });
     if (keys.length && keys[keys.length - 1] === route.name?.toString())
       keys.pop();
-    openKeys.value = keys;
   },
   { immediate: true }
 );
